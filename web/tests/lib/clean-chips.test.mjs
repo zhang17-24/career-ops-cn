@@ -93,14 +93,10 @@ test("a pathological paste is still bounded", () => {
 
 // ── the cap must not be smaller than the config it carries ───────────────────
 
-test("the shipped portals.example.yml round-trips without losing keywords", () => {
-  // The regression this pair of tests exists for. The cap was 16 and the
-  // template ships 37 positives, so seedExploreFilters() read the project's own
-  // default and handed the scanner fewer than half of it — while the CLI, on
-  // the same file, used all 37. One config, two different searches, no warning.
+test("the China portals.example.yml round-trips without losing keywords", () => {
   const yml = readFileSync(new URL("../../../templates/portals.example.yml", import.meta.url), "utf8");
   const positive = yaml.load(yml)?.title_filter?.positive ?? [];
-  assert.ok(positive.length > 16, "template should still be the realistic size this guards");
+  assert.ok(positive.length >= 8, "template should keep a useful China role set");
   assert.equal(cleanChips(positive).length, positive.length);
 });
 

@@ -6,14 +6,14 @@ import { cumulativeTiles } from "@/lib/funnel-tiles.mjs";
 export const dynamic = "force-dynamic";
 
 const STAGES: { key: string; label: string }[] = [
-  { key: "EVALUATED", label: "Evaluated" },
-  { key: "APPLIED", label: "Applied" },
-  { key: "RESPONDED", label: "Responded" },
-  { key: "INTERVIEW", label: "Interview" },
-  { key: "OFFER", label: "Offer" },
-  { key: "HIRED", label: "Hired" },
-  { key: "REJECTED", label: "Rejected" },
-  { key: "DISCARDED", label: "Discarded" },
+  { key: "EVALUATED", label: "已评估" },
+  { key: "APPLIED", label: "已投递" },
+  { key: "RESPONDED", label: "有回复" },
+  { key: "INTERVIEW", label: "面试" },
+  { key: "OFFER", label: "录用意向" },
+  { key: "HIRED", label: "已入职" },
+  { key: "REJECTED", label: "未通过" },
+  { key: "DISCARDED", label: "已放弃" },
 ];
 
 export default function Analytics() {
@@ -50,26 +50,26 @@ export default function Analytics() {
 
   return (
     <div className="mx-auto max-w-4xl px-6 py-10">
-      <h1 className="font-display text-2xl tracking-tight text-landing">Analytics</h1>
-      <p className="mt-1 text-sm text-muted">Across {total} tracked evaluations.</p>
+      <h1 className="font-display text-2xl tracking-tight text-landing">数据分析</h1>
+      <p className="mt-1 text-sm text-muted">共记录 {total} 次岗位评估。</p>
 
       {/* headline stats */}
       <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <Stat value={total} label="evaluated" />
-        <Stat value={avg ? avg.toFixed(2) : "—"} label="avg score" />
+        <Stat value={total} label="已评估" />
+        <Stat value={avg ? avg.toFixed(2) : "—"} label="平均分" />
         <Stat
           value={interviews}
-          label="interviews"
-          hint={interviews === 0 ? "Interviews follow replies — keep follow-ups warm →" : undefined}
+          label="面试"
+          hint={interviews === 0 ? "及时跟进有助于获得面试 →" : undefined}
         />
         <Stat
           value={offers}
-          label="offers"
-          hint={offers === 0 ? "Offers follow interviews — keep the conversations going →" : undefined}
+          label="录用意向"
+          hint={offers === 0 ? "继续准备面试并保持沟通 →" : undefined}
         />
       </div>
 
-      <Section title="Pipeline by stage">
+      <Section title="各阶段数量">
         {stageCounts.map((s) => (
           <Bar
             key={s.key}
@@ -82,13 +82,13 @@ export default function Analytics() {
         ))}
       </Section>
 
-      <Section title="Score distribution">
+      <Section title="评分分布">
         {buckets.map((b) => (
           <Bar key={b.label} label={b.label} value={b.n} pct={(b.n / maxBucket) * 100} total={scores.length} />
         ))}
       </Section>
 
-      <Section title="Top companies" id="companies">
+      <Section title="投递最多的公司" id="companies">
         {topCompanies.map(([name, n]) => (
           <Bar key={name} label={name} value={n} pct={(n / maxCompany) * 100} />
         ))}

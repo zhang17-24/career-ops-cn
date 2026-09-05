@@ -96,8 +96,8 @@ language:
   # `en` or `zh-CN`; `zh-CN` also enables Chinese PDF typography rules.
   # This is separate from language.modes_dir: modes_dir selects market
   # vocabulary/rules, while output selects the prose language.
-  output: en
-  # modes_dir: modes/de  # optional: use DACH market vocabulary while still writing in English
+  output: zh-CN
+  modes_dir: modes/zh
 
 # Optional follow-up cadence preferences for `node followup-cadence.mjs`.
 # CLI flags still win for one-off runs (for example `--applied-days 10`).

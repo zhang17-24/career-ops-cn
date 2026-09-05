@@ -21,7 +21,7 @@ import { profileTargetKeywords } from "@/lib/profile-keywords.mjs";
  *   location block_hard > always_allow > block > allow (case-insensitive substring);
  *   block_hard is the one tier always_allow cannot override (scan.mjs, #2956)
  */
-type FilterLists = Pick<ExploreFilters, "positive" | "negative" | "allow" | "block" | "alwaysAllow" | "blockHard">;
+type FilterLists = Pick<ExploreFilters, "positive" | "negative" | "allow" | "block" | "alwaysAllow" | "blockHard" | "ats">;
 
 function listFrom(v: unknown): string[] {
   return cleanChips(v);
@@ -36,7 +36,16 @@ import { serializePortals } from "./portals-serialize.mjs";
 /** Write the ephemeral filter file to a temp path; caller cleans it up. */
 export function writeTempPortals(f: FilterLists): string {
   const file = path.join(os.tmpdir(), `career-ops-explore-${randomUUID()}.yml`);
-  fs.writeFileSync(file, serializePortals(f), "utf8");
+  let text = serializePortals(f);
+  const configured = loadYaml("portals.yml");
+  const allowed = new Set(f.ats);
+  const companies = (Array.isArray(configured?.tracked_companies) ? configured.tracked_companies : []).filter((entry) => {
+    if (!entry || typeof entry !== "object") return false;
+    const company = entry as Record<string, unknown>;
+    return company.scan_method === "websearch" || typeof company.provider !== "string" || allowed.has(company.provider as ExploreFilters["ats"][number]);
+  });
+  text += yaml.dump({ tracked_companies: companies }, { lineWidth: 120, noRefs: true });
+  fs.writeFileSync(file, text, "utf8");
   return file;
 }
 

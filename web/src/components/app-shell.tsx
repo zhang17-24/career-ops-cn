@@ -13,7 +13,6 @@ import { PipelineProvider } from "@/components/pipeline/pipeline-provider";
 import { ApplyProvider } from "@/components/apply/apply-provider";
 import { ExploreProvider } from "@/components/explore/explore-provider";
 import { FirstScoreView } from "@/components/explore/first-score-view";
-import { BetaBanner } from "@/components/beta/beta-banner";
 import { WorkerPills } from "@/components/jobs/worker-pills";
 import { UsageMeter } from "@/components/usage-meter";
 import { instrumentSerif } from "@/lib/fonts";
@@ -32,7 +31,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <Link href="/" className="mb-8 flex items-center gap-2.5 px-1">
             <CoMark size={32} />
             <span className={`${instrumentSerif.className} relative -top-px text-2xl font-normal tracking-tight text-landing`}>
-              career-ops
+              求职工作台
             </span>
           </Link>
           <nav className="flex flex-col gap-1">
@@ -66,7 +65,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <div className="mt-auto space-y-3 pt-4">
             <UsageMeter />
             <div className="flex items-center justify-between px-1">
-              <span className={`${instrumentSerif.className} text-sm text-faint`}>local-first · v0</span>
+              <span className={`${instrumentSerif.className} text-sm text-faint`}>本地优先 · 中国版</span>
               <ThemeToggle />
             </div>
           </div>
@@ -75,7 +74,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <AssistantConsole />
         <BackToTop />
         <FirstScoreView />
-        <BetaBanner />
       </div>
       </ExploreProvider>
       </ApplyProvider>

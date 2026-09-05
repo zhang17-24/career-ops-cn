@@ -247,9 +247,9 @@ test("buildPrompt: evaluate reads the MARKET's evaluation mode, not always ofert
   assert.doesNotMatch(prompt, /Read modes\/oferta\.md/);
 });
 
-test("buildPrompt: evaluate still reads oferta.md when no market is configured", () => {
+test("buildPrompt: China edition reads the Chinese evaluation mode by default", () => {
   const prompt = buildPrompt({ kind: "evaluate", ...ARGS });
-  assert.match(prompt, /Read modes\/oferta\.md and follow it EXACTLY/);
+  assert.match(prompt, /Read modes\/zh\/oferta\.md and follow it EXACTLY/);
 });
 
 test("buildPrompt: the output language is stated explicitly in the prompt", () => {
@@ -264,12 +264,10 @@ test("buildPrompt: a configured market also points the agent at its _shared.md",
   assert.match(prompt, /modes\/de\/_shared\.md/);
 });
 
-test("buildPrompt: the default configuration adds no market note", () => {
-  // English/global must not be told to read modes/_shared.md for "this
-  // market's vocabulary" — there is no market, and the line would be noise.
+test("buildPrompt: the China edition defaults to Chinese market guidance", () => {
   const prompt = buildPrompt({ kind: "evaluate", ...ARGS });
-  assert.match(prompt, /Write all human-facing output in "en"/);
-  assert.doesNotMatch(prompt, /this market's vocabulary/);
+  assert.match(prompt, /Write all human-facing output in "zh-CN"/);
+  assert.match(prompt, /modes\/zh\/_shared\.md/);
 });
 
 test("buildPrompt: the language directive is not limited to the evaluate prompt", () => {

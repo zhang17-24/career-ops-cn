@@ -5,6 +5,18 @@ import { useRouter } from "next/navigation";
 import { Check } from "lucide-react";
 import { CANONICAL_STATES } from "@/lib/format";
 
+const STATUS_LABEL: Record<string, string> = {
+  Evaluated: "已评估",
+  Applied: "已投递",
+  Responded: "已回复",
+  Interview: "面试中",
+  Offer: "已录用",
+  Hired: "已入职",
+  Rejected: "未通过",
+  Discarded: "已放弃",
+  SKIP: "跳过",
+};
+
 // Status writeback control. Updates the existing tracker row (status cell) via
 // /api/status — never adds rows. Reverts on failure; confirms with the
 // terminal-popup animation.
@@ -39,7 +51,7 @@ export function StatusSelect({ n, current }: { n: string; current: string }) {
   const known = (CANONICAL_STATES as readonly string[]).includes(status);
   return (
     <span className="inline-flex items-center gap-2">
-      <label className="text-xs text-faint">status</label>
+      <label className="text-xs text-faint">状态</label>
       <select
         value={status}
         onChange={onChange}
@@ -49,13 +61,13 @@ export function StatusSelect({ n, current }: { n: string; current: string }) {
         {!known && <option value={status}>{status}</option>}
         {CANONICAL_STATES.map((s) => (
           <option key={s} value={s}>
-            {s}
+            {STATUS_LABEL[s] ?? s}
           </option>
         ))}
       </select>
       {saved && (
         <span className="animate-terminal-popup inline-flex items-center gap-1 text-xs font-medium text-brand">
-          <Check className="size-3" /> saved
+          <Check className="size-3" /> 已保存
         </span>
       )}
     </span>

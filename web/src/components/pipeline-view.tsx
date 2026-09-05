@@ -27,9 +27,15 @@ const TABS = [
   "SKIP",
 ] as const;
 type Tab = (typeof TABS)[number];
+const TAB_LABEL: Record<Tab, string> = {
+  INBOX: "待处理", ALL: "全部", EVALUATED: "已评估", APPLIED: "已投递",
+  RESPONDED: "有回复", INTERVIEW: "面试", OFFER: "录用意向", HIRED: "已入职",
+  REJECTED: "未通过", DISCARDED: "已放弃", SKIP: "跳过",
+};
 
 const SORT_KEYS = ["company", "role", "score", "status", "date"] as const;
 type SortKey = (typeof SORT_KEYS)[number];
+const SORT_LABEL: Record<SortKey, string> = { company: "公司", role: "岗位", score: "评分", status: "状态", date: "日期" };
 
 export function PipelineView({
   applications,
@@ -123,10 +129,10 @@ export function PipelineView({
     <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8 max-sm:pb-24">
       <div className="flex items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-2xl tracking-tight text-landing">Pipeline</h1>
+          <h1 className="font-display text-2xl tracking-tight text-landing">投递进度</h1>
           <p className="mt-1 text-sm text-muted">
-            <span className="tabular-nums">{pendingInbox.length}</span> in inbox ·{" "}
-            <span className="tabular-nums">{applications.length}</span> tracked
+            <span className="tabular-nums">{pendingInbox.length}</span> 个待处理 ·{" "}
+            <span className="tabular-nums">{applications.length}</span> 个已记录
           </p>
         </div>
         {/* the tracker has its own search; the inbox brings its own facet filters */}
@@ -136,7 +142,7 @@ export function PipelineView({
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Search company or role…"
+              placeholder="搜索公司或岗位…"
               className="w-full rounded-md border border-border bg-surface/60 py-2 pl-9 pr-3 text-sm outline-none transition-colors placeholder:text-faint focus:border-brand/50 focus-visible:ring-2 focus-visible:ring-brand/40"
             />
           </div>
@@ -165,7 +171,7 @@ export function PipelineView({
                   : "border-transparent text-muted hover:text-foreground",
               )}
             >
-              {t} <span className="text-faint tabular-nums">{count}</span>
+              {TAB_LABEL[t]} <span className="text-faint tabular-nums">{count}</span>
             </button>
           );
         })}
@@ -173,12 +179,12 @@ export function PipelineView({
 
       {tab !== "INBOX" && minFilter != null && (
         <div className="mt-3 flex items-center gap-2">
-          <span className="text-xs text-faint">Filtered:</span>
+          <span className="text-xs text-faint">筛选条件：</span>
           <button
             type="button"
             onClick={() => setParams({ min: null })}
             className="inline-flex items-center gap-1.5 rounded-full border border-brand/40 bg-brand-soft px-2.5 py-1 text-xs font-medium text-brand transition-colors hover:bg-brand/15"
-            title="Clear score filter"
+            title="清除评分筛选"
           >
             score ≥ {minFilter.toFixed(1)}
             <X className="size-3" />
@@ -210,7 +216,7 @@ export function PipelineView({
                     onClick={() => setParams({ sort: k, dir: sort.key === k ? sort.dir * -1 : -1 })}
                   >
                     <span className="inline-flex items-center gap-1">
-                      {k}
+                      {SORT_LABEL[k]}
                       <ChevronsUpDown className="size-3" />
                     </span>
                   </th>
@@ -249,8 +255,8 @@ export function PipelineView({
         </div>
       ) : (
         <div className="mt-4 rounded-2xl border border-dashed border-border bg-surface/30 px-6 py-12 text-center">
-          <p className="font-display text-lg">No matches</p>
-          <p className="mx-auto mt-1 max-w-sm text-sm text-muted">Try a different tab or clear the search.</p>
+          <p className="font-display text-lg">没有匹配结果</p>
+          <p className="mx-auto mt-1 max-w-sm text-sm text-muted">切换分类或清除搜索条件。</p>
         </div>
       )}
     </div>
@@ -263,8 +269,8 @@ function InboxEmpty({ count, filtered }: { count: number; filtered: boolean }) {
   if (filtered) {
     return (
       <div className="mt-4 rounded-2xl border border-dashed border-border bg-surface/30 px-6 py-12 text-center">
-        <p className="font-display text-lg">No matches</p>
-        <p className="mx-auto mt-1 max-w-sm text-sm text-muted">Clear the search to see the full inbox.</p>
+        <p className="font-display text-lg">没有匹配结果</p>
+        <p className="mx-auto mt-1 max-w-sm text-sm text-muted">清除搜索条件即可查看全部待处理职位。</p>
       </div>
     );
   }
@@ -274,26 +280,26 @@ function InboxEmpty({ count, filtered }: { count: number; filtered: boolean }) {
         <span className="size-2.5 rounded-full bg-foreground/15" aria-hidden="true" />
         <span className="size-2.5 rounded-full bg-foreground/15" aria-hidden="true" />
         <span className="size-2.5 rounded-full bg-foreground/15" aria-hidden="true" />
-        <span className="ml-3 font-mono text-xs tracking-wide text-muted">career-ops · inbox</span>
+        <span className="ml-3 font-mono text-xs tracking-wide text-muted">求职工作台 · 待处理</span>
       </div>
       <div className="px-6 py-10 text-center">
         <p className="font-display text-lg">
-          Your <span className="text-brand">inbox</span> is empty.
+          <span className="text-brand">待处理列表</span>是空的。
         </p>
         {count > 0 ? (
-          <p className="mx-auto mt-2 max-w-sm text-sm text-muted">Nothing pending right now.</p>
+          <p className="mx-auto mt-2 max-w-sm text-sm text-muted">现在没有需要处理的岗位。</p>
         ) : (
           <>
-            <p className="mx-auto mt-2 max-w-sm text-sm text-muted">Find roles that match your CV — free, no tokens spent.</p>
+            <p className="mx-auto mt-2 max-w-sm text-sm text-muted">免费查找与你简历目标匹配的国内岗位。</p>
             <Link
               href="/explore?run=1"
               className="mt-5 inline-flex items-center gap-2 rounded-full bg-brand px-5 py-2.5 text-sm font-medium text-brand-foreground shadow-sm transition-all duration-200 hover:bg-brand-200 hover:-translate-y-0.5 hover:shadow-md"
             >
-              <Compass className="size-4" /> Run your first free scan <ArrowRight className="size-4" />
+              <Compass className="size-4" /> 开始第一次免费扫描 <ArrowRight className="size-4" />
             </Link>
             <p className="mx-auto mt-4 max-w-sm text-xs text-muted">
-              Prefer the terminal? Run <code className="rounded bg-surface-hover px-1 py-0.5 font-mono">career-ops scan</code>, or add job URLs to{" "}
-              <code className="rounded bg-surface-hover px-1 py-0.5 font-mono">data/pipeline.md</code>.
+              也可以在终端运行 <code className="rounded bg-surface-hover px-1 py-0.5 font-mono">career-ops scan</code>，或把职位链接加入{" "}
+              <code className="rounded bg-surface-hover px-1 py-0.5 font-mono">data/pipeline.md</code>。
             </p>
           </>
         )}

@@ -33,13 +33,13 @@ export function ResultsList({ offers }: { offers: EnrichedOffer[] }) {
       <div className="flex flex-wrap items-center gap-3">
         <div>
           <p className="text-sm text-foreground">
-            <span className="font-semibold">{offers.length}</span> {isAi ? `candidate${offers.length === 1 ? "" : "s"}` : `fresh role${offers.length === 1 ? "" : "s"}`}
+            <span className="font-semibold">{offers.length}</span> 个{isAi ? "候选岗位" : "新岗位"}
             <CostBadge kind={isAi ? "spend" : "free-network"} size="xs" className="ml-2 align-middle" />
           </p>
           <p className="text-[12px] text-faint">
             {isAi
-              ? "found by AI on the open web · unverified until you evaluate"
-              : `${companiesScanned > 0 ? `${companiesScanned.toLocaleString()} companies scanned · ` : ""}0 tokens spent${partial ? " · some boards were unreachable (normal for public directories)" : ""}`}
+              ? "由 AI 从公开网页找到，评估时会再次验证"
+              : `${companiesScanned > 0 ? `已扫描 ${companiesScanned.toLocaleString()} 家企业 · ` : ""}不消耗 AI 额度${partial ? " · 部分来源暂时不可访问" : ""}`}
           </p>
         </div>
 
@@ -49,7 +49,7 @@ export function ResultsList({ offers }: { offers: EnrichedOffer[] }) {
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Filter results…"
+              placeholder="筛选结果…"
               className="w-32 bg-transparent text-[13px] outline-none placeholder:text-faint"
             />
           </div>
@@ -61,7 +61,7 @@ export function ResultsList({ offers }: { offers: EnrichedOffer[] }) {
                 onClick={() => setSort(s)}
                 className={cn("rounded-md px-2.5 py-1 font-medium capitalize transition-colors", sort === s ? "bg-brand-soft text-brand" : "text-muted hover:text-foreground")}
               >
-                {s}
+                {s === "fresh" ? "最新" : "公司"}
               </button>
             ))}
           </div>
@@ -71,7 +71,7 @@ export function ResultsList({ offers }: { offers: EnrichedOffer[] }) {
               onClick={() => addToPipeline(addable)}
               className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface/40 px-2.5 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-brand-soft hover:text-brand"
             >
-              <Plus className="size-3.5" /> Add all {addable.length}
+              <Plus className="size-3.5" /> 全部加入（{addable.length}）
             </button>
           )}
         </div>
@@ -83,7 +83,7 @@ export function ResultsList({ offers }: { offers: EnrichedOffer[] }) {
         ))}
       </div>
 
-      {view.length === 0 && <p className="py-10 text-center text-sm text-faint">No results match “{q}”.</p>}
+      {view.length === 0 && <p className="py-10 text-center text-sm text-faint">没有符合“{q}”的结果。</p>}
     </div>
   );
 }

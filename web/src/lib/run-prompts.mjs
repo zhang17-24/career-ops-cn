@@ -61,7 +61,7 @@ export function buildPrompt({ kind, input, memory, today, postedAt, lang }) {
   // readLanguageConfig() touches the filesystem, so callers that cannot supply
   // it (tests, future callers) keep working instead of this module reaching for
   // fs itself and losing its "plain module, testable as a value" property.
-  const resolvedLang = lang ?? { output: "en", modesDir: "modes", evalModeFile: "modes/oferta.md" };
+  const resolvedLang = lang ?? { output: "zh-CN", modesDir: "modes/zh", evalModeFile: "modes/zh/oferta.md" };
   const marketNote =
     resolvedLang.modesDir !== "modes"
       ? ` Also read ${resolvedLang.modesDir}/_shared.md for this market's vocabulary, benefits and legal concepts, and keep those terms (explained in the output language) where relevant.`
@@ -153,4 +153,3 @@ VERDICT: {score}/5 — {reason in 12 words or fewer}
 
 Posting URL: ${input}`;
 }
-

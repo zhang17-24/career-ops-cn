@@ -3236,6 +3236,18 @@ async function main() {
       duplicates: totalDupes,
       added: verifiedOffers.length,
       added_urls: verifiedOffers.map(offer => offer.url),
+      // Backward-compatible detail payload for local UI clients. Existing
+      // receipt consumers can ignore this additive field.
+      offers: verifiedOffers.map(offer => ({
+        company: offer.company,
+        title: offer.title,
+        url: offer.url,
+        location: offer.location || '',
+        postedAt: Number.isFinite(offer.postedAt)
+          ? new Date(offer.postedAt).toISOString().slice(0, 10)
+          : '',
+        source: offer.source,
+      })),
       errors: errors.map(({ company, error }) => ({ company, error })),
       dry_run: dryRun,
     }, errors.length > 0 ? 2 : 0);

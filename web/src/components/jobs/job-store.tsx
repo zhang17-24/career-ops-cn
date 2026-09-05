@@ -68,7 +68,7 @@ export function JobsProvider({ children }: { children: React.ReactNode }) {
       const arr = raw ? JSON.parse(raw) : null;
       if (Array.isArray(arr)) {
         // anything left "running" from a previous session is stale → mark interrupted
-        setJobs(arr.map((j: Job) => (j.status === "running" ? { ...j, status: "error", steps: [...(j.steps || []), { kind: "status", label: "Interrupted (page reloaded)", ts: Date.now() }] } : j)));
+        setJobs(arr.map((j: Job) => (j.status === "running" ? { ...j, status: "error", steps: [...(j.steps || []), { kind: "status", label: "页面重新加载，任务已中断", ts: Date.now() }] } : j)));
       }
     } catch {
       /* ignore */
@@ -102,7 +102,7 @@ export function JobsProvider({ children }: { children: React.ReactNode }) {
         kind: opts.kind,
         batchId: opts.batchId,
         status: "running",
-        steps: [{ kind: "status", label: "Starting…", ts: Date.now() }],
+        steps: [{ kind: "status", label: "正在启动…", ts: Date.now() }],
         text: "",
         startedAt: Date.now(),
       };
@@ -115,7 +115,7 @@ export function JobsProvider({ children }: { children: React.ReactNode }) {
             ...j,
             status: "error",
             endedAt: Date.now(),
-            steps: [...j.steps, { kind: "status", label: "No CLI configured — open Config and click Save config", ts: Date.now() }],
+            steps: [...j.steps, { kind: "status", label: "尚未配置 AI 工具，请前往设置保存配置", ts: Date.now() }],
           }));
           return;
         }
@@ -158,7 +158,7 @@ export function JobsProvider({ children }: { children: React.ReactNode }) {
           });
           if (!res.ok || !res.body) {
             const e = await res.json().catch(() => ({}));
-            finish("error", e.error || "Failed to start");
+            finish("error", e.error || "启动失败");
             return;
           }
           const reader = res.body.getReader();
@@ -192,7 +192,7 @@ export function JobsProvider({ children }: { children: React.ReactNode }) {
                   if (typeof ev.tokens === "number") doneTokens = ev.tokens;
                   if (typeof ev.costUsd === "number") doneCostUsd = ev.costUsd;
                 } else if (ev.type === "error") {
-                  finish("error", ev.msg || "Error");
+                  finish("error", ev.msg || "运行失败");
                   return;
                 }
               } catch {
@@ -200,9 +200,9 @@ export function JobsProvider({ children }: { children: React.ReactNode }) {
               }
             }
           }
-          finish("done", "Done");
+          finish("done", "已完成");
         } catch {
-          finish("error", "Connection error");
+          finish("error", "连接失败");
         }
       })();
 

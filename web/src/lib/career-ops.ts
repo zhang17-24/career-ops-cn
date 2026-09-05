@@ -448,9 +448,9 @@ export function rememberFact(fact: string): "ok" | "deduped" | "error" {
  * as separate fields rather than collapsed into one "locale".
  */
 export type LanguageConfig = {
-  /** language.output — prose language for user-facing text. Default "en". */
+  /** language.output — prose language for user-facing text. China edition defaults to "zh-CN". */
   output: string;
-  /** language.modes_dir, normalized without a trailing slash. Default "modes". */
+  /** language.modes_dir, normalized without a trailing slash. China edition defaults to "modes/zh". */
   modesDir: string;
   /** The market's evaluation-mode file, repo-root-relative. Default "modes/oferta.md". */
   evalModeFile: string;
@@ -516,8 +516,8 @@ function resolveEvalModeFile(root: string, modesDir: string): string {
  */
 export function readLanguageConfig(): LanguageConfig {
   const root = careerOpsRoot();
-  let modesDir = "modes";
-  let output = "en";
+  let modesDir = "modes/zh";
+  let output = "zh-CN";
   try {
     const parsed = yaml.load(fs.readFileSync(path.join(root, "config", "profile.yml"), "utf8"));
     if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {

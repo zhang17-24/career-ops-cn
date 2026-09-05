@@ -1,7 +1,7 @@
 {
-  "name": "career-ops",
+  "name": "career-ops-cn",
   "version": "1.32.0",
-  "description": "AI-powered job search pipeline — works with any AI coding CLI (Claude Code, Codex, OpenCode, Antigravity, Grok, Qwen, Kimi, Copilot)",
+  "description": "面向中国招聘场景的本地 AI 求职工作台，支持 Codex、Claude Code 和 Qwen",
   "private": true,
   "engines": {
     "node": ">=18"
@@ -34,13 +34,9 @@
     "rollback": "node update-system.mjs rollback",
     "liveness": "node check-liveness.mjs",
     "extract": "node browser-extract.mjs",
-    "scan:hn": "node scan-hn.mjs",
     "scan": "node scan.mjs",
-    "scan:full": "node scan-ats-full.mjs",
-    "scan:seeds": "node scan-ats-full.mjs --seeds yc,a16z",
-    "scan:yc": "node scan-ats-full.mjs --seeds yc",
-    "scan:interamt": "node scan-interamt.mjs",
-    "company:funded": "node company-funded.mjs",
+    "scan:china": "node scan.mjs",
+    "import:job-sites": "node scripts/import-job-apply-companies.mjs",
     "validate:portals": "node validate-portals.mjs",
     "verify:portals": "node verify-portals.mjs",
     "tracker": "node tracker.mjs",
@@ -87,10 +83,10 @@
     "ai-agent-skill"
   ],
   "author": "Santiago Fernández de Valderrama <hi@santifer.io> (https://santifer.io)",
-  "homepage": "https://santifer.io",
+  "homepage": "https://github.com/zhang17-24/career-ops-cn",
   "repository": {
     "type": "git",
-    "url": "https://github.com/career-ops-hq/career-ops"
+    "url": "https://github.com/zhang17-24/career-ops-cn.git"
   },
   "license": "MIT",
   "dependencies": {

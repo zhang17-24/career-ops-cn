@@ -205,7 +205,7 @@ export function ApplyProvider({ children }: { children: React.ReactNode }) {
       setStatus("ready");
     } catch {
       if (generation.current !== gen) return; // left while it was opening
-      setError("Could not open the form.");
+      setError("无法打开申请表单。");
       setStatus("error");
     }
   }, []);
@@ -234,7 +234,7 @@ export function ApplyProvider({ children }: { children: React.ReactNode }) {
       const r = await fetch("/api/apply/prefill", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ sessionId: sessionId.current, cliId: cliId() }) });
       if (generation.current !== gen) return; // left mid-prefill
       if (!r.body) {
-        setError("Couldn't pre-fill — no response stream.");
+        setError("无法预填：没有收到响应。" );
         setStatus("ready");
         return;
       }
@@ -264,21 +264,21 @@ export function ApplyProvider({ children }: { children: React.ReactNode }) {
           } else if (ev.t === "done") {
             got = true;
             applyAnswers(ev.answers ?? {});
-            if ((ev.count ?? 0) === 0) setError("The planner returned 0 answers — see the diagnostics log below.");
-            else if (ev.truncated) setError("The planner was cut off — some fields were recovered, others may be blank. See diagnostics.");
+            if ((ev.count ?? 0) === 0) setError("没有生成任何预填答案，请查看下方诊断记录。" );
+            else if (ev.truncated) setError("预填过程被中断，部分字段可能为空，请查看诊断记录。" );
           } else if (ev.t === "error") {
             sawError = true;
-            setError(ev.m ? `Couldn't pre-fill: ${ev.m}` : "Couldn't pre-fill from your CV.");
-            setPrefillLog((p) => [...p, `✗ ${ev.m ?? "error"}${ev.raw ? ` — raw tail: ${ev.raw.slice(0, 160)}` : ""}`]);
+            setError(ev.m ? `无法预填：${ev.m}` : "无法根据简历预填。" );
+            setPrefillLog((p) => [...p, `✗ ${ev.m ?? "错误"}${ev.raw ? ` — 原始响应末尾：${ev.raw.slice(0, 160)}` : ""}`]);
           }
         }
       }
       if (generation.current !== gen) return; // left mid-prefill
-      if (!got && !sawError) setError("Pre-fill ended without answers — see the diagnostics log below.");
+      if (!got && !sawError) setError("预填结束但没有生成答案，请查看下方诊断记录。" );
       setStatus("ready");
     } catch (e) {
       if (generation.current !== gen) return; // left mid-prefill
-      setError(`Couldn't pre-fill from your CV: ${e instanceof Error ? e.message : "stream error"}. See diagnostics.`);
+      setError(`无法根据简历预填：${e instanceof Error ? e.message : "响应流出错"}。请查看诊断记录。`);
       setStatus("ready");
     }
   }, []);
@@ -325,7 +325,7 @@ export function ApplyProvider({ children }: { children: React.ReactNode }) {
           return [...prev, ...(d.issues as ApplyIssue[]).filter((i) => !seen.has(i.message))];
         });
       }
-      if (d.navigated) setError("Heads up: the form's page changed during fill — review it carefully before submitting (career-ops never submits for you).");
+      if (d.navigated) setError("提醒：填写过程中表单页面发生了变化。提交前请仔细检查；系统不会替你点击提交。 ");
       setStatus("done");
       // ESCALATION ("si no va, full agente"): if deterministic fill clearly
       // didn't land (most fields failed / mismatched), let the agent fill it.

@@ -19,18 +19,17 @@ export function FirstRunHome() {
         <div aria-hidden className="pointer-events-none absolute inset-0 z-[1] bg-surface/55 backdrop-blur-[2px] dark:bg-background/45" />
         <div className="relative z-10">
           <p className="font-mono text-xs uppercase tracking-[0.2em] text-muted">
-            <span className="text-faint">//</span> local-first · your machine
+            <span className="text-faint">//</span> 本地优先 · 数据留在你的电脑
           </p>
           <h1 className={`${instrumentSerif.className} mt-3 text-4xl leading-[1.05] text-landing md:text-5xl`}>
-            Drop your CV. See who&apos;s hiring you in 60 seconds.
+            放入简历，60 秒开始找国内岗位。
           </h1>
           <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-muted">
-            No account. Paste text or drop a .md / .txt file to start. A PDF needs an AI CLI in{" "}
+            不需要注册账号。粘贴文字或放入 .md / .txt 文件即可开始。处理 PDF 前需在{" "}
             <a href="/config" className="text-foreground underline-offset-2 hover:underline">
-              Config
+              设置
             </a>{" "}
-            first. The market scan is <span className="text-foreground">free</span>. You only spend tokens when you
-            choose to score a role.
+            中连接 AI 工具。扫描企业官网<span className="text-foreground">免费</span>，只有详细评估岗位时才会使用 AI 额度。
           </p>
           <div className="mt-7">
             <CvIngest />

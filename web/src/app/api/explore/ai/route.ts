@@ -2,6 +2,7 @@ import { spawnHeadlessCli } from "@/lib/spawn-cli.mjs";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import * as yaml from "js-yaml";
 import { resolveCli } from "@/lib/clis";
 import { careerOpsRoot, readMemory } from "@/lib/career-ops";
 import { assembleDedupContext } from "@/lib/core/discover";
@@ -21,6 +22,36 @@ type CodexCapabilityCacheEntry = {
 };
 
 const codexCapabilityCache = new Map<string, CodexCapabilityCacheEntry>();
+
+type CatalogCompany = {
+  name?: unknown;
+  careers_url?: unknown;
+  category?: unknown;
+  note?: unknown;
+};
+
+function officialChinaCatalog(): string {
+  try {
+    const parsed = yaml.load(
+      fs.readFileSync(path.join(careerOpsRoot(), "portals.yml"), "utf8"),
+    ) as { tracked_companies?: CatalogCompany[] } | undefined;
+    const rows = (parsed?.tracked_companies || [])
+      .filter(
+        (company) =>
+          typeof company.name === "string" &&
+          typeof company.careers_url === "string",
+      )
+      .map((company) =>
+        [company.name, company.category, company.careers_url, company.note]
+          .filter((value) => typeof value === "string" && value.trim())
+          .join(" | "),
+      );
+    if (!rows.length) return "";
+    return `\n\n--- 中国校招官网目录（${rows.length} 家，搜索时优先使用）---\n${rows.join("\n")}`;
+  } catch {
+    return "";
+  }
+}
 
 function readCodexHelp(binPath: string, args: string[]): Promise<string> {
   return new Promise((resolve) => {
@@ -125,6 +156,9 @@ Follow modes/discover.md exactly. You are running headless for the web:
   <<offer:{"url":"…","title":"…","company":"…","location":"…","source":"ai-search","why":"…","postedHint":"…","ats":"…","verification":"unconfirmed"}>>
   Valid JSON, one per line, the moment you're confident — stream them as you go.
 - Between envelopes, narrate briefly (plain text) what you're searching — shown live as your reasoning.
+- 所有用户可见的搜索说明、岗位原因和结果文字必须使用简体中文。
+- 只查中国境内岗位和校招/应届岗位。优先使用下方企业校招官网目录及其官网域名。
+- 不使用 LinkedIn、Indeed、Glassdoor、Remote OK 等海外综合招聘站作为数据源。
 - Be frugal (~3–6 searches, stop at a strong set). EVERY candidate is UNVERIFIED.
 - Be a GENEROUS FINDER, not a judge: when a constraint (location, seniority, stage) can't be confirmed from the shallow signal, INCLUDE + flag the uncertainty in "why" — don't discard. NEVER score or judge fit; the A–F evaluation does that later, with the full JD.
 - DEDUP: skip anything already known below; don't re-propose the user's existing companies.
@@ -139,10 +173,10 @@ export async function POST(req: Request) {
   }
   const query = (body.query || "").trim();
   const cliId = body.cliId;
-  if (!query || !cliId) return Response.json({ error: "query and cliId required" }, { status: 400 });
+  if (!query || !cliId) return Response.json({ error: "请填写搜索条件并选择本机命令行工具。" }, { status: 400 });
 
   const resolved = resolveCli(cliId);
-  if (!resolved) return Response.json({ error: `CLI '${cliId}' not found on this machine` }, { status: 404 });
+  if (!resolved) return Response.json({ error: `本机没有找到 ${cliId} 命令行工具。` }, { status: 404 });
   const { spec, binPath } = resolved;
 
   // Read the CANONICAL mode at request time — single source of truth, never a
@@ -151,14 +185,15 @@ export async function POST(req: Request) {
   try {
     mode = fs.readFileSync(path.join(careerOpsRoot(), "modes", "discover.md"), "utf8");
   } catch {
-    return Response.json({ code: "MODE_MISSING", error: "AI search needs a newer career-ops — update to enable it." }, { status: 400 });
+    return Response.json({ code: "MODE_MISSING", error: "缺少 AI 搜索规则，请更新项目后再试。" }, { status: 400 });
   }
 
   const { lines } = assembleDedupContext();
   const memory = readMemory();
   const memoryLine = memory.trim() ? `\n\nWHAT YOU KNOW ABOUT THE USER (persistent memory):\n${memory.trim()}` : "";
   const knownBlock = lines.length ? `\n\n--- ALREADY KNOWN (dedup — do NOT propose these) ---\n${lines.join("\n")}` : "";
-  const prompt = `${mode}${OUTPUT_CONTRACT}${memoryLine}${knownBlock}\n\n--- USER INTENT ---\n${query}\n`;
+  const catalogBlock = officialChinaCatalog();
+  const prompt = `${mode}${OUTPUT_CONTRACT}${catalogBlock}${memoryLine}${knownBlock}\n\n--- 用户需求 ---\n${query}\n`;
 
   const isClaude = cliId === "claude";
   const isCodex = cliId === "codex";
@@ -168,7 +203,7 @@ export async function POST(req: Request) {
       {
         code: "CODEX_UNSUPPORTED",
         error:
-          "Codex CLI does not support the required read-only execution flags. Update Codex and try again.",
+          "当前 Codex CLI 不支持安全的只读运行参数，请更新后再试。",
       },
       { status: 400 },
     );
@@ -189,7 +224,7 @@ export async function POST(req: Request) {
       return Response.json(
         {
           code: "CODEX_TEMP_DIR_FAILED",
-          error: "AI search could not create an isolated Codex workspace.",
+          error: "无法创建隔离的 AI 搜索临时目录。",
         },
         { status: 400 },
       );

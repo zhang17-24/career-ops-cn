@@ -8,7 +8,7 @@ description: >-
 arguments: mode
 user_invocable: true
 user-invocable: true
-argument-hint: "[scan | discover | deep | pdf | text | latex | latex-tex | cover | email | add | expand | eu-swe | oferta | ofertas | apply | batch | tracker | agent-inbox | pipeline | contacto | training | project | interview-prep | interview | interview/plan | interview/practice | interview/debrief | interview-redflag | patterns | offer-prep | titles | upskill | followup | reply-watch | outcome | update]"
+argument-hint: "[scan | campus | 校招 | discover | pdf | cover | apply | pipeline | tracker | interview | followup | outcome | update]"
 license: MIT
 ---
 
@@ -71,6 +71,7 @@ Determine the mode from `$mode`:
 | `inbox` | `agent-inbox` |
 | `pipeline` | `pipeline` |
 | `apply` | `apply` |
+| `campus` / `校招` / `校招投递` | `campus-apply` |
 | `scan` | `scan` |
 | `discover` | `discover` |
 | `batch` | `batch` |
@@ -95,14 +96,14 @@ If `$mode` is not a sub-command AND doesn't look like a JD, show discovery.
 
 Before executing any mode, read `config/profile.yml` if it exists and resolve:
 
-- `language.output` → ISO language code for human-facing output. Default: `en`.
+- `language.output` → 面向用户内容的语言代码。中国版默认：`zh-CN`。
 - `language.modes_dir` → optional market-mode directory. This controls market vocabulary and local evaluation rules only.
 
 Inject this directive after loading the mode instructions and before producing any user-visible content:
 
 > Write all human-facing output in `{language.output}` regardless of the language of these instructions or of the job description. This includes reports, tracker notes, PDFs, cover letters, outreach, interview prep, form answers, and summaries. If `language.modes_dir` supplies market-specific vocabulary, keep the market logic but explain terms in `{language.output}` when needed.
 
-`language.output` is authoritative for prose. `modes_dir` is market context; it must not force the prose language.
+中国版没有配置文件时也默认使用 `zh-CN` 与 `modes/zh`。`language.output` 决定输出语言，`modes_dir` 决定招聘市场规则。
 
 ---
 
@@ -153,6 +154,7 @@ Available commands:
   /career-ops tracker   → Application status overview
   /career-ops agent-inbox → Queue/drain requests for the next session (data/agent-inbox.md)
   /career-ops apply     → Live application assistant (reads form + generates answers)
+  /career-ops campus    → 中国校招：官方入口找岗位、查重、辅助填表、确认后提交
   /career-ops scan      → Scan portals and discover new offers
   /career-ops discover  → Resolve a company list to scannable ATS boards + append to portals.yml (zero-token)
   /career-ops batch     → Batch processing with parallel workers
@@ -180,7 +182,7 @@ If `modes/_custom.md` exists, read it after `modes/_profile.md` and before the s
 
 Read `modes/_shared.md` + `modes/_profile.md` (if exists) + `modes/_custom.md` (if exists) + `modes/{mode}.md`
 
-Applies to: `auto-pipeline`, `oferta`, `ofertas`, `pdf`, `text`, `contacto`, `apply`, `pipeline`, `scan`, `batch`
+Applies to: `auto-pipeline`, `oferta`, `ofertas`, `pdf`, `text`, `contacto`, `apply`, `campus-apply`, `pipeline`, `scan`, `batch`
 
 ### Standalone modes with profile and custom context
 

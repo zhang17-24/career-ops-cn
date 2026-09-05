@@ -47,10 +47,10 @@ export function CvEditor() {
     <div className="mx-auto max-w-6xl px-6 py-8">
       <div className="flex items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-2xl tracking-tight text-landing">CV editor</h1>
+          <h1 className="font-display text-2xl tracking-tight text-landing">简历编辑器</h1>
           <p className="mt-1 text-sm text-muted">
-            Edit <code className="text-foreground">cv.md</code> with live preview.
-            {!exists && loaded && <span className="ml-1 text-faint">No cv.md yet — start typing to create it.</span>}
+            编辑 <code className="text-foreground">cv.md</code> 并实时预览。
+            {!exists && loaded && <span className="ml-1 text-faint">还没有 cv.md，输入内容即可创建。</span>}
           </p>
         </div>
         <button
@@ -65,12 +65,12 @@ export function CvEditor() {
           )}
         >
           {saving ? <Loader2 className="size-4 animate-spin" /> : saved ? <Check className="size-4" /> : null}
-          {saved ? "Saved" : "Save"}
+          {saved ? "已保存" : "保存"}
         </button>
       </div>
 
       {!loaded ? (
-        <div className="mt-6 text-sm text-muted">Loading…</div>
+        <div className="mt-6 text-sm text-muted">加载中…</div>
       ) : (
         <div className="mt-6 grid gap-4 lg:grid-cols-2">
           <textarea
@@ -87,7 +87,7 @@ export function CvEditor() {
             {content.trim() ? (
               <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
             ) : (
-              <p className="text-muted">Preview appears here.</p>
+              <p className="text-muted">预览会显示在这里。</p>
             )}
           </article>
         </div>

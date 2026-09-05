@@ -15,10 +15,10 @@ function hasCli(): boolean {
 }
 
 const LABELS: Record<string, string> = {
-  "cv.md": "your CV",
-  "config/profile.yml": "your profile — target roles, comp, location",
-  "modes/_profile.md": "your personalization",
-  "portals.yml": "the companies to scan",
+  "cv.md": "你的简历",
+  "config/profile.yml": "目标岗位、薪资和城市",
+  "modes/_profile.md": "个性化求职信息",
+  "portals.yml": "要扫描的国内企业",
 };
 
 // Detect (via the core's doctor.mjs) whether setup is incomplete, and offer to
@@ -40,29 +40,27 @@ export function OnboardingBanner() {
   if (dismissed || !d || !d.onboardingNeeded) return null;
   const items = d.missing.map((m) => LABELS[m] ?? m);
   const kickoff =
-    `Help me finish setting up career-ops. I still need to add ${items.join(", ")} — walk me through just those, conversationally, and write the files for me. Don't ask me for anything that's already set up (for example, don't ask for my CV if it's already saved).`;
+    `请用中文帮助我完成求职工作台设置。我还需要补充：${items.join("、")}。只询问这些缺失项并替我写入配置；已经设置好的内容不要重复询问。`;
 
   return (
     <div className="dot-bg relative mb-6 overflow-hidden rounded-2xl border border-brand/30 bg-gradient-to-br from-brand/10 via-surface/40 to-transparent p-5">
       <button
         onClick={() => setDismissed(true)}
         className="absolute right-3 top-3 text-faint transition-colors hover:text-foreground"
-        aria-label="Dismiss"
+        aria-label="关闭"
       >
         <X className="size-4" />
       </button>
-      <h2 className="font-display text-xl text-landing">Let&apos;s finish setting you up</h2>
+      <h2 className="font-display text-xl text-landing">完成初始设置</h2>
       <p className="mt-1.5 max-w-xl text-sm text-muted">
-        career-ops works best when it knows you. We still need {items.join(", ")}.{" "}
-        <span className="text-foreground">No YAML to edit</span> — answer in plain language and the assistant writes it
-        for you.
+        求职工作台还需要：{items.join("、")}。<span className="text-foreground">不用手写 YAML</span>，用中文回答，助手会生成配置。
       </p>
       {cli ? (
         <button
           onClick={() => window.dispatchEvent(new CustomEvent("co-assistant", { detail: { message: kickoff } }))}
           className="mt-4 inline-flex items-center gap-2 rounded-full bg-brand px-4 py-2 text-sm font-medium text-brand-foreground transition-colors hover:bg-brand-200"
         >
-          <Sparkles className="size-4" /> Set me up with the assistant
+          <Sparkles className="size-4" /> 让助手帮我设置
         </button>
       ) : (
         // The assistant needs a CLI to run — without one the kickoff would silently
@@ -71,7 +69,7 @@ export function OnboardingBanner() {
           href="/config"
           className="mt-4 inline-flex items-center gap-2 rounded-full bg-brand px-4 py-2 text-sm font-medium text-brand-foreground transition-colors hover:bg-brand-200"
         >
-          <Settings className="size-4" /> Connect your AI CLI to get started
+          <Settings className="size-4" /> 先连接 AI 工具
         </Link>
       )}
     </div>

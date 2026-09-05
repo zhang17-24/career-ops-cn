@@ -25,11 +25,11 @@ function block(key, items) {
  * block_hard included, or a config that hard-blocks and nothing else would write
  * no location_filter at all and the scan would honor none of it (#3102).
  *
- * @param {{positive:string[], negative:string[], allow:string[], block:string[], alwaysAllow:string[], blockHard:string[]}} f
+ * @param {{positive:string[], negative:string[], allow:string[], block:string[], alwaysAllow:string[], blockHard:string[], ats?:string[]}} f
  * @returns {string}
  */
 export function serializePortals(f) {
-  let out = "# Ephemeral Explorer filters — generated per-search, safe to delete.\n";
+  let out = "# 中国版职位搜索条件 — 每次搜索临时生成，可安全删除。\n";
   if (f.positive.length || f.negative.length) {
     out += "title_filter:\n";
     out += block("positive", f.positive);

@@ -142,7 +142,7 @@ export function FirstScoreView() {
                 >
                   {score}
                 </div>
-                <div className="text-[11px] uppercase tracking-wide text-faint">/ 5 fit</div>
+                <div className="text-[11px] tracking-wide text-faint">/ 5 匹配度</div>
               </div>
             )}
           </div>

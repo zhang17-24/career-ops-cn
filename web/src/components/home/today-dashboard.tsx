@@ -35,7 +35,7 @@ export function TodayDashboard({
   const [fresh, setFresh] = useState<DiscoveredOffer[]>([]);
   const [freshCount, setFreshCount] = useState(0);
   const router = useRouter();
-  const dateLabel = useMemo(() => new Date().toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" }), []);
+  const dateLabel = useMemo(() => new Date().toLocaleDateString("zh-CN", { weekday: "long", month: "long", day: "numeric" }), []);
 
   const refetch = useCallback(() => {
     fetch("/api/followups")
@@ -91,36 +91,36 @@ export function TodayDashboard({
         <div aria-hidden className="pointer-events-none absolute inset-0 z-[1] bg-surface/55 backdrop-blur-[2px] dark:bg-background/45" />
         <div className="relative z-10">
           <p className="font-mono text-xs uppercase tracking-[0.2em] text-muted">
-            <span className="text-faint">//</span> today · <span className="tabular-nums">{dateLabel}</span>
+            <span className="text-faint">//</span> 今日 · <span className="tabular-nums">{dateLabel}</span>
           </p>
           <h1 className={`${instrumentSerif.className} mt-3 text-4xl leading-[1.05] text-landing md:text-5xl`}>
             {allClear ? (
-              <>You&apos;re all caught up.</>
+              <>今天的事项已处理完。</>
             ) : (
               <>
                 {newThisWeek > 0 && (
                   <>
-                    <span className="text-brand tabular-nums">{newThisWeek}</span> new match{newThisWeek === 1 ? "" : "es"} this week
+                    本周有 <span className="text-brand tabular-nums">{newThisWeek}</span> 个新匹配
                   </>
                 )}
                 {newThisWeek > 0 && overdue > 0 && <span className="text-faint"> · </span>}
                 {overdue > 0 && (
                   <>
-                    <span className="text-brand tabular-nums">{overdue}</span> follow-up{overdue === 1 ? "" : "s"} due
+                    <span className="text-brand tabular-nums">{overdue}</span> 个跟进到期
                   </>
                 )}
               </>
             )}
           </h1>
           <p className="mt-4 max-w-xl text-sm text-muted">
-            {allClear ? "I'll keep scanning the market in the background and surface anything that fits." : "Your action queue for today — discovery and follow-ups, in one place."}
+            {allClear ? "可以随时扫描国内企业官网，发现符合目标的新岗位。" : "今天需要处理的找职位和跟进事项都在这里。"}
           </p>
           <div className="mt-6 flex flex-wrap gap-2.5">
             <Link href="/explore" className="inline-flex items-center gap-2 rounded-full bg-brand px-5 py-2.5 text-sm font-medium text-brand-foreground transition hover:bg-brand-200 max-sm:min-h-[44px]">
-              Find new roles <ArrowRight className="size-4" />
+              查找新岗位 <ArrowRight className="size-4" />
             </Link>
             <Link href="/pipeline" className="inline-flex items-center gap-2 rounded-full border border-border px-5 py-2.5 text-sm font-medium text-foreground transition hover:border-brand/40 hover:text-brand max-sm:min-h-[44px]">
-              Open pipeline
+              打开投递进度
             </Link>
           </div>
           {inBetween && <QuickEvaluate />}
@@ -129,7 +129,7 @@ export function TodayDashboard({
 
       {/* A. Follow-ups due (demand loop) */}
       {followups.length > 0 ? (
-        <Section icon={Bell} title="Follow-ups due" hint="Keep your applications alive — a nudge beats silence">
+        <Section icon={Bell} title="待跟进" hint="及时、礼貌地询问进度">
           <div className="grid gap-2.5">
             {followups.map((f) => (
               // Refetch (not a local decrement) so the parent's followups/nextUpcoming
@@ -143,7 +143,7 @@ export function TodayDashboard({
         nextUpcoming && (
           // Nothing is due — say so honestly instead of an empty "due" block,
           // but still surface what's next so the queue isn't silent (#86).
-          <Section icon={Bell} title="Next follow-up" hint="Nothing due yet">
+          <Section icon={Bell} title="下次跟进" hint="目前没有到期事项">
             <p className="text-sm text-muted">
               <span className="font-medium text-foreground">{nextUpcoming.company}</span>
               {nextUpcoming.role && <span> · {nextUpcoming.role}</span>}
@@ -155,7 +155,7 @@ export function TodayDashboard({
 
       {/* B. Awaiting your decision */}
       {awaiting.length > 0 && (
-        <Section icon={CircleHelp} title="Awaiting your decision" hint="Scored — apply or skip">
+        <Section icon={CircleHelp} title="等你决定" hint="已经评分，选择投递或跳过">
           <div className="grid gap-2.5 sm:grid-cols-2">
             {awaiting.map((a) => (
               <DecisionCard key={a.n} app={a} />
@@ -166,7 +166,7 @@ export function TodayDashboard({
 
       {/* C. Fresh matches this week (supply loop) */}
       {fresh.length > 0 && (
-        <Section icon={Sparkles} title="Fresh matches this week" hint="Found by your free scans · 0 tokens">
+        <Section icon={Sparkles} title="本周新匹配" hint="免费扫描发现，不消耗 AI 额度">
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {fresh.slice(0, 6).map((o) => (
               <DiscoveryCard key={o.url} offer={o} inPipeline={inboxUrls.has(o.url)} />
@@ -174,7 +174,7 @@ export function TodayDashboard({
           </div>
           {fresh.length > 6 && (
             <Link href="/explore?view=fresh" className="mt-3 inline-flex items-center text-sm text-muted transition hover:text-brand max-sm:min-h-[44px]">
-              See all {freshCount} →
+              查看全部 {freshCount} 个 →
             </Link>
           )}
         </Section>
@@ -184,7 +184,7 @@ export function TodayDashboard({
         <div className="mt-8 rounded-2xl border border-border bg-surface/30 px-6 py-10 text-center">
           <Sparkles className="mx-auto size-6 text-brand" />
           <p className="mx-auto mt-3 max-w-md text-sm text-muted">
-            Nothing needs you right now. Run a <Link href="/explore" className="text-brand hover:underline">free scan</Link> to surface this week&apos;s roles, or check your <Link href="/pipeline" className="text-brand hover:underline">pipeline</Link>.
+            目前没有待办。可以运行一次<Link href="/explore" className="text-brand hover:underline">免费扫描</Link>查看本周岗位，或打开<Link href="/pipeline" className="text-brand hover:underline">投递进度</Link>。
           </p>
         </div>
       )}

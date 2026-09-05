@@ -8,19 +8,19 @@ export type CostClass = "free" | "free-network" | "spend" | "free-gemini";
 
 export const COST_META: Record<CostClass, { label: string; tip: string }> = {
   "free-network": {
-    label: "Free",
-    tip: "Scans the public ATS network over HTTP. No AI, no tokens, nothing sent — and it writes nothing until you choose to add a role.",
+    label: "免费",
+    tip: "通过公开接口扫描国内企业招聘官网，不使用 AI 额度；加入岗位前不会写入数据。",
   },
   free: {
-    label: "Free",
-    tip: "No tokens. Reads or writes local files only.",
+    label: "免费",
+    tip: "不使用 AI 额度，只读写本地文件。",
   },
   spend: {
-    label: "Uses tokens",
-    tip: "Runs a real A–F evaluation on your own AI. This is the only thing that spends tokens — and only when you pick a role.",
+    label: "使用 AI 额度",
+    tip: "使用你自己的 AI 工具评估岗位，只在你主动选择后运行。",
   },
   "free-gemini": {
-    label: "Free · Gemini",
-    tip: "Evaluate with Google's free Gemini tier — no token cost.",
+    label: "免费 · Gemini",
+    tip: "使用 Gemini 免费额度评估。",
   },
 };

@@ -5,9 +5,9 @@ import { ArrowRight, Sparkles } from "lucide-react";
 import { CostBadge } from "@/components/cost/cost-badge";
 
 const EXAMPLES = [
-  "AI infra roles at climate startups, remote EU",
-  "Forward-deployed engineer at Series A devtools, US-remote",
-  "Head of Applied AI at healthtech, posted this week",
+  "上海或杭州的大模型应用工程师，应届生",
+  "深圳的前端开发校招，偏 AI 产品",
+  "北京自动驾驶算法岗，最近一周发布",
 ];
 
 // The "magic" natural-language box: a soft contained halo at rest that intensifies
@@ -52,7 +52,7 @@ export function AiSearchBox({
       <style>{STYLE}</style>
       <div className="co-aibox p-4">
         <div className="mb-2 flex items-center gap-2 text-[12px] font-medium text-brand">
-          <Sparkles className="size-3.5" /> Describe the role — an AI hunts the open web for it
+          <Sparkles className="size-3.5" /> 描述目标岗位，AI 会从 223 家企业官网中寻找
         </div>
         <textarea
           ref={ref}
@@ -68,16 +68,16 @@ export function AiSearchBox({
               if (intent.trim()) onSubmit();
             }
           }}
-          placeholder="“AI infra at climate startups, remote EU, not staff-level” — plain language, your words"
+          placeholder="例如：上海或杭州的大模型应用工程师，应届生"
         />
         <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
           <span className="text-[12px] text-muted">
             {cliConfigured ? (
               <>
-                Reads the public web with <span className="text-foreground">{cliName || "your CLI"}</span> — it costs your tokens.
+                使用 <span className="text-foreground">{cliName || "本机 AI 工具"}</span> 检索企业官网，会消耗你的 Token。
               </>
             ) : (
-              "Connect an AI CLI in Config to use AI search."
+              "请先在设置中连接本机 AI 工具。"
             )}
           </span>
           <button
@@ -86,7 +86,7 @@ export function AiSearchBox({
             onClick={onSubmit}
             className="inline-flex items-center gap-2 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-brand-foreground shadow-sm transition hover:brightness-110 disabled:opacity-50"
           >
-            Search the open web
+            搜索企业官网
             <CostBadge kind="spend" size="xs" />
             <ArrowRight className="size-4" />
           </button>
@@ -105,7 +105,7 @@ export function AiSearchBox({
           </button>
         ))}
         <button type="button" onClick={onRunScan} className="ml-auto inline-flex items-center gap-1 text-[12px] text-faint transition hover:text-foreground">
-          or run the free Scan instead →
+          或改用免费自动扫描 →
         </button>
       </div>
     </div>

@@ -10,12 +10,12 @@ import { cn } from "@/lib/cn";
 // followup-cadence.mjs reads the same keys — the CLI and the web must agree.
 
 const FIELDS: { key: ProfileCadenceKey; label: string; hint: string }[] = [
-  { key: "applied_first_days", label: "First follow-up", hint: "days after applying before the 1st nudge is due" },
-  { key: "applied_subsequent_days", label: "Between follow-ups", hint: "days between nudges while Applied" },
-  { key: "applied_max_followups", label: "Max follow-ups", hint: "after this many with no reply the lead goes cold" },
-  { key: "responded_initial_days", label: "Reply window", hint: "answer a company response within this many days" },
-  { key: "responded_subsequent_days", label: "Responded cadence", hint: "days between touches while in Responded" },
-  { key: "interview_thankyou_days", label: "Thank-you note", hint: "due within this many days of reaching Interview" },
+  { key: "applied_first_days", label: "首次跟进", hint: "投递多少天后提醒第一次跟进" },
+  { key: "applied_subsequent_days", label: "跟进间隔", hint: "已投递阶段两次提醒之间的天数" },
+  { key: "applied_max_followups", label: "最多跟进次数", hint: "超过该次数仍无回复时标为冷却" },
+  { key: "responded_initial_days", label: "回复时限", hint: "企业回复后应在多少天内回应" },
+  { key: "responded_subsequent_days", label: "回复后跟进间隔", hint: "已回复阶段两次联系之间的天数" },
+  { key: "interview_thankyou_days", label: "面试感谢信", hint: "进入面试后多少天内发送感谢信" },
 ];
 
 export function CadenceSettings() {
@@ -57,7 +57,7 @@ export function CadenceSettings() {
       const raw = values[k].trim();
       const n = raw === "" ? Number.NaN : Number(raw);
       if (!Number.isInteger(n) || n < 0) {
-        setError(`"${FIELDS.find((f) => f.key === k)?.label}" must be a whole number ≥ 0.`);
+        setError(`“${FIELDS.find((f) => f.key === k)?.label}”必须是大于或等于 0 的整数。`);
         return;
       }
       payload[k] = n;
@@ -72,13 +72,13 @@ export function CadenceSettings() {
       });
       const j = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setError(typeof j.error === "string" ? j.error : "Could not save.");
+        setError(typeof j.error === "string" ? j.error : "无法保存。请稍后重试。");
       } else {
         setSaved(true);
         setTimeout(() => setSaved(false), 2000);
       }
     } catch {
-      setError("Could not save.");
+      setError("无法保存。请稍后重试。");
     }
     setSaving(false);
   };
@@ -86,30 +86,28 @@ export function CadenceSettings() {
   return (
     <div>
       <label className="mt-8 mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-muted">
-        Follow-up cadence
+        跟进频率
       </label>
       <div className="rounded-xl border border-border bg-surface/50 p-4">
         <p className="text-xs leading-relaxed text-faint">
-          When the <span className="text-muted">Follow-ups</span> tracker nudges you. Saved to{" "}
-          <span className="font-mono text-muted">config/profile.yml</span> — the CLI uses the same values.
+          设置系统何时提醒你跟进。配置保存在 <span className="font-mono text-muted">config/profile.yml</span>，命令行和网页共用这些数值。
         </p>
         {loadError ? (
           <div className="mt-3 text-sm text-muted">
             <p className="text-red-500">
-              Couldn&apos;t read your current cadence settings — not showing defaults, to avoid overwriting real values in{" "}
-              <span className="font-mono">config/profile.yml</span>.
+              无法读取当前跟进设置。为避免覆盖 <span className="font-mono">config/profile.yml</span> 中的真实配置，这里不会展示默认值。
             </p>
             <button
               type="button"
               onClick={load}
               className="mt-2 rounded-md border border-border bg-surface px-3 py-1.5 text-xs font-medium transition-colors hover:bg-surface-hover"
             >
-              Retry
+              重试
             </button>
           </div>
         ) : values === null ? (
           <div className="mt-3 flex items-center gap-2 text-sm text-muted">
-            <Loader2 className="size-4 animate-spin" /> Loading…
+            <Loader2 className="size-4 animate-spin" /> 正在加载…
           </div>
         ) : (
           <>
@@ -140,7 +138,7 @@ export function CadenceSettings() {
               )}
             >
               {saving ? <Loader2 className="size-3.5 animate-spin" /> : saved ? <Check className="size-3.5 text-emerald-400" /> : null}
-              {saved ? "Saved" : "Save cadence"}
+              {saved ? "已保存" : "保存跟进频率"}
             </button>
           </>
         )}

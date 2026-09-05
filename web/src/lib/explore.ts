@@ -4,13 +4,15 @@
 // can never drift between the two halves. Server-only logic (spawning the scanner,
 // writing temp files) lives in lib/core/{scan,portals,pipeline}.ts.
 
-export type AtsSource = "greenhouse" | "lever" | "ashby" | "workday";
-export const ATS_SOURCES: AtsSource[] = ["greenhouse", "lever", "ashby", "workday"];
+export type AtsSource = "tencent" | "meituan" | "alibaba" | "feishu-jobs" | "mokahr" | "amazon";
+export const ATS_SOURCES: AtsSource[] = ["feishu-jobs", "mokahr"];
 export const ATS_LABEL: Record<AtsSource, string> = {
-  greenhouse: "Greenhouse",
-  lever: "Lever",
-  ashby: "Ashby",
-  workday: "Workday",
+  tencent: "腾讯招聘",
+  meituan: "美团招聘",
+  alibaba: "阿里招聘",
+  "feishu-jobs": "飞书企业招聘",
+  mokahr: "Moka 企业招聘",
+  amazon: "亚马逊招聘",
 };
 
 /** The full UI filter state. The keyword/location lists mirror scan.mjs's
@@ -29,7 +31,7 @@ export type ExploreFilters = {
 };
 
 export const DEFAULT_FILTERS: ExploreFilters = {
-  positive: [],
+  positive: ["产品经理", "软件工程师", "前端", "后端", "算法", "数据", "大模型"],
   negative: [],
   allow: [],
   block: [],

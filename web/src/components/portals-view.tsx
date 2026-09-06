@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Bot, ExternalLink, Loader2, PackagePlus, Pencil, Plus, Power, PowerOff, Radar, Search, Trash2, Wrench, X } from "lucide-react";
+import { Bot, ExternalLink, HelpCircle, Loader2, PackagePlus, Pencil, Plus, Power, PowerOff, Radar, Search, Trash2, Wrench, X } from "lucide-react";
 import { CompanyLogo } from "@/components/company-logo";
 import { useJobs, type Job } from "@/components/jobs/job-store";
 import { cn } from "@/lib/cn";
@@ -33,6 +33,7 @@ export function PortalsView() {
   const [error, setError] = useState("");
   const [adapters, setAdapters] = useState<Adapter[]>([]);
   const [adapterOpen, setAdapterOpen] = useState(false);
+  const [tutorialCompany, setTutorialCompany] = useState<CatalogCompany | null | undefined>(undefined);
   const { jobs, startJob } = useJobs();
 
   // map the agentic "fix-portal" workers to the company they're repairing
@@ -160,6 +161,9 @@ export function PortalsView() {
         >
           <PackagePlus className="size-4" /> 适配器插件 ({adapters.length})
         </button>
+        <button type="button" onClick={() => setTutorialCompany(null)} className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-2 text-sm font-medium transition-colors hover:border-brand/40 hover:text-brand max-sm:min-h-[44px]">
+          <HelpCircle className="size-4" /> 使用教程
+        </button>
         {loading && <span className="text-xs text-faint">正在检查每家企业…（约 30–60 秒）</span>}
       </div>
       <p className="mt-2 text-xs text-faint">添加、编辑和删除只会更新本机配置，不会扫描网站或消耗 Token。</p>
@@ -213,6 +217,7 @@ export function PortalsView() {
         {shown.map((company) => {
           const checked = health.get(company.name);
           const tone = checked ? (TONE[checked.status] ?? TONE.skipped) : null;
+          const existingAdapter = adapters.find((adapter) => adapter.companies.includes(company.name) || adapter.name.includes(company.name));
           return (
             <li key={company.name} className="rounded-2xl border border-border bg-surface/40 p-4">
               <div className="flex items-start gap-3">
@@ -233,7 +238,7 @@ export function PortalsView() {
                 <span className="min-w-0 truncate text-[11px] text-faint" title={company.url}>{company.url}</span>
                 <div className="flex items-center gap-2">
                   {checked?.status === "broken" && <FixAffordance company={company.name} job={fixByCompany.get(company.name)} onFix={() => startJob({ title: `修复 · ${company.name}`, subtitle: "重新查找校招官网", kind: "fix-portal", input: company.name, page: "/portals" })} />}
-                  {!company.automatic && <button type="button" onClick={() => startJob({ title: `适配 · ${company.name}`, subtitle: "用 Ego Lite 创建零 Token 适配器", kind: "adapt-provider", input: company.name, page: "/portals" })} className="inline-flex items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-xs text-muted hover:border-brand/40 hover:text-brand" title="这会启动一次 Agent 开发任务；适配器日常运行仍为零 Token"><Bot className="size-3" /> Agent 适配</button>}
+                  {!company.automatic && <button type="button" onClick={() => setTutorialCompany(company)} className="inline-flex items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-xs text-muted hover:border-brand/40 hover:text-brand" title={existingAdapter ? "适配器已生成，继续启用并绑定" : "先查看适配流程，再决定是否启动 Agent"}>{existingAdapter ? <Wrench className="size-3" /> : <Bot className="size-3" />}{existingAdapter ? "完成配置" : "Agent 适配"}</button>}
                   <button type="button" onClick={() => openEditor(company)} aria-label={`编辑 ${company.name}`} title="编辑招聘源" className="inline-flex size-8 items-center justify-center rounded-lg border border-border text-muted hover:border-brand/40 hover:text-brand">
                     <Pencil className="size-3.5" />
                   </button>
@@ -279,6 +284,49 @@ export function PortalsView() {
           onChanged={async () => { await Promise.all([loadAdapters(), loadCatalog()]); }}
         />
       )}
+      {tutorialCompany !== undefined && (
+        <AdapterTutorial
+          company={tutorialCompany}
+          adapter={tutorialCompany ? adapters.find((item) => item.companies.includes(tutorialCompany.name) || item.name.includes(tutorialCompany.name)) : undefined}
+          onClose={() => setTutorialCompany(undefined)}
+          onManage={() => { setTutorialCompany(undefined); setAdapterOpen(true); }}
+          onStart={(target) => {
+            setTutorialCompany(undefined);
+            startJob({ title: `适配 · ${target.name}`, subtitle: "用 Ego Lite 创建零 Token 适配器", kind: "adapt-provider", input: target.name, page: "/portals" });
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+function AdapterTutorial({ company, adapter, onClose, onManage, onStart }: { company: CatalogCompany | null; adapter?: Adapter; onClose: () => void; onManage: () => void; onStart: (company: CatalogCompany) => void }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4" role="dialog" aria-modal="true" aria-labelledby="adapter-tutorial-title">
+      <div className="max-h-[88vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-border bg-[var(--surface)] p-5 shadow-2xl">
+        <div className="flex items-start justify-between gap-3">
+          <div><h2 id="adapter-tutorial-title" className="text-lg font-semibold">招聘源自动适配教程</h2><p className="mt-1 text-sm text-muted">{adapter ? `${company?.name} 的适配器 ${adapter.id} 已生成，但${adapter.enabled ? "尚未绑定企业" : "尚未启用和绑定"}，所以仍显示“官网手动打开”。` : company ? `${company.name} 目前还没有已启用并绑定的适配器，所以只能手动打开官网。` : "把“官网手动打开”升级为“可自动读取”，需要完成下面四步。"}</p></div>
+          <button type="button" onClick={onClose} aria-label="关闭教程" className="inline-flex size-9 items-center justify-center rounded-lg text-muted hover:bg-surface-hover"><X className="size-4" /></button>
+        </div>
+
+        <ol className="mt-5 grid gap-3 text-sm">
+          <li className="rounded-xl border border-border p-4"><strong>1. Agent 观察网站</strong><p className="mt-1 text-muted">Agent 用 Ego Lite 打开招聘官网，寻找公开 API 或页面数据。遇到登录、短信或验证码，会停下来交给你。</p></li>
+          <li className="rounded-xl border border-border p-4"><strong>2. 生成并测试插件</strong><p className="mt-1 text-muted">Agent 按模板生成固定解析规则，只测试这一家和离线样本，不运行全量岗位扫描。</p></li>
+          <li className="rounded-xl border border-border p-4"><strong>3. 你审核并启用</strong><p className="mt-1 text-muted">完成后进入“适配器插件”，点击启用，再把插件绑定到对应企业。新插件默认停用。</p></li>
+          <li className="rounded-xl border border-border p-4"><strong>4. 日常零 Token 读取</strong><p className="mt-1 text-muted">以后读取岗位只运行接口请求和固定解析代码，不调用模型。只有开发新适配器的这一次 Agent 任务消耗 Token。</p></li>
+        </ol>
+
+        <div className="mt-5 rounded-xl bg-amber-500/10 p-4 text-sm text-amber-800 dark:text-amber-300">
+          开始前请先在“设置”中配置可用的 Codex、Claude Code 或其他 AI 工具。没有配置时，任务无法启动。
+        </div>
+
+        {company && <p className="mt-4 break-all text-xs text-faint">目标：{company.name} · {company.url}</p>}
+        <div className="mt-5 flex flex-wrap justify-end gap-2">
+          <button type="button" onClick={onClose} className="rounded-lg border border-border px-4 py-2 text-sm">先不适配</button>
+          {company && <a href={company.url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 rounded-lg border border-border px-4 py-2 text-sm">手动打开官网 <ExternalLink className="size-3.5" /></a>}
+          {adapter ? <button type="button" onClick={onManage} className="inline-flex items-center gap-2 rounded-lg bg-brand px-4 py-2 text-sm font-medium text-brand-foreground"><Wrench className="size-4" />打开适配器插件</button> : company && <button type="button" onClick={() => onStart(company)} className="inline-flex items-center gap-2 rounded-lg bg-brand px-4 py-2 text-sm font-medium text-brand-foreground"><Bot className="size-4" />开始 Agent 适配</button>}
+        </div>
+      </div>
     </div>
   );
 }

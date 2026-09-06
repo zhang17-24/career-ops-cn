@@ -268,7 +268,7 @@ function PortalEditor({ company, isNew, categories, saving, error, onChange, onC
 }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4" role="dialog" aria-modal="true" aria-labelledby="portal-editor-title">
-      <form onSubmit={(event) => { event.preventDefault(); onSave(); }} className="w-full max-w-lg rounded-2xl border border-border bg-bg p-5 shadow-2xl">
+      <form onSubmit={(event) => { event.preventDefault(); onSave(); }} className="w-full max-w-lg rounded-2xl border border-border bg-[var(--surface)] p-5 shadow-2xl">
         <div className="flex items-center justify-between gap-3">
           <h2 id="portal-editor-title" className="text-lg font-semibold">{isNew ? "添加企业招聘源" : "编辑企业招聘源"}</h2>
           <button type="button" onClick={onClose} aria-label="关闭" className="inline-flex size-9 items-center justify-center rounded-lg text-muted hover:bg-surface-hover"><X className="size-4" /></button>
@@ -293,7 +293,7 @@ function PortalEditor({ company, isNew, categories, saving, error, onChange, onC
 function ConfirmDelete({ company, saving, error, onClose, onDelete }: { company: CatalogCompany; saving: boolean; error: string; onClose: () => void; onDelete: () => void }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4" role="dialog" aria-modal="true" aria-labelledby="portal-delete-title">
-      <div className="w-full max-w-md rounded-2xl border border-border bg-bg p-5 shadow-2xl">
+      <div className="w-full max-w-md rounded-2xl border border-border bg-[var(--surface)] p-5 shadow-2xl">
         <h2 id="portal-delete-title" className="text-lg font-semibold">删除 {company.name}？</h2>
         <p className="mt-2 break-all text-sm text-muted">{company.url}</p>
         <p className="mt-3 text-xs text-faint">只会从本机招聘源列表中删除，原配置会自动备份。</p>

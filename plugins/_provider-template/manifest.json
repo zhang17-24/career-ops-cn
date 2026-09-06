@@ -1,0 +1,12 @@
+{
+  "id": "{{NAME}}",
+  "name": "{{COMPANY}} 招聘源适配器",
+  "version": "0.1.0",
+  "apiVersion": 1,
+  "description": "零 Token 读取 {{COMPANY}} 的公开招聘职位。",
+  "hooks": ["provider"],
+  "requiredEnv": [],
+  "allowedHosts": ["{{HOST}}"],
+  "skill": "skill.md",
+  "humanInTheLoop": true
+}

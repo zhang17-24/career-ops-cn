@@ -131,3 +131,31 @@ export function scaffoldNew(root, name) {
   if (existsSync(path.join(dest, 'test'))) for (const f of readdirSync(path.join(dest, 'test'))) sub(path.join(dest, 'test', f));
   return dest;
 }
+
+/** Scaffold a deterministic, zero-token recruitment provider plugin. */
+export function scaffoldProvider(root, name, { host, company = name } = {}) {
+  if (!/^[a-z0-9][a-z0-9-]*$/.test(name)) throw new Error(`plugin name must match [a-z0-9-] (got "${name}")`);
+  if (typeof host !== 'string' || !/^[a-z0-9.-]+$/i.test(host) || !host.includes('.')) {
+    throw new Error(`--host must be a hostname such as jobs.example.com (got "${host || ''}")`);
+  }
+  const tpl = path.join(root, 'plugins', '_provider-template');
+  if (!existsSync(tpl)) throw new Error('plugins/_provider-template/ not found');
+  const dest = path.join(root, 'plugins.local', name);
+  if (existsSync(dest)) throw new Error(`plugins.local/${name} already exists`);
+  mkdirSync(path.join(root, 'plugins.local'), { recursive: true });
+  cpSync(tpl, dest, { recursive: true });
+  const replacements = { '{{NAME}}': name, '{{HOST}}': host.toLowerCase(), '{{COMPANY}}': String(company).slice(0, 120) };
+  const substituteTree = (dir) => {
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      const target = path.join(dir, entry.name);
+      if (entry.isDirectory()) substituteTree(target);
+      else if (entry.isFile()) {
+        let text = readFileSync(target, 'utf8');
+        for (const [from, to] of Object.entries(replacements)) text = text.replaceAll(from, to);
+        writeFileSync(target, text, 'utf8');
+      }
+    }
+  };
+  substituteTree(dest);
+  return dest;
+}

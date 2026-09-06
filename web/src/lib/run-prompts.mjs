@@ -102,6 +102,18 @@ If NO slug variant resolves, say so clearly and leave portals.yml unchanged. Nev
 
 End with EXACTLY one final line: VERDICT: {5 if now live, else 1}/5 — {what you changed, ≤12 words}`;
   }
+  if (kind === "adapt-provider") {
+    return `Create a deterministic zero-token recruitment-source adapter for exactly one company: "${input}". Work headless in this career-ops-cn checkout.
+1. Read .agents/skills/recruitment-source-adapter/SKILL.md and follow it exactly.
+2. Find only the "${input}" entry in portals.yml. Use Ego Lite to inspect its public careers page and public XHR/API. Prefer a reusable public ATS adapter over a company-specific adapter.
+3. Create the plugin with \`node plugins.mjs new-provider <id> --host <api-host> --company "${input}"\`, implement the fixed parser, and add a zero-network fixture test.
+4. Do NOT run scan.mjs, verify-portals.mjs, a batch scan, an AI evaluation, or an application flow. Never submit an application. A single bounded endpoint request is allowed only if required to validate this adapter.
+5. If login, SMS verification, or CAPTCHA appears, stop and clearly ask the user to take over Ego Lite. Never bypass it.
+6. Leave the adapter installed but DISABLED and do not bind it automatically. The user reviews and enables it from the Web adapter manager.
+7. Change only plugins.local/<id>/ files. Do not edit other companies or commit/push anything.
+
+End with EXACTLY one final line: VERDICT: {5 if the fixture test passes, else 1}/5 — {adapter id and result, ≤12 words}`;
+  }
   // The posting date is INTERPOLATED, not asked for. The scanner wrote it into
   // pipeline.md from the provider's own `offer.postedAt`; the server already has
   // it (readScanDates/readInbox) and passes it here, so the agent copies a value

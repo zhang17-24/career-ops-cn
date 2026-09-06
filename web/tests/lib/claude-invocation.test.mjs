@@ -88,10 +88,10 @@ test("toolScopeFor: an unknown kind falls back to the read-only scope", () => {
   assert.equal(scope, TOOL_SCOPES.readOnly);
 });
 
-test("toolScopeFor: evaluate and fix-portal keep Write and Bash on purpose", () => {
+test("toolScopeFor: persisting kinds keep Write and Bash on purpose", () => {
   // Given these kinds genuinely run reserve-report-num.mjs / merge-tracker.mjs /
   // verify-portals.mjs and persist canonical artifacts
-  for (const kind of ["evaluate", "fix-portal"]) {
+  for (const kind of ["evaluate", "fix-portal", "adapt-provider"]) {
     // When resolving their scope
     const allowed = toolNames(toolScopeFor(kind).allowed);
 
@@ -187,7 +187,7 @@ test("claudeCliArgs: other kinds keep their MCP servers", () => {
   // a user's configured server (the optional Canva one, say) from loading on an
   // evaluation — a behaviour change the issue never asked for. #2507 covers the
   // same gap for the other kinds.
-  for (const kind of ["research", "evaluate", "fix-portal"]) {
+  for (const kind of ["research", "evaluate", "fix-portal", "adapt-provider"]) {
     assert.ok(
       !claudeCliArgs({ kind, prompt: "x" }).includes("--strict-mcp-config"),
       `${kind} must not have its MCP config locked down by a pdf-scoped fix`,

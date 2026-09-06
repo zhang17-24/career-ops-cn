@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { ExternalLink, Loader2, Pencil, Plus, Radar, Search, Trash2, Wrench, X } from "lucide-react";
+import { Bot, ExternalLink, Loader2, PackagePlus, Pencil, Plus, Power, PowerOff, Radar, Search, Trash2, Wrench, X } from "lucide-react";
 import { CompanyLogo } from "@/components/company-logo";
 import { useJobs, type Job } from "@/components/jobs/job-store";
 import { cn } from "@/lib/cn";
@@ -10,6 +10,7 @@ import { cn } from "@/lib/cn";
 type CatalogCompany = { name: string; url: string; category: string; note: string; automatic: boolean; provider: string };
 type HealthCompany = { name: string; status: string; detail: string };
 type Result = { available: boolean; configured: boolean; companies: HealthCompany[] };
+type Adapter = { id: string; name: string; description: string; version: string; hosts: string[]; enabled: boolean; local: boolean; companies: string[] };
 
 const TONE: Record<string, { dot: string; label: string; chip: string }> = {
   live: { dot: "bg-emerald-500", label: "正常", chip: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400" },
@@ -30,6 +31,8 @@ export function PortalsView() {
   const [deleteTarget, setDeleteTarget] = useState<CatalogCompany | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [adapters, setAdapters] = useState<Adapter[]>([]);
+  const [adapterOpen, setAdapterOpen] = useState(false);
   const { jobs, startJob } = useJobs();
 
   // map the agentic "fix-portal" workers to the company they're repairing
@@ -50,8 +53,16 @@ export function PortalsView() {
       .catch(() => setCatalog([]));
   }
 
+  function loadAdapters() {
+    return fetch("/api/portals/adapters")
+      .then((r) => r.json())
+      .then((data) => setAdapters(Array.isArray(data.adapters) ? data.adapters : []))
+      .catch(() => setAdapters([]));
+  }
+
   useEffect(() => {
     void loadCatalog();
+    void loadAdapters();
   }, []);
 
   function openEditor(company?: CatalogCompany) {
@@ -142,6 +153,13 @@ export function PortalsView() {
         >
           <Plus className="size-4" /> 添加企业
         </button>
+        <button
+          type="button"
+          onClick={() => { setAdapterOpen(true); void loadAdapters(); }}
+          className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-2 text-sm font-medium transition-colors hover:border-brand/40 hover:text-brand max-sm:min-h-[44px]"
+        >
+          <PackagePlus className="size-4" /> 适配器插件 ({adapters.length})
+        </button>
         {loading && <span className="text-xs text-faint">正在检查每家企业…（约 30–60 秒）</span>}
       </div>
       <p className="mt-2 text-xs text-faint">添加、编辑和删除只会更新本机配置，不会扫描网站或消耗 Token。</p>
@@ -215,6 +233,7 @@ export function PortalsView() {
                 <span className="min-w-0 truncate text-[11px] text-faint" title={company.url}>{company.url}</span>
                 <div className="flex items-center gap-2">
                   {checked?.status === "broken" && <FixAffordance company={company.name} job={fixByCompany.get(company.name)} onFix={() => startJob({ title: `修复 · ${company.name}`, subtitle: "重新查找校招官网", kind: "fix-portal", input: company.name, page: "/portals" })} />}
+                  {!company.automatic && <button type="button" onClick={() => startJob({ title: `适配 · ${company.name}`, subtitle: "用 Ego Lite 创建零 Token 适配器", kind: "adapt-provider", input: company.name, page: "/portals" })} className="inline-flex items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-xs text-muted hover:border-brand/40 hover:text-brand" title="这会启动一次 Agent 开发任务；适配器日常运行仍为零 Token"><Bot className="size-3" /> Agent 适配</button>}
                   <button type="button" onClick={() => openEditor(company)} aria-label={`编辑 ${company.name}`} title="编辑招聘源" className="inline-flex size-8 items-center justify-center rounded-lg border border-border text-muted hover:border-brand/40 hover:text-brand">
                     <Pencil className="size-3.5" />
                   </button>
@@ -252,6 +271,81 @@ export function PortalsView() {
           onDelete={() => void deleteCompany()}
         />
       )}
+      {adapterOpen && (
+        <AdapterManager
+          adapters={adapters}
+          companies={catalog}
+          onClose={() => setAdapterOpen(false)}
+          onChanged={async () => { await Promise.all([loadAdapters(), loadCatalog()]); }}
+        />
+      )}
+    </div>
+  );
+}
+
+function AdapterManager({ adapters, companies, onClose, onChanged }: { adapters: Adapter[]; companies: CatalogCompany[]; onClose: () => void; onChanged: () => Promise<void> }) {
+  const [company, setCompany] = useState(companies.find((item) => !item.automatic)?.name || companies[0]?.name || "");
+  const selected = companies.find((item) => item.name === company);
+  const initialHost = (() => { try { return selected ? new URL(selected.url).hostname : ""; } catch { return ""; } })();
+  const [id, setId] = useState("");
+  const [host, setHost] = useState(initialHost);
+  const [binding, setBinding] = useState<Record<string, string>>({});
+  const [busy, setBusy] = useState("");
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+
+  async function request(action: string, adapterId: string, extra: Record<string, unknown> = {}) {
+    setBusy(`${action}:${adapterId}`); setError(""); setMessage("");
+    try {
+      const response = await fetch("/api/portals/adapters", {
+        method: action === "remove" ? "DELETE" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(action === "remove" ? { id: adapterId } : { action, id: adapterId, ...extra }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || "操作失败");
+      setMessage(data.message || "已保存");
+      await onChanged();
+    } catch (cause) { setError(cause instanceof Error ? cause.message : "操作失败"); }
+    finally { setBusy(""); }
+  }
+
+  function changeCompany(next: string) {
+    setCompany(next);
+    const row = companies.find((item) => item.name === next);
+    try { setHost(row ? new URL(row.url).hostname : ""); } catch { setHost(""); }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4" role="dialog" aria-modal="true" aria-labelledby="adapter-title">
+      <div className="max-h-[88vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-border bg-[var(--surface)] p-5 shadow-2xl">
+        <div className="flex items-start justify-between gap-3">
+          <div><h2 id="adapter-title" className="text-lg font-semibold">招聘源适配器插件</h2><p className="mt-1 text-xs text-faint">运行时只使用固定接口和解析规则，零 Token。点击“Agent 适配”开发新规则时会产生一次 Agent Token。</p></div>
+          <button type="button" onClick={onClose} aria-label="关闭" className="inline-flex size-9 items-center justify-center rounded-lg text-muted hover:bg-surface-hover"><X className="size-4" /></button>
+        </div>
+
+        <form onSubmit={(event) => { event.preventDefault(); void request("scaffold", id, { company, host }); }} className="mt-5 grid gap-3 rounded-xl border border-border bg-surface-hover/40 p-4 sm:grid-cols-2">
+          <label className="grid gap-1.5 text-xs text-muted">企业<select value={company} onChange={(event) => changeCompany(event.target.value)} className="min-h-10 rounded-lg border border-border bg-surface px-3 text-sm text-foreground">{companies.map((item) => <option key={item.name}>{item.name}</option>)}</select></label>
+          <label className="grid gap-1.5 text-xs text-muted">适配器 ID<input required pattern="[a-z0-9][a-z0-9-]*" value={id} onChange={(event) => setId(event.target.value.toLowerCase())} placeholder="例如 xiaohongshu" className="min-h-10 rounded-lg border border-border bg-surface px-3 text-sm text-foreground" /></label>
+          <label className="grid gap-1.5 text-xs text-muted sm:col-span-2">允许访问的 API 域名<input required value={host} onChange={(event) => setHost(event.target.value)} placeholder="jobs.example.com" className="min-h-10 rounded-lg border border-border bg-surface px-3 text-sm text-foreground" /></label>
+          <div className="flex items-center justify-between gap-3 sm:col-span-2"><p className="text-xs text-faint">这里只生成已安装但未启用的安全模板，不会访问网站。</p><button disabled={!!busy} className="rounded-lg bg-brand px-3 py-2 text-xs font-medium text-brand-foreground disabled:opacity-50">生成插件模板</button></div>
+        </form>
+
+        <div className="mt-5 grid gap-3">
+          {adapters.length === 0 && <p className="rounded-xl border border-dashed border-border p-4 text-sm text-muted">还没有招聘源插件。先生成模板，再让 Agent 完成解析规则。</p>}
+          {adapters.map((adapter) => (
+            <div key={adapter.id} className="rounded-xl border border-border p-4">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div><div className="flex items-center gap-2"><span className="font-medium">{adapter.name}</span><code className="text-xs text-faint">{adapter.id}</code><span className={cn("rounded px-1.5 py-0.5 text-[10px] font-semibold", adapter.enabled ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400" : "bg-surface-hover text-muted")}>{adapter.enabled ? "已启用" : "已停用"}</span></div><p className="mt-1 text-xs text-muted">{adapter.description}</p><p className="mt-1 text-[11px] text-faint">域名：{adapter.hosts.join(", ") || "无"} · 已绑定：{adapter.companies.join("、") || "无"}</p></div>
+                <div className="flex gap-2"><button onClick={() => void request(adapter.enabled ? "disable" : "enable", adapter.id)} disabled={!!busy} className="inline-flex items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-xs disabled:opacity-50">{adapter.enabled ? <PowerOff className="size-3" /> : <Power className="size-3" />}{adapter.enabled ? "停用" : "启用"}</button>{adapter.local && <button onClick={() => { if (window.confirm(`卸载 ${adapter.id}？已绑定企业会自动解绑。`)) void request("remove", adapter.id); }} disabled={!!busy} className="rounded-lg border border-red-500/30 px-2.5 py-1.5 text-xs text-red-500 disabled:opacity-50">卸载</button>}</div>
+              </div>
+              <div className="mt-3 flex flex-wrap items-center gap-2"><select value={binding[adapter.id] || ""} onChange={(event) => setBinding({ ...binding, [adapter.id]: event.target.value })} className="min-h-9 rounded-lg border border-border bg-surface px-2 text-xs"><option value="">选择要绑定的企业</option>{companies.map((item) => <option key={item.name}>{item.name}</option>)}</select><button disabled={!binding[adapter.id] || !!busy} onClick={() => void request("bind", adapter.id, { company: binding[adapter.id] })} className="rounded-lg border border-border px-2.5 py-1.5 text-xs disabled:opacity-40">绑定</button></div>
+            </div>
+          ))}
+        </div>
+        {message && <p className="mt-4 text-sm text-emerald-600 dark:text-emerald-400">{message}</p>}
+        {error && <p className="mt-4 text-sm text-red-500">{error}</p>}
+      </div>
     </div>
   );
 }

@@ -1,0 +1,4 @@
+interface:
+  display_name: "招聘源零 Token 适配器"
+  short_description: "用 Ego Lite 为企业招聘官网生成可插拔适配器"
+  default_prompt: "请为我指定的企业招聘官网创建一个可安装、可停用、可卸载的零 Token provider 适配器。"

@@ -27,7 +27,7 @@ import {
 } from './plugins/_engine.mjs';
 import { loadRegistry, findInRegistry, classifySource, sourceBadge, successorFor } from './plugins/_registry.mjs';
 import { readLock, writeLockEntry, removeLockEntry, hashPluginTree, consentSurface } from './plugins/_lock.mjs';
-import { installFromRepo, scaffoldNew, parseRepoArg } from './plugin-install.mjs';
+import { installFromRepo, scaffoldNew, scaffoldProvider, parseRepoArg } from './plugin-install.mjs';
 import { appendToPipeline } from './scan.mjs';
 import { isMainModule } from './lib/is-main-module.mjs';
 
@@ -341,6 +341,14 @@ function cmdEnable(args) {
   console.log(`✅ Enabled ${id}.${m.requiredEnv.length ? ' Add its keys to .env: ' + m.requiredEnv.join(', ') : ''}`);
 }
 
+function cmdDisable(args) {
+  const id = args[0];
+  if (!id) { console.error('Usage: node plugins.mjs disable <id>'); process.exit(1); }
+  if (!findManifest(id)) { console.error(`Unknown plugin "${id}". Run \`node plugins.mjs list\`.`); process.exit(1); }
+  setEnabled(id, false);
+  console.log(`✓ Disabled ${id}. Its files and company bindings were kept.`);
+}
+
 function cmdTrust(args) {
   const id = args[0];
   const m = findManifest(id);
@@ -381,6 +389,24 @@ function cmdNew(args) {
   console.log('  Next: edit manifest.json + index.mjs, then either');
   console.log(`    A) develop locally:  node plugins.mjs enable ${name}`);
   console.log(`    B) publish:          push a github repo named "career-ops-plugin-${name}", then open a registry PR (docs/PLUGINS.md)`);
+}
+
+function cmdNewProvider(args) {
+  const name = args.find(a => !a.startsWith('--'));
+  const valueAfter = (flag) => {
+    const i = args.indexOf(flag);
+    return i >= 0 ? args[i + 1] : undefined;
+  };
+  const host = valueAfter('--host');
+  const company = valueAfter('--company') || name;
+  if (!name || !host) {
+    console.error('Usage: node plugins.mjs new-provider <name> --host <jobs.example.com> [--company <name>]');
+    process.exit(1);
+  }
+  try { scaffoldProvider(ROOT, name, { host, company }); }
+  catch (e) { console.error(`✗ ${e.message}`); process.exit(1); }
+  console.log(`✓ Created zero-token provider template at plugins.local/${name}/`);
+  console.log('  It is installed but disabled. Implement index.mjs, run its fixture test, then enable and bind it.');
 }
 
 async function cmdAdd(args) {
@@ -427,12 +453,14 @@ async function main() {
     case 'run': return cmdRun(rest);
     case 'skill': return cmdSkill(rest);
     case 'new': return cmdNew(rest);
+    case 'new-provider': return cmdNewProvider(rest);
     case 'add': return cmdAdd(rest);
     case 'enable': return cmdEnable(rest);
+    case 'disable': return cmdDisable(rest);
     case 'trust': return cmdTrust(rest);
     case 'remove': return cmdRemove(rest);
     default:
-      console.error('Usage: node plugins.mjs [list | available | run <id> [hook] | skill <id> | new <name> | add <name|owner/repo> [--sha <c>] [--confirm] | enable <id> [--confirm] | trust <id> | remove <id>]');
+      console.error('Usage: node plugins.mjs [list | available | run <id> [hook] | skill <id> | new <name> | new-provider <name> --host <host> [--company <name>] | add <name|owner/repo> [--sha <c>] [--confirm] | enable <id> [--confirm] | disable <id> | trust <id> | remove <id>]');
       process.exit(1);
   }
 }

@@ -73,7 +73,7 @@ test("buildPrompt: the pdf prompt still pins tailoring to the real mode", () => 
 
 test("buildPrompt: every kind ends with exactly one VERDICT instruction", () => {
   // Given each kind — job-store.tsx parses that final line client-side
-  for (const kind of ["pdf", "research", "evaluate", "fix-portal"]) {
+  for (const kind of ["pdf", "research", "evaluate", "fix-portal", "adapt-provider"]) {
     const prompt = buildPrompt({ kind, ...ARGS });
 
     // Then the contract is present exactly once, so the parse cannot pick a
@@ -115,10 +115,20 @@ test("buildPrompt: every kind carries a DIRECT no-submission clause", () => {
     evaluate: /NEVER submit an application/i,
     research: /never submit, send, or click Apply/i,
     "fix-portal": /do not submit, send, or click Apply/i,
+    "adapt-provider": /Never submit an application/i,
   };
   for (const [kind, pattern] of Object.entries(clauses)) {
     assert.match(buildPrompt({ kind, ...ARGS }), pattern, `${kind} must carry a direct no-submission clause`);
   }
+});
+
+test("buildPrompt: adapt-provider creates one disabled plugin and forbids scans", () => {
+  const prompt = buildPrompt({ kind: "adapt-provider", input: "示例企业", memory: "", today: "2026-08-04" });
+  assert.match(prompt, /recruitment-source-adapter\/SKILL\.md/);
+  assert.match(prompt, /Ego Lite/i);
+  assert.match(prompt, /Do NOT run scan\.mjs/i);
+  assert.match(prompt, /DISABLED/i);
+  assert.match(prompt, /exactly one company/i);
 });
 
 test("buildPrompt: fix-portal is additionally scoped to one company and one file", () => {

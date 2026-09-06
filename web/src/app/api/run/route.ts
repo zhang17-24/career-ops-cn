@@ -46,7 +46,7 @@ export async function POST(req: Request) {
   // it to modes/oferta.md meant a configured market passed a check on a file the
   // run never opens, and would have missed a market dir with no evaluation mode.
   const lang = readLanguageConfig();
-  const needsScript: Record<string, string> = { evaluate: lang.evalModeFile, "fix-portal": "verify-portals.mjs", pdf: "generate-pdf.mjs" };
+  const needsScript: Record<string, string> = { evaluate: lang.evalModeFile, "fix-portal": "verify-portals.mjs", "adapt-provider": "plugins.mjs", pdf: "generate-pdf.mjs" };
   const required = needsScript[kind];
   // CAREER_OPS_ROOT is runtime user data, not a build input. Tracing this
   // dynamic path would copy the whole web project into every server bundle.
@@ -66,7 +66,7 @@ export async function POST(req: Request) {
   // a company name can arrive from a public ATS listing rather than the user's own
   // typing. Refuse rather than sanitize: a silently rewritten name would repair the
   // wrong portal.
-  if (kind === "fix-portal" && !isShellSafeCompanyName(input)) {
+  if ((kind === "fix-portal" || kind === "adapt-provider") && !isShellSafeCompanyName(input)) {
     return new Response(
       JSON.stringify({ error: "That company name has characters I can't safely pass to the portal checker — rename it in portals.yml first." }),
       { status: 400, headers: { "Content-Type": "application/json" } },

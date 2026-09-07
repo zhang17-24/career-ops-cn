@@ -3,6 +3,7 @@ import fs from "node:fs";
 import { careerOpsRoot, rootScript } from "@/lib/career-ops";
 import { writeTempPortals, cleanupTempPortals } from "./portals";
 import { ATS_SOURCES, type DiscoveredOffer, type ExploreFilters, type ScanEvent } from "@/lib/explore";
+import { sourceCatalog } from "./source-catalog";
 
 export type { DiscoveredOffer, ScanEvent, AtsSource } from "@/lib/explore";
 export { ATS_SOURCES } from "@/lib/explore";
@@ -41,9 +42,8 @@ type ScanJson = {
 export function runDiscovery(filters: ExploreFilters, onEvent: (e: ScanEvent) => void): Promise<DiscoveredOffer[]> {
   return new Promise((resolve) => {
     const tempPortals = writeTempPortals(filters);
-    const sources = (filters.ats.length ? filters.ats : [...ATS_SOURCES]).filter((source) =>
-      (ATS_SOURCES as readonly string[]).includes(source),
-    );
+    const available = new Set(sourceCatalog().filter(s => s.enabled).map(s => s.id));
+    const sources = filters.ats.filter(source => available.has(source));
     const args = [rootScript("scan"), "--dry-run", "--json", "--since", String(Math.max(1, filters.sinceDays || 7))];
     const child = spawn(process.execPath, args, {
       cwd: careerOpsRoot(),

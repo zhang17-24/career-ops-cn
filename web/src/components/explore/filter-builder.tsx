@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { X, Ban, Clock, MapPin, ChevronDown, SlidersHorizontal } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { ATS_LABEL, ATS_SOURCES, cleanChips, type AtsSource, type ExploreFilters } from "@/lib/explore";
@@ -108,6 +108,14 @@ export function FilterBuilder({
   seededFrom?: string[];
 }) {
   const [advanced, setAdvanced] = useState(false);
+  const [sources, setSources] = useState(ATS_SOURCES.map(id => ({ id, name: ATS_LABEL[id] })));
+  const [sourceError, setSourceError] = useState("");
+  useEffect(() => {
+    fetch("/api/portals/sources").then(async r => {
+      if (!r.ok) throw new Error("招聘源列表加载失败，请刷新重试。");
+      setSources((await r.json()).sources);
+    }).catch(e => setSourceError(e.message));
+  }, []);
   const set = (patch: Partial<ExploreFilters>) => onChange({ ...filters, ...patch });
   const toggleAts = (a: AtsSource) => {
     const has = filters.ats.includes(a);
@@ -157,9 +165,9 @@ export function FilterBuilder({
         </div>
 
         <div>
-          <Label hint={filters.ats.length === 0 ? "至少选择一个" : undefined}>招聘源</Label>
+          <Label hint={sourceError || (filters.ats.length === 0 ? "至少选择一个" : undefined)}>招聘源</Label>
           <div className="flex flex-wrap gap-1.5">
-            {ATS_SOURCES.map((a) => {
+            {sources.map(({ id: a, name }) => {
               const on = filters.ats.includes(a);
               return (
                 <button
@@ -171,7 +179,7 @@ export function FilterBuilder({
                     on ? "border-brand/40 bg-brand-soft text-brand" : "border-border text-muted hover:text-foreground",
                   )}
                 >
-                  {ATS_LABEL[a]}
+                  {name}
                 </button>
               );
             })}

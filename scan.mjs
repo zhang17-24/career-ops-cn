@@ -60,8 +60,7 @@ import * as yaml from 'js-yaml';
 
 import { makeHttpCtx } from './providers/_http.mjs';
 import { buildTrustValidator } from './providers/_trust-validator.mjs';
-import { loadProviders, resolveProvider } from './providers/_registry.mjs';
-import { mergeProviderPlugins } from './plugins/_engine.mjs';
+import { loadProviders, loadAllProviders, resolveProvider } from './providers/_registry.mjs';
 import { classifyFetchError } from './verify-portals.mjs';
 import { fingerprintText, findCrossListings } from './fingerprint-core.mjs';
 import { resolveColumns, parseTrackerRow, normalizeTextKey } from './tracker-parse.mjs';
@@ -2600,11 +2599,10 @@ async function main() {
   const effectiveAfter = resolveEffectiveAfter(postedAfter, sinceDays);
 
   // 1. Load providers
-  const providers = await loadProviders(PROVIDERS_DIR);
+  const providers = await loadAllProviders(PROVIDERS_DIR);
   // Opt-in: merge enabled keyed/auth-gated provider plugins. Returns immediately
   // (no discovery, no dotenv, no process.env mutation) when config/plugins.yml is
   // absent — so a plain scan with no plugins configured stays byte-identical.
-  await mergeProviderPlugins(providers, { root: path.dirname(PROVIDERS_DIR) });
   if (providers.size === 0) {
     console.error('Error: no providers loaded from providers/');
     process.exit(1);

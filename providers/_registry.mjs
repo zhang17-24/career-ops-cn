@@ -10,6 +10,13 @@
 import { existsSync, readdirSync } from 'fs';
 import path from 'path';
 import { pathToFileURL } from 'url';
+import { mergeProviderPlugins } from '../plugins/_engine.mjs';
+
+export async function loadAllProviders(dir) {
+  const providers = await loadProviders(dir);
+  await mergeProviderPlugins(providers, { root: path.dirname(dir) });
+  return providers;
+}
 
 /**
  * Load every provider plugin in a directory into an id→provider Map.

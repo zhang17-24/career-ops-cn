@@ -3,6 +3,7 @@ import path from "node:path";
 import * as yaml from "js-yaml";
 import { careerOpsRoot } from "@/lib/career-ops";
 import { atomicWriteWithBackup } from "@/lib/core/safe-write";
+import { sourceCatalog } from "@/lib/core/source-catalog";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -55,6 +56,7 @@ export async function GET() {
 
   try {
     const parsed = yaml.load(fs.readFileSync(file, "utf8")) as { tracked_companies?: PortalEntry[] } | null;
+    const sources = sourceCatalog();
     const companies = (Array.isArray(parsed?.tracked_companies) ? parsed.tracked_companies : [])
       .filter((item) => item?.name && item?.careers_url)
       .map((item) => ({
@@ -62,7 +64,8 @@ export async function GET() {
         url: item.careers_url,
         category: item.category || "其他",
         note: item.note || "",
-        automatic: item.scan_method !== "websearch",
+        automatic: item.scan_method !== "websearch" && sources.some(s => s.id === item.provider && s.enabled),
+        state: item.provider ? (sources.some(s => s.id === item.provider && s.enabled) ? "已配置 · 待验证" : "适配器未启用或不存在") : "未绑定适配器",
         provider: item.provider || "",
       }));
     return Response.json({ configured: true, companies });

@@ -57,7 +57,7 @@ function SourceChip({ ats, s }: { ats: AtsSource; s?: SourceState }) {
       ) : (
         <span className="size-2.5 rounded-full border border-current opacity-40" />
       )}
-      <span className="text-[13px] font-medium text-foreground">{ATS_LABEL[ats]}</span>
+      <span className="text-[13px] font-medium text-foreground">{ATS_LABEL[ats] || ats}</span>
       <div className="ml-auto flex flex-col items-end gap-1">
         {state === "noisy" && <span className="text-[10px] text-faint">跳过 {s?.unreachable} 个</span>}
         <div className="co-src__track">
@@ -92,7 +92,7 @@ export function DiscoveringState() {
         </div>
 
         <div className="co-src">
-          {ATS_SOURCES.map((a) => (
+          {Object.keys(sources).map((a) => (
             <SourceChip key={a} ats={a} s={sources[a]} />
           ))}
         </div>

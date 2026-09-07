@@ -4,7 +4,7 @@
 // can never drift between the two halves. Server-only logic (spawning the scanner,
 // writing temp files) lives in lib/core/{scan,portals,pipeline}.ts.
 
-export type AtsSource = "tencent" | "meituan" | "alibaba" | "feishu-jobs" | "mokahr" | "amazon";
+export type AtsSource = string;
 export const ATS_SOURCES: AtsSource[] = ["feishu-jobs", "mokahr"];
 export const ATS_LABEL: Record<AtsSource, string> = {
   tencent: "腾讯招聘",
@@ -112,7 +112,7 @@ function cleanAts(v: unknown): AtsSource[] {
   if (!Array.isArray(v)) return [...ATS_SOURCES];
   const out = v
     .map((a) => String(a).toLowerCase())
-    .filter((a): a is AtsSource => (ATS_SOURCES as string[]).includes(a));
+    .filter((a) => /^[a-z0-9][a-z0-9-]{0,79}$/.test(a));
   return out.length ? Array.from(new Set(out)) : [...ATS_SOURCES];
 }
 
@@ -157,7 +157,7 @@ export function filtersToParams(f: ExploreFilters): string {
   if (f.blockHard.length) sp.set("hardno", f.blockHard.join(","));
   if (f.alwaysAllow.length) sp.set("home", f.alwaysAllow.join(","));
   if (f.sinceDays !== DEFAULT_FILTERS.sinceDays) sp.set("since", String(f.sinceDays));
-  if (f.ats.length !== ATS_SOURCES.length) sp.set("ats", f.ats.join(","));
+  sp.set("ats", f.ats.join(","));
   if (f.limitPerAts !== DEFAULT_FILTERS.limitPerAts) sp.set("limit", String(f.limitPerAts));
   return sp.toString();
 }

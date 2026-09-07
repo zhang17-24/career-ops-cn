@@ -6,6 +6,8 @@ import * as yaml from "js-yaml";
 import { careerOpsRoot } from "@/lib/career-ops";
 import { DEFAULT_FILTERS, cleanChips, type ExploreFilters } from "@/lib/explore";
 import { profileTargetKeywords } from "@/lib/profile-keywords.mjs";
+import { sourceCatalog } from "./source-catalog";
+import { selectCompanies } from "./select-sources.mjs";
 
 /**
  * ACL for portals.yml — the core's scan-filter config (a CONTRACT entry-point,
@@ -38,12 +40,8 @@ export function writeTempPortals(f: FilterLists): string {
   const file = path.join(os.tmpdir(), `career-ops-explore-${randomUUID()}.yml`);
   let text = serializePortals(f);
   const configured = loadYaml("portals.yml");
-  const allowed = new Set(f.ats);
-  const companies = (Array.isArray(configured?.tracked_companies) ? configured.tracked_companies : []).filter((entry) => {
-    if (!entry || typeof entry !== "object") return false;
-    const company = entry as Record<string, unknown>;
-    return company.scan_method === "websearch" || typeof company.provider !== "string" || allowed.has(company.provider as ExploreFilters["ats"][number]);
-  });
+  const available = sourceCatalog().filter(s => s.enabled).map(s => s.id);
+  const companies = selectCompanies(Array.isArray(configured?.tracked_companies) ? configured.tracked_companies : [], f.ats, available);
   text += yaml.dump({ tracked_companies: companies }, { lineWidth: 120, noRefs: true });
   fs.writeFileSync(file, text, "utf8");
   return file;
@@ -73,7 +71,7 @@ function loadYaml(rel: string): Record<string, unknown> | null {
  * portals has none. Never throws — a bare checkout just yields DEFAULT_FILTERS.
  */
 export function seedExploreFilters(): { filters: ExploreFilters; seededFrom: string[] } {
-  const filters: ExploreFilters = { ...DEFAULT_FILTERS, ats: [...DEFAULT_FILTERS.ats] };
+  const filters: ExploreFilters = { ...DEFAULT_FILTERS, ats: sourceCatalog().filter(s => s.enabled).map(s => s.id) };
   const seededFrom: string[] = [];
 
   const portals = loadYaml("portals.yml");

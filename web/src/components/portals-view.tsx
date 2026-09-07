@@ -7,7 +7,7 @@ import { CompanyLogo } from "@/components/company-logo";
 import { useJobs, type Job } from "@/components/jobs/job-store";
 import { cn } from "@/lib/cn";
 
-type CatalogCompany = { name: string; url: string; category: string; note: string; automatic: boolean; provider: string };
+type CatalogCompany = { name: string; url: string; category: string; note: string; automatic: boolean; provider: string; state?: string };
 type HealthCompany = { name: string; status: string; detail: string };
 type Result = { available: boolean; configured: boolean; companies: HealthCompany[] };
 type Adapter = { id: string; name: string; description: string; version: string; hosts: string[]; enabled: boolean; local: boolean; companies: string[] };
@@ -210,7 +210,7 @@ export function PortalsView() {
       </div>
 
       <p className="mt-3 text-sm text-muted">
-        共 <span className="font-medium text-foreground">{catalog.length}</span> 家 · {categories.length - 1} 类 · {automatic} 家可自动读取 · 当前显示 {shown.length} 家
+        共 <span className="font-medium text-foreground">{catalog.length}</span> 家 · {categories.length - 1} 类 · {automatic} 家已配置自动读取（待检查） · 当前显示 {shown.length} 家
       </p>
 
       <ul className="mt-4 grid gap-3 md:grid-cols-2">
@@ -227,11 +227,12 @@ export function PortalsView() {
                     <span className="font-medium">{company.name}</span>
                     <span className="rounded bg-surface-hover px-1.5 py-0.5 text-[10px] text-muted">{company.category}</span>
                     <span className={cn("rounded px-1.5 py-0.5 text-[10px] font-semibold", company.automatic ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400" : "bg-blue-500/10 text-blue-700 dark:text-blue-300")}>
-                      {company.automatic ? "可自动读取" : "官网手动打开"}
+                      {tone ? tone.label : company.state || "官网手动打开"}
                     </span>
                     {tone && <span className={cn("rounded px-1.5 py-0.5 text-[10px] font-semibold", tone.chip)}>{tone.label}</span>}
                   </div>
                   {company.note && <p className="mt-1.5 text-xs leading-5 text-faint">{company.note}</p>}
+                  {checked?.detail && <p className="mt-1.5 text-xs leading-5 text-muted">检查结果：{checked.detail}</p>}
                 </div>
               </div>
               <div className="mt-3 flex items-center justify-between gap-2">

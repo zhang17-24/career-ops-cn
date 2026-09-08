@@ -18,6 +18,7 @@ export const NAV_ITEMS: NavItem[] = [
   { href: "/portals", label: "招聘源", icon: Radar },
   { href: "/analytics", label: "数据分析", icon: BarChart3 },
   { href: "/cv", label: "简历", icon: FileText },
+  { href: "/skills", label: "技能库", icon: FileText },
   { href: "/config", label: "设置", icon: Settings },
 ];
 

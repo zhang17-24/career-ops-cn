@@ -7,6 +7,7 @@ import { instrumentSerif } from "@/lib/fonts";
 import { ATS_LABEL, type AtsSource, type DiscoveredOffer } from "@/lib/explore";
 import { useJobs } from "@/components/jobs/job-store";
 import { useExplore } from "./explore-provider";
+import { tencentJobUrl } from "@/lib/tencent-job-url.mjs";
 
 function freshness(postedAt: string): string {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(postedAt)) return "";
@@ -38,9 +39,24 @@ function Logo({ company }: { company: string }) {
 // What a running worker is doing on this exact posting → the live CTA label.
 const WORKER_LABEL: Record<string, string> = { evaluate: "正在评估…", pdf: "正在准备简历…", research: "正在研究公司…", apply: "正在填表…" };
 
-export function DiscoveryCard({ offer, inPipeline, evaluatedN }: { offer: DiscoveredOffer; inPipeline: boolean; evaluatedN?: string }) {
+export function DiscoveryCard({ offer, inPipeline, evaluatedN, onExpired }: { offer: DiscoveredOffer; inPipeline: boolean; evaluatedN?: string; onExpired?: (url: string) => void }) {
   const { added, adding, addToPipeline } = useExplore();
   const { jobs, startJob } = useJobs();
+  const [checking, setChecking] = useState(false);
+  const [health, setHealth] = useState('');
+  const [healthError, setHealthError] = useState('');
+  const expired = health === 'expired';
+  async function verify() {
+    setChecking(true); setHealthError('');
+    try {
+      const r = await fetch('/api/explore/verify', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url: tencentJobUrl(offer.url) }) });
+      const result = await r.json();
+      if (!r.ok) throw new Error(result.error || '检查失败');
+      setHealth(result.result);
+      if (result.result === 'expired') onExpired?.(offer.url);
+    } catch (e) { setHealthError(e instanceof Error ? e.message : '检查失败'); }
+    finally { setChecking(false); }
+  }
 
   // GLOBAL worker awareness: any worker acting on this URL drives the CTA, here
   // and on every other surface that renders this offer (the jobs store is global).
@@ -58,6 +74,7 @@ export function DiscoveryCard({ offer, inPipeline, evaluatedN }: { offer: Discov
   const fresh = freshness(offer.postedAt) || offer.postedHint || "";
 
   const evaluate = () => {
+    if (expired) return;
     addToPipeline([offer]); // evaluating implies it's in the pipeline — record it
     startJob({ title: `Evaluate · ${offer.company}`, subtitle: offer.title, kind: "evaluate", input: offer.url, page: "/explore" });
   };
@@ -66,7 +83,7 @@ export function DiscoveryCard({ offer, inPipeline, evaluatedN }: { offer: Discov
     <div className="co-rise group flex min-w-0 flex-col gap-2.5 rounded-xl border border-border bg-surface/40 p-3.5 text-left transition-all hover:-translate-y-0.5 hover:border-brand/30 hover:shadow-sm">
       <div className="flex items-start gap-3">
         <Logo company={offer.company} />
-        <a href={offer.url} target="_blank" rel="noopener noreferrer" className="block min-w-0 flex-1 max-sm:min-h-[44px]">
+        <a href={tencentJobUrl(offer.url)} target="_blank" rel="noopener noreferrer" className="block min-w-0 flex-1 max-sm:min-h-[44px]">
           <h3 className={`${instrumentSerif.className} truncate text-[17px] leading-tight text-foreground transition-colors group-hover:text-brand`}>{offer.title}</h3>
           <p className="mt-0.5 truncate text-[13px] text-muted">
             {offer.company}
@@ -74,7 +91,7 @@ export function DiscoveryCard({ offer, inPipeline, evaluatedN }: { offer: Discov
           </p>
         </a>
         <a
-          href={offer.url}
+          href={tencentJobUrl(offer.url)}
           target="_blank"
           rel="noopener noreferrer"
           title="打开职位页面"
@@ -97,8 +114,8 @@ export function DiscoveryCard({ offer, inPipeline, evaluatedN }: { offer: Discov
           </span>
         )}
         {offer.matchedKeyword && (
-          <span className="text-faint" title="Keyword match — not yet scored. Evaluate to get an A–F fit score.">
-            · 匹配 <span className="text-brand/80">{offer.matchedKeyword}</span>
+          <span className="text-faint" title="本地关键词匹配，不代表已核实岗位有效性或适合程度。">
+            · <span className="text-brand/80">{offer.matchedKeyword}</span>
           </span>
         )}
       </div>
@@ -110,6 +127,11 @@ export function DiscoveryCard({ offer, inPipeline, evaluatedN }: { offer: Discov
         </p>
       )}
 
+      <div className="text-xs text-muted">
+        <button disabled={checking} onClick={() => void verify()} className="text-brand underline disabled:opacity-50">{checking ? '检查中…' : '检查有效性（零 Token）'}</button>
+        <span className="ml-2">{health === 'active' ? '检查时可投递' : expired ? '官网显示已下线，请勿投递' : health ? '暂无法确认，请打开官网查看' : '详情有效性尚未检查'}</span>
+        {healthError && <p role="alert">{healthError}</p>}
+      </div>
       <div className="mt-0.5">
         {evaluatedN || doneEval ? (
           <a
@@ -128,7 +150,7 @@ export function DiscoveryCard({ offer, inPipeline, evaluatedN }: { offer: Discov
           <div className="flex items-center gap-2">
             <button
               type="button"
-              disabled={isAdded || isAdding}
+              disabled={expired || isAdded || isAdding}
               onClick={() => addToPipeline([offer])}
               className={cn(
                 "inline-flex flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-md px-2.5 py-2 text-xs font-medium transition-colors max-sm:min-h-[44px]",
@@ -141,6 +163,7 @@ export function DiscoveryCard({ offer, inPipeline, evaluatedN }: { offer: Discov
             <button
               type="button"
               onClick={evaluate}
+              disabled={expired}
               title={unverified ? "Runs a real evaluation — and verifies the posting is live. Uses tokens." : "Runs a real A–F evaluation. Uses tokens."}
               className="inline-flex flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-md border border-brand/30 px-2.5 py-2 text-xs font-medium text-brand transition-colors hover:bg-brand-soft max-sm:min-h-[44px]"
             >

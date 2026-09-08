@@ -41,7 +41,9 @@ type ScanJson = {
 
 export function runDiscovery(filters: ExploreFilters, onEvent: (e: ScanEvent) => void): Promise<DiscoveredOffer[]> {
   return new Promise((resolve) => {
-    const tempPortals = writeTempPortals(filters);
+    // Keep already-fetched candidates so relaxing positive keywords is local.
+    // Core still enforces exclusions, location, dates and deduplication.
+    const tempPortals = writeTempPortals({ ...filters, positive: [] });
     const available = new Set(sourceCatalog().filter(s => s.enabled).map(s => s.id));
     const sources = filters.ats.filter(source => available.has(source));
     const args = [rootScript("scan"), "--dry-run", "--json", "--since", String(Math.max(1, filters.sinceDays || 7))];

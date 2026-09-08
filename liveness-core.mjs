@@ -15,6 +15,8 @@ function normalizeForMatch(text = '') {
 }
 
 const HARD_EXPIRED_PATTERNS = [
+  /(?:该|此|本)(?:职位|岗位)(?:已|已经)(?:下线|关闭|结束|失效)/,
+  /您访问的页面没有找到/,
   /job (is )?no longer available/i,
   /job.*no longer open/i,
   // Generalized "filled" signal. The old /position has been filled/ missed the
@@ -60,6 +62,7 @@ const LISTING_PAGE_PATTERNS = [
 // `insufficient_content` → expired, and scan --verify would write live jobs to
 // scan-history and permanently filter them out. Treat as uncertain instead.
 const BOT_CHALLENGE_PATTERNS = [
+  /请先登录|登录后查看|安全验证|请输入验证码|完成验证后/,
   /just a moment/i,
   /performing security verification/i,
   /checking your browser before/i,
@@ -96,6 +99,8 @@ const APPLY_PATTERNS = [
   // labels containing “投递” can be status/history controls rather than Apply.
   /^申请职位$/,
   /^投递$/,
+  /^投递简历$/,
+  /^立即投递$/,
 ];
 
 const MIN_CONTENT_CHARS = 300;

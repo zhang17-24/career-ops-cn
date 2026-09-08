@@ -310,6 +310,12 @@ function AdapterTutorial({ company, adapter, onClose, onManage, onStart }: { com
           <button type="button" onClick={onClose} aria-label="关闭教程" className="inline-flex size-9 items-center justify-center rounded-lg text-muted hover:bg-surface-hover"><X className="size-4" /></button>
         </div>
 
+        <details className="mt-4 rounded-xl border border-border p-4 text-sm">
+          <summary className="cursor-pointer font-medium">真实数据验收规则（Agent 必须遵守）</summary>
+          <p className="mt-3 text-muted">正式结果禁止使用 mock 或示例兜底。必须记录官网来源与时间，实际点击核对最多三个岗位的名称、编号和详情；不能猜链接，也不能用离线测试代替真实验收。</p>
+          <p className="mt-2 text-muted">下线、404 标失效；登录、验证码、超时标待确认。新插件默认停用，审核启用后检查绑定、文件信任和实际加载，再只扫描该企业验收。修改后的插件须审核后更新信任。</p>
+          <p className="mt-2 text-muted">证据保存在插件目录 ACCEPTANCE.md。缺少证据只能标待验收，不能宣布成功。完整规则：docs/招聘源适配验收SOP.md。</p>
+        </details>
         <ol className="mt-5 grid gap-3 text-sm">
           <li className="rounded-xl border border-border p-4"><strong>1. Agent 观察网站</strong><p className="mt-1 text-muted">Agent 用 Ego Lite 打开招聘官网，寻找公开 API 或页面数据。遇到登录、短信或验证码，会停下来交给你。</p></li>
           <li className="rounded-xl border border-border p-4"><strong>2. 生成并测试插件</strong><p className="mt-1 text-muted">Agent 按模板生成固定解析规则，只测试这一家和离线样本，不运行全量岗位扫描。</p></li>

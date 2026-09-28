@@ -1,0 +1,52 @@
+{
+  "officialUrl": "https://careers.ctrip.com/",
+  "entryUrl": "https://careers.ctrip.com/#/campus/jobList",
+  "allowedHosts": [
+    "careers.ctrip.com",
+    "ak-s-cw.tripcdn.com"
+  ],
+  "evidence": [
+    {
+      "fromUrl": "https://careers.ctrip.com/",
+      "toUrl": "https://careers.ctrip.com/#/campus",
+      "kind": "link",
+      "note": "2026-09-18T17:34:50.763473+00:00 携程集团招聘官网；校园招聘 anchor 原始 href #/campus。"
+    },
+    {
+      "fromUrl": "https://careers.ctrip.com/#/campus",
+      "toUrl": "https://careers.ctrip.com/#/campus/jobList",
+      "kind": "link",
+      "note": "正常点击“查看所有职位”，page.info 和 task.tabs 确认同页路由。"
+    },
+    {
+      "fromUrl": "https://careers.ctrip.com/#/campus/jobList",
+      "toUrl": "https://careers.ctrip.com/api/hrrecruit/getJobAd",
+      "kind": "api",
+      "note": "正常 SPA 导航捕获 POST；retCode 201，total 56，第一页10条。 2026-09-18T18:29Z 同一列表正常SPA请求再次捕获并确认，参数/总数一致。"
+    },
+    {
+      "fromUrl": "https://careers.ctrip.com/#/campus/jobList",
+      "toUrl": "https://ak-s-cw.tripcdn.com/modules/hrteam/careers-trip-new-ares/static/js/84.1b218d6d.chunk.js",
+      "kind": "api",
+      "note": "实际加载的公开列表脚本；仅检查 recruit-item-link 局部路由代码。"
+    },
+    {
+      "fromUrl": "https://careers.ctrip.com/#/campus/jobList",
+      "toUrl": "https://careers.ctrip.com/#/campus/job-detail/MJ036670",
+      "kind": "link",
+      "note": "实际 anchor href；滚动与命中检查后正常点击，新增详情标签核对完整标题、编号、职责。 2026-09-18T18:29—18:30Z 当前列表再次观察相同href，重新打开并核对标题、编号、职责；同页hash复用需整页reload，详见ACCEPTANCE.md。"
+    },
+    {
+      "fromUrl": "https://careers.ctrip.com/#/campus/jobList",
+      "toUrl": "https://careers.ctrip.com/#/campus/job-detail/MJ036676",
+      "kind": "link",
+      "note": "实际 anchor href；滚动与命中检查后正常点击，新增详情标签核对完整标题、编号、职责。 2026-09-18T18:29—18:30Z 当前列表再次观察相同href，重新打开并核对标题、编号、职责；同页hash复用需整页reload，详见ACCEPTANCE.md。"
+    },
+    {
+      "fromUrl": "https://careers.ctrip.com/#/campus/jobList",
+      "toUrl": "https://careers.ctrip.com/#/campus/job-detail/MJ036671",
+      "kind": "link",
+      "note": "实际 anchor href；滚动与命中检查后正常点击，新增详情标签核对完整标题、编号、职责。 2026-09-18T18:29—18:30Z 当前列表再次观察相同href，重新打开并核对标题、编号、职责；同页hash复用需整页reload，详见ACCEPTANCE.md。"
+    }
+  ]
+}

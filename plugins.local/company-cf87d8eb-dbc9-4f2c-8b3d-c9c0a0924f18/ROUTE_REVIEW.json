@@ -1,0 +1,48 @@
+{
+  "officialUrl": "https://talent.catl.com/",
+  "entryUrl": "https://app.mokahr.com/campus-recruitment/catlhr/148948#/jobs",
+  "allowedHosts": [
+    "talent.catl.com",
+    "app.mokahr.com",
+    "static-ats.mokahr.com",
+    "static-extension.mokahr.com"
+  ],
+  "evidence": [
+    {
+      "fromUrl": "https://talent.catl.com/",
+      "toUrl": "https://talent.catl.com/social-recruitment/catlhr/96144/#/",
+      "kind": "redirect",
+      "note": "2026-09-13T15:31:33Z Ego Lite正常打开配置入口后pageInfo实际落点；标题为宁德时代校招 | 宁德时代社招 | 宁德时代招聘官网，页脚为宁德时代新能源科技股份有限公司。"
+    },
+    {
+      "fromUrl": "https://talent.catl.com/social-recruitment/catlhr/96144/#/",
+      "toUrl": "https://app.mokahr.com/campus-recruitment/catlhr/148948#/",
+      "kind": "link",
+      "note": "同次真实DOM中2027届全球校园招聘anchor的原始href与解析后absolute href完全一致。仅提出路线申请，未打开目标、未批准域名。"
+    },
+    {
+      "fromUrl": "https://app.mokahr.com/campus-recruitment/catlhr/148948#/",
+      "toUrl": "https://app.mokahr.com/campus-recruitment/catlhr/148948#/jobs",
+      "kind": "link",
+      "note": "2026-09-13T15:47Z Ego Lite真实职位列表anchor：raw href=#/jobs，resolved href为此地址；标题宁德时代 - 校园招聘。正常列表加载后有30个岗位anchor，页面显示614结果。"
+    },
+    {
+      "fromUrl": "https://app.mokahr.com/campus-recruitment/catlhr/148948#/jobs",
+      "toUrl": "https://static-ats.mokahr.com/recruitment-web-client/javascripts/recruitmentWeb-20260910-1545-197e7-release.js",
+      "kind": "api",
+      "note": "2026-09-13T15:49:59.337Z 正常列表加载的公开script资源请求；同域还提供runtime、vendor、样式和i18n资源。固定DOM reader需要页面业务资源；仅观察地址，未下载或执行提取的脚本。"
+    },
+    {
+      "fromUrl": "https://app.mokahr.com/campus-recruitment/catlhr/148948#/jobs",
+      "toUrl": "https://static-extension.mokahr.com/td-ats-web-aggregation-catl-hr/js/tdAtsWebAggregationCatlHrGlobalConfig.d93248c4.js",
+      "kind": "api",
+      "note": "2026-09-13T15:49:59.337Z 正常列表实际加载的宁德时代定制公开script资源请求；申请供browserListing加载，必要性及匿名读取仍由批准后的平台独立验收。"
+    },
+    {
+      "fromUrl": "https://app.mokahr.com/campus-recruitment/catlhr/148948#/jobs",
+      "toUrl": "https://app.mokahr.com/api/outer/ats-apply/website/jobs/v2",
+      "kind": "api",
+      "note": "2026-09-13T15:49Z document-start preload观察正常首屏POST，orgId=catlhr/siteId=148948/limit=30/offset=0；HTTP200，仅data字符串和necromancer字段，无法直接固定解析，不逆向封装。"
+    }
+  ]
+}

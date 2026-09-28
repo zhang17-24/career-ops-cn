@@ -1,0 +1,18 @@
+import { strict as assert } from 'node:assert';
+import hooks, { parseMokaHtml } from '../index.mjs';
+const job = {id:'900719925474099312345',title:'测试岗位',status:'open',zhineng:{id:160479},location:{address:'公开工作地址'}};
+const html = jobs => `<input id="init-data" type="hidden" value="${JSON.stringify({org:{id:'fenbi',name:'猿辅导集团'},siteId:'47742',jobs}).replace(/&/g,'&amp;').replace(/"/g,'&quot;')}">`;
+const result = parseMokaHtml(html([job]));
+assert.deepEqual(result,[{id:job.id,title:job.title,company:'猿辅导',url:`https://hr.yuanfudao.com/#/job/${job.id}`,location:'公开工作地址'}]);
+assert.deepEqual(parseMokaHtml(html([])),[]);
+assert.deepEqual(parseMokaHtml(html([{...job,status:'closed'}])),[]);
+assert.deepEqual(parseMokaHtml(html([{...job,zhineng:{id:1}}])),[]);
+assert.equal(parseMokaHtml(html([{...job,location:{}}]))[0].location,'');
+for(const jobs of [null,[job,job],[{...job,id:123}],[{...job,title:''}],[{...job,status:'unknown'}],Array(101).fill(job)]) assert.throws(()=>parseMokaHtml(html(jobs)));
+assert.throws(()=>parseMokaHtml('<html>not initialized</html>'));
+assert.throws(()=>parseMokaHtml(html([job]).replace('fenbi','other')));
+let calls=0;
+assert.deepEqual(await hooks.provider.fetch({}, {fetchText:async(url,opts)=>{calls++;assert.equal(url,'https://hr.yuanfudao.com/');assert.equal(opts.redirect,'error');return html([job]);}}),result);
+assert.equal(calls,1);
+await assert.rejects(hooks.provider.fetch({}, {fetchText:async()=>{throw new Error('HTTP unavailable');}}),/HTTP unavailable/);
+console.log('PASS: zero-network mapping, string IDs, empty/closed, malformed/duplicate, one-page limit, failure propagation');

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Check, X, Loader2, AlertTriangle } from "lucide-react";
 import type { Job } from "@/components/jobs/job-store";
-import { jobErrorHint } from "@/lib/job-error-hint.mjs";
+import { jobErrorHint, adapterPendingHint } from "@/lib/job-error-hint.mjs";
 import { cn } from "@/lib/cn";
 
 // Humanize raw agent tool names into what the user actually cares about, so a
@@ -56,6 +56,7 @@ export const TONE = {
 } as const;
 
 export function pillTone(j: Job): keyof typeof TONE {
+  if (adapterPendingHint(j)) return "warn";
   if (j.status === "error") return "bad";
   if (j.status === "done") return j.result?.tone ?? "muted";
   return "muted";
@@ -75,18 +76,19 @@ export function WorkerCard({
   const elapsed = useElapsed(running, job.startedAt);
   const rawLast = job.steps[job.steps.length - 1]?.label;
   const last = rawLast ? humanizeStep(rawLast) : undefined;
-  const bottom = job.status === "done" && job.result?.summary ? job.result.summary : last;
+  const pending = adapterPendingHint(job);
+  const bottom = pending?.title ?? (job.status === "done" && job.result?.summary ? job.result.summary : last);
   const inline = variant === "inline";
-  const hasScore = job.result?.score != null;
+  const hasScore = !pending && job.result?.score != null;
   const errorHint = jobErrorHint(job);
-  const tokens = job.status === "done" ? job.cost?.tokens ?? 0 : 0;
+  const tokens = job.status !== "running" ? job.cost?.tokens ?? 0 : 0;
 
   return (
     <div className={cn(inline && "rounded-xl border border-border bg-surface/60 p-2.5")}>
       <div className="flex items-center gap-2">
         {job.status === "running" ? (
           <Loader2 className="size-3 shrink-0 animate-spin text-brand" />
-        ) : job.status === "error" ? (
+        ) : job.status === "error" || pending ? (
           <AlertTriangle className={cn("size-3 shrink-0", tone.icon)} />
         ) : (
           <Check className={cn("size-3 shrink-0", tone.icon)} />

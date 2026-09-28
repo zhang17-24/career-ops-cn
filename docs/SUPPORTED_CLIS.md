@@ -13,4 +13,5 @@ Career-ops is AI-agnostic and runs on several command-line agent tools. The core
 | Qwen | `AGENTS.md` | Interactive: `qwen`. Headless/Batch: `qwen -p "prompt"` |
 | Kimi | `KIMI.md` | Interactive: `kimi` |
 | GitHub Copilot CLI | `AGENTS.md` | Headless/Batch: `copilot -p "prompt"` |
+| WorkBuddy | `CODEBUDDY.md` | Headless/Batch: `codebuddy -p "prompt"` (the CodeBuddy Code CLI bundled inside the WorkBuddy app; not on PATH — see `web/src/lib/cli-search-dirs.mjs`). Entry is `CODEBUDDY.md` rather than `AGENTS.md` because this CLI silently drops rule files over 40000 bytes and AGENTS.md is ~49KB — the entry points at AGENTS.md instead of importing it |
 | Gemini | `GEMINI.md` | Legacy wrapper redirecting to `AGENTS.md` (transitioned to Antigravity CLI). |

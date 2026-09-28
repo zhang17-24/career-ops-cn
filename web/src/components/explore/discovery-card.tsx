@@ -46,6 +46,7 @@ export function DiscoveryCard({ offer, inPipeline, evaluatedN, onExpired }: { of
   const [health, setHealth] = useState('');
   const [healthError, setHealthError] = useState('');
   const expired = health === 'expired';
+  const inlineDetail = offer.url.includes(':~:text=');
   async function verify() {
     setChecking(true); setHealthError('');
     try {
@@ -128,7 +129,7 @@ export function DiscoveryCard({ offer, inPipeline, evaluatedN, onExpired }: { of
       )}
 
       <div className="text-xs text-muted">
-        <button disabled={checking} onClick={() => void verify()} className="text-brand underline disabled:opacity-50">{checking ? '检查中…' : '检查有效性（零 Token）'}</button>
+        {inlineDetail ? <span>官网列表内详情：打开官网后，点击同名岗位展开。非独立详情链接，当前有效性需核对。</span> : <button disabled={checking} onClick={() => void verify()} className="text-brand underline disabled:opacity-50">{checking ? '检查中…' : '检查有效性（零 Token）'}</button>}
         <span className="ml-2">{health === 'active' ? '检查时可投递' : expired ? '官网显示已下线，请勿投递' : health ? '暂无法确认，请打开官网查看' : '详情有效性尚未检查'}</span>
         {healthError && <p role="alert">{healthError}</p>}
       </div>

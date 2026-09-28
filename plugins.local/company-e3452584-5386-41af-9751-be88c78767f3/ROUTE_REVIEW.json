@@ -1,0 +1,25 @@
+{
+  "officialUrl": "https://www.miniso.cn/",
+  "entryUrl": "https://miniso.zhiye.com/campus/jobs",
+  "allowedHosts": ["miniso.zhiye.com"],
+  "evidence": [
+    {
+      "fromUrl": "https://www.miniso.cn/",
+      "toUrl": "https://miniso.zhiye.com/",
+      "kind": "link",
+      "note": "2026-09-19 名创优品中文官网（标题：名创优品MINISO - 全球领先的IP趣味好物平台）页脚/导航中可见'招聘'链接，原始 href=https://miniso.zhiye.com/，解析后绝对地址相同；Ego Lite 页面 evaluate 读取确认。"
+    },
+    {
+      "fromUrl": "https://miniso.zhiye.com/",
+      "toUrl": "https://miniso.zhiye.com/campus/jobs",
+      "kind": "link",
+      "note": "2026-09-19 北森招聘门户默认校园招聘列表入口（官网搜索与公众号指引均指向 https://miniso.zhiye.com/campus；实际浏览器直接导航 /campus/jobs 加载列表 SPA 并触发公开 API）。"
+    },
+    {
+      "fromUrl": "https://miniso.zhiye.com/campus/jobs",
+      "toUrl": "https://miniso.zhiye.com/api/Jobad/GetJobAdPageList",
+      "kind": "api",
+      "note": "2026-09-19 公开匿名 POST 返回 200，Code=200，Count=30，Data=20 条，字段 Id/JobAdName/LocNames/Duty/Require 与北森公开 schema 一致，无凭证。"
+    }
+  ]
+}

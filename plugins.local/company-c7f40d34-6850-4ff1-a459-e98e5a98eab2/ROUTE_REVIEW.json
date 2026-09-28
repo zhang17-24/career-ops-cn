@@ -1,0 +1,35 @@
+{
+  "officialUrl": "https://www.bosch.com.cn/careers/",
+  "entryUrl": "https://app.mokahr.com/campus-recruitment/bosch/168626?locale=zh-CN#/jobs?zhineng%5B0%5D=204853",
+  "allowedHosts": [
+    "www.bosch.com.cn",
+    "app.mokahr.com",
+    "static-ats.mokahr.com"
+  ],
+  "evidence": [
+    {
+      "fromUrl": "https://www.bosch.com.cn/careers/",
+      "toUrl": "https://app.mokahr.com/campus-recruitment/bosch/168626?locale=zh-CN#/",
+      "kind": "link",
+      "note": "2026-09-13T15:31:47Z，Ego Lite 打开配置入口，标题为「加入博世 | 博世在中国」，正文显示 Work #LikeABosch。官网「2027届博世中国校园招聘／了解详情」anchor 的原始 href 与解析后绝对 href 均为此地址；未猜测租户或路由。新域名尚未批准，未读取其列表或 API。"
+    },
+    {
+      "fromUrl": "https://app.mokahr.com/campus-recruitment/bosch/168626?locale=zh-CN#/",
+      "toUrl": "https://app.mokahr.com/campus-recruitment/bosch/168626?locale=zh-CN#/jobs?zhineng%5B0%5D=204853",
+      "kind": "link",
+      "note": "2026-09-13T15:49:34Z：2027 博世中国校园招聘首页人工智能方向 anchor 的 raw/resolved href 一致。实际打开后显示 AI/人工智能、32 结果、30 行/页；仅申请这一已观察列表页，不推断全部校招覆盖。"
+    },
+    {
+      "fromUrl": "https://app.mokahr.com/campus-recruitment/bosch/168626?locale=zh-CN#/jobs?zhineng%5B0%5D=204853",
+      "toUrl": "https://app.mokahr.com/api/outer/ats-apply/website/jobs/v2",
+      "kind": "api",
+      "note": "正常 SPA 导航产生 POST，orgId=bosch、siteId=168626、limit=30、offset=0、zhinengIds=[204853]、site=campus、locale=zh-CN。响应 HTTP 200，顶层 data 为封装字符串；不逆向，拟改用平台 browserListing。"
+    },
+    {
+      "fromUrl": "https://app.mokahr.com/campus-recruitment/bosch/168626?locale=zh-CN#/jobs?zhineng%5B0%5D=204853",
+      "toUrl": "https://static-ats.mokahr.com/recruitment-web-client/javascripts/recruitmentWeb-20260910-1545-197e7-release.js",
+      "kind": "api",
+      "note": "2026-09-13T15:49:34Z：实际 script.src 与 performance resource 均观察到此主程序；同域还承载 runtime/vendor/i18n/CSS，为固定 DOM reader 所需脚本域名。仅申请精确域名，未下载分析 bundle。"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "id": "company-243ef6bd-bafc-4c7c-8f96-fb93be905d21",
+  "name": "吉比特 招聘源适配器",
+  "version": "0.1.0",
+  "apiVersion": 1,
+  "description": "零 Token 读取 吉比特 的公开招聘职位。",
+  "hooks": [
+    "provider"
+  ],
+  "requiredEnv": [],
+  "allowedHosts": [
+    "hr.g-bits.com",
+    "joinserverfast.g-bits.com"
+  ],
+  "skill": "skill.md",
+  "humanInTheLoop": true,
+  "inlineDetails": {
+    "listUrl": "https://hr.g-bits.com/web/index.html#/post-web/post-list/",
+    "itemSelector": "tbody.js-duty",
+    "idAttribute": "data-post-id",
+    "titleSelector": "td:first-child",
+    "toggleSelector": "tr.duty-info",
+    "bodySelector": "div.dsp-wrap"
+  }
+}

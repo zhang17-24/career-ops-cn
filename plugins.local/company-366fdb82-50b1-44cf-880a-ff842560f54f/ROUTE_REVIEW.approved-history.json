@@ -1,0 +1,41 @@
+{
+  "officialUrl": "https://dewu.com/",
+  "entryUrl": "https://campus.dewu.com/578078/position/list",
+  "allowedHosts": [
+    "dewu.com",
+    "poizon.jobs.feishu.cn",
+    "campus.dewu.com"
+  ],
+  "evidence": [
+    {
+      "fromUrl": "https://dewu.com/",
+      "toUrl": "https://poizon.jobs.feishu.cn/index",
+      "kind": "link",
+      "note": "2026-09-12T15:48:12Z Ego Lite 官网标题“得物App-新一代潮流网购社区”，页脚上海得物信息集团有限公司；加入得物/加入我们 raw href 与绝对 href 均为目标地址。"
+    },
+    {
+      "fromUrl": "https://poizon.jobs.feishu.cn/index",
+      "toUrl": "https://campus.dewu.com/",
+      "kind": "link",
+      "note": "2026-09-12T15:48:12Z 标题“加入得物App”，正文得物App介绍；校园招聘 raw href=https://campus.dewu.com，解析后为目标地址。"
+    },
+    {
+      "fromUrl": "https://campus.dewu.com/",
+      "toUrl": "https://campus.dewu.com/578078",
+      "kind": "redirect",
+      "note": "2026-09-12T15:48:12Z Ego Lite 正常打开后 pageInfo 为目标地址，标题“得物App校园招聘”。"
+    },
+    {
+      "fromUrl": "https://campus.dewu.com/578078",
+      "toUrl": "https://campus.dewu.com/578078/position/list",
+      "kind": "link",
+      "note": "2026-09-12T15:48:12Z 校招职位 raw href=/578078/position/list，绝对 href 为目标地址；仅记录链接，未打开列表，等待路线审核。"
+    },
+    {
+      "fromUrl": "https://campus.dewu.com/578078",
+      "toUrl": "https://campus.dewu.com/api/v1/common/setting",
+      "kind": "api",
+      "note": "2026-09-12T15:48:12Z 首页正常加载的公开 XHR/fetch 资源记录；仅观察 URL，未读取响应、未重放；这是站点设置接口，并非岗位列表证据。"
+    }
+  ]
+}

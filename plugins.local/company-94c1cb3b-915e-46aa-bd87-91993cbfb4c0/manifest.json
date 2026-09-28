@@ -1,0 +1,12 @@
+{
+  "id": "company-94c1cb3b-915e-46aa-bd87-91993cbfb4c0",
+  "name": "金山办公 招聘源适配器",
+  "version": "0.1.0",
+  "apiVersion": 1,
+  "description": "零 Token 读取 金山办公 的公开招聘职位。",
+  "hooks": ["provider"],
+  "requiredEnv": [],
+  "allowedHosts": ["join.wps.cn"],
+  "skill": "skill.md",
+  "humanInTheLoop": true
+}

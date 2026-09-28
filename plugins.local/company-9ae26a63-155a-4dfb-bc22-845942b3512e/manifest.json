@@ -1,0 +1,25 @@
+{
+  "id": "company-9ae26a63-155a-4dfb-bc22-845942b3512e",
+  "name": "金山办公 招聘源适配器",
+  "version": "0.1.0",
+  "apiVersion": 1,
+  "description": "通过平台固定 DOM reader 读取金山办公已批准校招项目的一页公开职位，运行零 Token。",
+  "hooks": [
+    "provider"
+  ],
+  "requiredEnv": [],
+  "allowedHosts": [
+    "join.wps.cn",
+    "app.mokahr.com",
+    "static-ats.mokahr.com"
+  ],
+  "skill": "skill.md",
+  "humanInTheLoop": true,
+  "browserListing": {
+    "listUrl": "https://app.mokahr.com/campus-recruitment/wps/41436?sourceToken=8379ee777457c4d22fc65d4439f660b3#/jobs?page=1&anchorName=jobsList&project%5B0%5D=100102183",
+    "identityText": "金山办公软件",
+    "linkSelector": ".jobs-AkItzswt6b a.link-txmgVOCVz9",
+    "titleSelector": ".title-u2qk9xX9Ie",
+    "locationSelector": ".info-tPG_0QGbhl .separator-_pKVwkeo9b + div .no-adaptive-tooltip"
+  }
+}

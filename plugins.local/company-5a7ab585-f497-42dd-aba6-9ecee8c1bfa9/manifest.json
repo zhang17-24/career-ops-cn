@@ -1,0 +1,12 @@
+{
+  "id": "company-5a7ab585-f497-42dd-aba6-9ecee8c1bfa9",
+  "name": "蚂蚁集团 招聘源适配器",
+  "version": "0.1.0",
+  "apiVersion": 1,
+  "description": "零 Token 读取 蚂蚁集团 的公开招聘职位。",
+  "hooks": ["provider"],
+  "requiredEnv": [],
+  "allowedHosts": ["talent.antgroup.com"],
+  "skill": "skill.md",
+  "humanInTheLoop": true
+}

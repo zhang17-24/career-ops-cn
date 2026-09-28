@@ -1,7 +1,8 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { codexStreamArgs, isFatalClaudeStderr, isFatalCodexStderr, parseClaudeEvent, parseCodexEvent } from "./run-cli-support.mjs";
+import { codexStreamArgs, isFatalClaudeStderr, isFatalCodexStderr, isTerminalClaudeLine, isTerminalCodexLine, parseClaudeEvent, parseCodexEvent, workbuddyStreamArgs } from "./run-cli-support.mjs";
+import { workbuddyCliDirs } from "./cli-search-dirs.mjs";
 
 // Server-only (node imports). The agnostic runtimes career-ops can delegate to
 // in headless mode (AGENTS.md). Install URLs from career-ops-docs.
@@ -31,6 +32,19 @@ export type CliSpec = {
   /** Structured-output CLIs only: decide whether a stderr line is fatal.
    * Absent → the route falls back to the shared generic error regex. */
   stderrIsFatal?: (line: string) => boolean;
+  /** Structured-output CLIs only: whether a stdout line marks the END of the run.
+   *
+   * Absent → the route waits for stdout EOF, which is what every non-structured
+   * CLI does anyway. Present → the route stops waiting shortly after this line,
+   * so a CLI that leaves a child process holding the pipe can't turn a finished
+   * run into a 780s "timeout" (see LINGER_GRACE_MS in api/run/route.ts).
+   *
+   * A separate hook rather than a field on ParsedEvent: the parsers answer "what
+   * payload is this", and parseClaudeEvent returns null for a payload-free
+   * `result` — a contract pinned by exact-shape assertions in
+   * run-cli-support.test.mjs. Widening ParsedEvent would have rewritten those
+   * assertions for no functional gain. */
+  isTerminal?: (line: string) => boolean;
 };
 
 /**
@@ -57,8 +71,22 @@ export type CliSpec = {
  * lives in a comment is a rule the next contributor may never read.
  */
 export const KNOWN: CliSpec[] = [
-  { id: "claude", name: "Claude Code", bin: "claude", run: "claude -p", url: "https://claude.ai/code", args: (p) => ["-p", p], parseEvent: parseClaudeEvent, stderrIsFatal: isFatalClaudeStderr },
-  { id: "codex", name: "Codex", bin: "codex", run: "codex exec", url: "https://github.com/openai/codex", args: (p) => ["exec", p], streamArgs: codexStreamArgs, parseEvent: parseCodexEvent, stderrIsFatal: isFatalCodexStderr },
+  { id: "claude", name: "Claude Code", bin: "claude", run: "claude -p", url: "https://claude.ai/code", args: (p) => ["-p", p], parseEvent: parseClaudeEvent, stderrIsFatal: isFatalClaudeStderr, isTerminal: isTerminalClaudeLine },
+  // WorkBuddy ships the CodeBuddy Code CLI inside its app bundle, so `bin` is
+  // `codebuddy`, not `workbuddy`. Same structured-output shape as Claude (it is
+  // a Claude Code fork), hence parseClaudeEvent/stderrIsFatal are shared —
+  // measured 2026-09-19 against real captured events: stream_event,
+  // content_block_delta, cache_creation_input_tokens and is_error all match.
+  //
+  // No permission flag here on purpose. Headless runs need the bypass
+  // permission mode before ANY tool works (measured: with an explicit tool
+  // whitelist that included Bash but no permission mode, Bash was refused),
+  // but that flag belongs behind the consent toggle in
+  // workbuddy-adapter-runtime.mjs — see the KNOWN header above and
+  // claude-invocation.mjs. Spelling it out here would trip
+  // clis-permissions.test.mjs, which is the guard doing its job.
+  { id: "workbuddy", name: "WorkBuddy", bin: "codebuddy", run: "codebuddy -p", url: "https://www.workbuddy.cn", args: (p) => ["-p", p], streamArgs: workbuddyStreamArgs, parseEvent: parseClaudeEvent, stderrIsFatal: isFatalClaudeStderr, isTerminal: isTerminalClaudeLine },
+  { id: "codex", name: "Codex", bin: "codex", run: "codex exec", url: "https://github.com/openai/codex", args: (p) => ["exec", p], streamArgs: codexStreamArgs, parseEvent: parseCodexEvent, stderrIsFatal: isFatalCodexStderr, isTerminal: isTerminalCodexLine },
   { id: "gemini", name: "Gemini CLI", bin: "gemini", run: "gemini -p", url: "https://github.com/google-gemini/gemini-cli", args: (p) => ["-p", p] },
   { id: "opencode", name: "OpenCode", bin: "opencode", run: "opencode run", url: "https://opencode.ai", args: (p) => ["run", p] },
   { id: "copilot", name: "GitHub Copilot CLI", bin: "copilot", run: "copilot -p", url: "https://docs.github.com/en/copilot/github-copilot-in-the-cli", args: (p) => ["-p", p] },
@@ -80,6 +108,10 @@ function searchDirs(): string[] {
     path.join(home, ".bun/bin"),
     path.join(home, ".deno/bin"),
     path.join(home, ".opencode/bin"),
+    // App-bundled CLIs. WorkBuddy ships `codebuddy` inside its own .app, where
+    // no PATH entry will ever point — see cli-search-dirs.mjs for why only
+    // macOS is listed.
+    ...workbuddyCliDirs(process.platform),
     "/opt/homebrew/bin",
     "/usr/local/bin",
     "/usr/bin",

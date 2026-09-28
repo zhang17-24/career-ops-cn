@@ -1,0 +1,19 @@
+{
+  "officialUrl": "https://join.fanruan.com/",
+  "entryUrl": "https://join.fanruan.com/campus",
+  "allowedHosts": ["join.fanruan.com"],
+  "evidence": [
+    {
+      "fromUrl": "https://join.fanruan.com/",
+      "toUrl": "https://join.fanruan.com/campus",
+      "kind": "link",
+      "note": "2026-09-13 00:08 +08:00，Ego Lite 实读配置首页，标题为首页 | 帆软招聘官网，正文介绍帆软软件有限公司及 FineReport、FineBI 等产品。页脚校园招聘 anchor 的原始 href 与解析后的 href 均为 https://join.fanruan.com/campus；直接打开该实际链接，标题为帆软校园招聘 | 职位列表，公开岗位正文可读，无登录或验证码阻拦。"
+    },
+    {
+      "fromUrl": "https://join.fanruan.com/campus",
+      "toUrl": "https://join.fanruan.com/campus",
+      "kind": "api",
+      "note": "同次正常页面加载的 Performance resource 记录中观察到 fetch/XMLHttpRequest 类型 URL https://join.fanruan.com/campus；未读取请求体或响应结构，尚不能认定其为岗位 API。未观察到可确认的公共 ATS 入口。"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "officialUrl": "https://hr.yuanfudao.com/",
+  "entryUrl": "https://hr.yuanfudao.com/#/jobs?&zhineng%5B0%5D=160479",
+  "allowedHosts": [
+    "hr.yuanfudao.com"
+  ],
+  "evidence": [
+    {
+      "fromUrl": "https://hr.yuanfudao.com/",
+      "toUrl": "https://hr.yuanfudao.com/#/jobs?&zhineng%5B0%5D=160479",
+      "kind": "link",
+      "note": "2026-09-19T04:41:10.545Z 官网标题“2026届猿辅导集团 - 校园招聘”；产品/研发类实际 anchor href。"
+    },
+    {
+      "fromUrl": "https://hr.yuanfudao.com/#/jobs?&zhineng%5B0%5D=160479",
+      "toUrl": "https://hr.yuanfudao.com/api/outer/ats-apply/website/jobs/v2",
+      "kind": "api",
+      "note": "正常 SPA POST，200；orgId=fenbi/siteId=47742；只记录封装 schema。"
+    },
+    {
+      "fromUrl": "https://hr.yuanfudao.com/",
+      "toUrl": "https://hr.yuanfudao.com/campus-recruitment/fenbi/47742/",
+      "kind": "redirect",
+      "note": "匿名 HTTP 302 Location；此实际目标又302到自身，生产读取阻塞。"
+    },
+    {
+      "fromUrl": "https://hr.yuanfudao.com/#/jobs?&zhineng%5B0%5D=160479",
+      "toUrl": "https://hr.yuanfudao.com/#/job/c3404b3e-9cb8-456f-a0df-cc89384f7255",
+      "kind": "link",
+      "note": "实际 anchor 和滚动命中检查后点击；当前详情标题和正文一致：2025届校招- C端产品实习生（有转正机会）"
+    },
+    {
+      "fromUrl": "https://hr.yuanfudao.com/#/jobs?&zhineng%5B0%5D=160479",
+      "toUrl": "https://hr.yuanfudao.com/#/job/e433c6ae-c3f0-4e9e-96a1-4421063b1f69",
+      "kind": "link",
+      "note": "实际 anchor 和滚动命中检查后点击；当前详情标题和正文一致：2026春招-测试工程师"
+    },
+    {
+      "fromUrl": "https://hr.yuanfudao.com/#/jobs?&zhineng%5B0%5D=160479",
+      "toUrl": "https://hr.yuanfudao.com/#/job/6ae831e9-eda5-417b-9353-5f229b46a9fb",
+      "kind": "link",
+      "note": "实际 anchor 和滚动命中检查后点击；当前详情标题和正文一致：2026届春招-AI服务端研发工程师"
+    }
+  ]
+}

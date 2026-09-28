@@ -3,6 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { scoreTone } from "@/lib/format";
 import { readSavedCliId, resolveCliId } from "@/lib/saved-cli";
+import { adapterPendingHint } from "@/lib/job-error-hint.mjs";
 
 export type JobStep = { kind: "tool" | "status"; label: string; ts: number };
 export type JobResult = { score: number | null; summary: string; tone: "good" | "warn" | "bad" | "muted" };
@@ -15,7 +16,7 @@ export type Job = {
   input?: string; // the URL/posting it processed (links inbox rows to their worker)
   kind?: string;
   batchId?: string; // groups jobs fired together (e.g. "evaluate all Anthropic")
-  status: "running" | "done" | "error";
+  status: "running" | "done" | "error" | "awaiting_review";
   steps: JobStep[];
   text: string;
   result?: JobResult;
@@ -24,7 +25,7 @@ export type Job = {
   endedAt?: number;
 };
 
-type StartOpts = { title: string; subtitle?: string; kind: string; input: string; page?: string; batchId?: string };
+type StartOpts = { title: string; subtitle?: string; kind: string; input: string; page?: string; batchId?: string; adapterTicket?: string; recoveryNote?: string; managedPublic?: boolean };
 
 type Ctx = {
   jobs: Job[];
@@ -122,11 +123,12 @@ export function JobsProvider({ children }: { children: React.ReactNode }) {
         let text = "";
         let verdictLine = ""; // latched separately so the 8000-char tail can't drop it
         let doneTokens = 0; // per-run token cost, forwarded on the done event (#6)
+        let receivedDone = false;
         let doneCostUsd: number | null = null;
         const steps: JobStep[] = [];
-        const finish = (status: "done" | "error", lastLabel?: string) => {
-          const result = status === "done" ? parseVerdict(verdictLine || text) : undefined;
-          const cost = status === "done" && doneTokens > 0 ? { tokens: doneTokens, usd: doneCostUsd ?? undefined } : undefined;
+        const finish = (status: "done" | "error" | "awaiting_review", lastLabel?: string) => {
+          const result: JobResult | undefined = status === "done" ? (opts.kind === "adapt-provider" ? { score: null, summary: "验收通过 · 已自动安装并绑定", tone: "good" } : parseVerdict(verdictLine || text)) : undefined;
+          const cost = doneTokens > 0 ? { tokens: doneTokens, usd: doneCostUsd ?? undefined } : undefined;
           patch(id, (j) => ({
             ...j,
             status,
@@ -154,7 +156,7 @@ export function JobsProvider({ children }: { children: React.ReactNode }) {
           const res = await fetch("/api/run", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ kind: opts.kind, input: opts.input, cliId }),
+            body: JSON.stringify({ kind: opts.kind, input: opts.input, cliId, adapterTicket: opts.adapterTicket, recoveryNote: opts.recoveryNote, managedPublic: opts.managedPublic }),
           });
           if (!res.ok || !res.body) {
             const e = await res.json().catch(() => ({}));
@@ -188,9 +190,15 @@ export function JobsProvider({ children }: { children: React.ReactNode }) {
                   text = full.slice(-8000);
                   patch(id, (j) => ({ ...j, text }));
                 } else if (ev.type === "done") {
+                  receivedDone = true;
                   // finish happens on stream-close; capture the per-run cost it carries
                   if (typeof ev.tokens === "number") doneTokens = ev.tokens;
                   if (typeof ev.costUsd === "number") doneCostUsd = ev.costUsd;
+                } else if (ev.type === "awaiting_review" && opts.kind === "adapt-provider") {
+                  if (typeof ev.tokens === "number") doneTokens = ev.tokens;
+                  if (typeof ev.costUsd === "number") doneCostUsd = ev.costUsd;
+                  finish("awaiting_review", ev.msg || "等待路线审核 · 未安装");
+                  return;
                 } else if (ev.type === "error") {
                   finish("error", ev.msg || "运行失败");
                   return;
@@ -200,7 +208,8 @@ export function JobsProvider({ children }: { children: React.ReactNode }) {
               }
             }
           }
-          finish("done", "已完成");
+          if (receivedDone) finish("done", "已完成");
+          else finish("error", "任务流提前结束，未收到服务端完成确认；请检查已有产物，不要直接重新适配。");
         } catch {
           finish("error", "连接失败");
         }
@@ -212,7 +221,7 @@ export function JobsProvider({ children }: { children: React.ReactNode }) {
   );
 
   const removeJob = useCallback((id: string) => setJobs((js) => js.filter((j) => j.id !== id)), []);
-  const clearFinished = useCallback(() => setJobs((js) => js.filter((j) => j.status === "running")), []);
+  const clearFinished = useCallback(() => setJobs((js) => js.filter((j) => j.status === "running" || adapterPendingHint(j))), []);
 
   return <JobsContext.Provider value={{ jobs, startJob, removeJob, clearFinished }}>{children}</JobsContext.Provider>;
 }

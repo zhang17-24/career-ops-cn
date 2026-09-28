@@ -1,0 +1,12 @@
+{
+  "id": "company-45a5b9c5-9350-4f9a-87d9-866f4b5d24e5",
+  "name": "虎牙 招聘源适配器",
+  "version": "0.1.0",
+  "apiVersion": 1,
+  "description": "固定读取虎牙招聘官网社会招聘公开 ATS（Moka 公开接口）一页列表（最多100条），并映射官网实际可见的详情路由；零 Token、不翻页、不调用模型。",
+  "hooks": ["provider"],
+  "requiredEnv": [],
+  "allowedHosts": ["api.mokahr.com", "hr.huya.com"],
+  "skill": "skill.md",
+  "humanInTheLoop": true
+}

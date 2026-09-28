@@ -1,0 +1,17 @@
+{
+  "id": "company-af53c855-ffdc-48b1-80c9-a7fa9531a73c",
+  "name": "猿辅导 招聘源适配器",
+  "version": "0.1.0",
+  "apiVersion": 1,
+  "description": "一次匿名初始化后固定解析 Moka 官方 HTML 初始岗位页，仅产品/研发类，不翻页、不调用模型。",
+  "hooks": [
+    "provider"
+  ],
+  "requiredEnv": [],
+  "allowedHosts": [
+    "hr.yuanfudao.com"
+  ],
+  "skill": "skill.md",
+  "humanInTheLoop": true,
+  "publicBootstrapUrl": "https://hr.yuanfudao.com/"
+}

@@ -1,0 +1,40 @@
+{
+  "officialUrl": "https://campus.didiglobal.com/",
+  "entryUrl": "https://campus.didiglobal.com/campus_apply/didiglobal/96064#/jobs",
+  "allowedHosts": [
+    "campus.didiglobal.com",
+    "static-ats.mokahr.com"
+  ],
+  "evidence": [
+    {
+      "fromUrl": "https://campus.didiglobal.com/",
+      "toUrl": "https://campus.didiglobal.com/campus_apply/didiglobal/96064#/",
+      "kind": "redirect",
+      "note": "2026-09-18T15:55:45Z Ego Lite 正常导航实际落地地址；标题“滴滴 - 校园招聘”，正文“滴滴27届秋招正式启动”。goto 等待 load 超时后，同一页 DOM 已可读，不是岗位关闭或登录拦截。"
+    },
+    {
+      "fromUrl": "https://campus.didiglobal.com/campus_apply/didiglobal/96064#/",
+      "toUrl": "https://campus.didiglobal.com/campus_apply/didiglobal/96064#/jobs",
+      "kind": "link",
+      "note": "同次 DOM 读取导航“校园招聘”：raw href 为 #/jobs，resolved href 为本条 toUrl。尚未打开列表，入口变更先申请路线审核。"
+    },
+    {
+      "fromUrl": "https://campus.didiglobal.com/campus_apply/didiglobal/96064#/jobs",
+      "toUrl": "https://campus.didiglobal.com/api/outer/ats-apply/website/jobs/v2",
+      "kind": "api",
+      "note": "2026-09-18T16:21:01Z Ego Lite 正常 SPA 列表导航的公开 POST；offset=0、limit=30、orgId=didiglobal、siteId=96064、site=campus。HTTP 200 返回 data 字符串与 necromancer 字段，不透明封装，未解码或重放。"
+    },
+    {
+      "fromUrl": "https://campus.didiglobal.com/campus_apply/didiglobal/96064#/jobs",
+      "toUrl": "https://static-ats.mokahr.com/recruitment-web-client/javascripts/recruitmentWeb-20260916-1942-b5798-release.js",
+      "kind": "link",
+      "note": "2026-09-18T16:21:01Z 已批准列表文档的实际 script src；同域另有 runtime、vendor、initial 和国际化脚本。公开列表可读，browserListing 所需核心客户端资源域名尚未批准；仅观察引用，未下载分析 bundle。"
+    },
+    {
+      "fromUrl": "https://campus.didiglobal.com/campus_apply/didiglobal/96064#/jobs",
+      "toUrl": "https://static-ats.mokahr.com/recruitment-web-client/stylesheets/recruitmentWeb-20260916-1942-b5798-release.css",
+      "kind": "link",
+      "note": "2026-09-18T16:21:01Z 列表文档实际 link rel=stylesheet 的绝对 href。申请精确静态资源域名用于平台匿名 DOM reader，不扩大 API、租户或登录权限。"
+    }
+  ]
+}

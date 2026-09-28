@@ -28,9 +28,10 @@ const AUTH_PATTERN =
   /authenticat\w*|login|sign[ -]?in|credential|api[ -]?key|unauthorized|no cli configured/i;
 
 const HINTS = {
-  auth: { kind: "auth", text: "Sign your CLI in from Config, then re-run." },
-  connection: { kind: "connection", text: "Lost connection to the local server — re-run." },
-  interrupted: { kind: "interrupted", text: "The run was interrupted — re-run it." },
+  auth: { kind: "auth", text: "请先在设置中确认 AI 工具的登录与配置。" },
+  connection: { kind: "connection", text: "与本地服务的连接中断，请先检查服务状态。" },
+  interrupted: { kind: "interrupted", text: "页面重载中断了任务，请先检查已有产物，避免重复执行。" },
+  policy: { kind: "policy", text: "AI 服务因使用政策拒绝了本次请求，并非招聘接口报错。请查看原始错误与服务政策；不会自动重试。" },
 };
 
 /** The message set on the job's last step — the authoritative terminal cause. */
@@ -44,8 +45,21 @@ function lastStepLabel(job) {
 export function jobErrorHint(job) {
   const label = lastStepLabel(job);
   if (!label) return null;
-  if (label === "Connection error") return HINTS.connection;
-  if (label === "Interrupted (page reloaded)") return HINTS.interrupted;
+  if (/violate.*usage policy|usage policy.*viola/i.test(label)) return HINTS.policy;
+  if (label === "Connection error" || label === "连接失败") return HINTS.connection;
+  if (label === "Interrupted (page reloaded)" || label === "页面重新加载，任务已中断") return HINTS.interrupted;
   if (AUTH_PATTERN.test(label)) return HINTS.auth;
   return null;
+}
+
+// Legacy adapter runs used a quality score for a workflow stage. Keep their
+// raw output intact, but do not present pending acceptance as a job rating.
+export function adapterPendingHint(job) {
+  if (job?.kind !== "adapt-provider") return null;
+  if (job.status === 'awaiting_review' || (job.status === 'error' && /^待审核 · 未安装[:：]/.test(lastStepLabel(job)))) {
+    return { title: '等待路线审核 · 未安装', text: '已发现新的招聘入口或域名，需要你核对后批准。这不是抓取失败；无需重新适配，审核后续接原候选。', href: job.input ? '/portals?adapter=' + encodeURIComponent(job.input) : '/portals' };
+  }
+  if (job.status !== "done") return null;
+  if (!/awaiting activation acceptance/i.test(job.result?.summary ?? "")) return null;
+  return { title: "待验收 · 未启用", text: "Agent 已结束，适配器尚未验收启用。请查看输出和 ACCEPTANCE.md；登录、真实岗位及详情链接验证未通过前，不可启用。" };
 }

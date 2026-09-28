@@ -1,0 +1,29 @@
+{
+  "officialUrl": "https://campus-talent.alibaba.com/?lang=zh",
+  "entryUrl": "https://campus-talent.alibaba.com/campus/position",
+  "allowedHosts": [
+    "campus-talent.alibaba.com",
+    "g.alicdn.com",
+    "lang.alicdn.com"
+  ],
+  "evidence": [
+    {
+      "fromUrl": "https://campus-talent.alibaba.com/?lang=zh",
+      "toUrl": "https://campus-talent.alibaba.com/campus/position",
+      "kind": "link",
+      "note": "2026-09-18T15:55:26Z Ego Lite 实际导航：配置首页标题为阿里巴巴校园招聘，显示2027届应届生、阿里星人才计划。职位菜单为 li[title=职位]，无 anchor href；滚动后确认视口内且命中，正常点击到此URL，page.info与任务标签列表一致。列表显示阿里巴巴2027届应届生、全部在招职位（476）及真实岗位anchor。这里的link记录实际菜单导航，不声称存在href。"
+    },
+    {
+      "fromUrl": "https://campus-talent.alibaba.com/campus/position",
+      "toUrl": "https://g.alicdn.com/CPO-platform/recruit-portal/1.0.1/js/index.js",
+      "kind": "api",
+      "note": "2026-09-18T16:20:42.110163+00:00 Ego Lite 正常加载批准列表时 Resource Timing 观察到 script：招聘 portal 应用入口；同域另载 React/ReactDOM。申请固定 DOM reader 的应用脚本资源权限，不是新增岗位API。"
+    },
+    {
+      "fromUrl": "https://campus-talent.alibaba.com/campus/position",
+      "toUrl": "https://lang.alicdn.com/mcms/recruit-careers-portal/0.0.90/recruit-careers-portal.json",
+      "kind": "api",
+      "note": "2026-09-18T16:20:42.110163+00:00 Ego Lite 正常加载批准列表时观察到 script 语言资源；同域另载 recruit-careers-center/0.0.56。申请固定 DOM reader 的语言资源权限。"
+    }
+  ]
+}

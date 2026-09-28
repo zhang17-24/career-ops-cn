@@ -1,0 +1,17 @@
+{
+  "id": "company-f0e5d08d-1057-42fb-9d12-6a49a3879789",
+  "name": "深度求索DeepSeek 招聘源适配器",
+  "version": "0.1.0",
+  "apiVersion": 1,
+  "description": "固定解析官网公开静态岗位数据，运行时零模型 Token；候选等待平台独立验收。",
+  "hooks": [
+    "provider"
+  ],
+  "requiredEnv": [],
+  "allowedHosts": [
+    "talent.deepseek.com",
+    "app.mokahr.com"
+  ],
+  "skill": "skill.md",
+  "humanInTheLoop": true
+}

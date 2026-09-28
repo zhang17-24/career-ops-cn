@@ -180,3 +180,5 @@ documents/*
 # Intake fingerprints — the recorded source filenames may themselves carry
 # PII (e.g. cv/jane-doe-master-cv.pdf). #1723
 data/intake-state.json
+# Per-install permission consent; never distribute full access to other users.
+.codex-permissions.local.json*

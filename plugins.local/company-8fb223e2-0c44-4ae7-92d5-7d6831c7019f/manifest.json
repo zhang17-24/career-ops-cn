@@ -1,0 +1,25 @@
+{
+  "id": "company-8fb223e2-0c44-4ae7-92d5-7d6831c7019f",
+  "name": "小鹏汽车 招聘源适配器",
+  "version": "0.1.0",
+  "apiVersion": 1,
+  "description": "通过平台固定 DOM reader 零 Token 读取小鹏汽车飞书校招官网第一页。",
+  "hooks": [
+    "provider"
+  ],
+  "requiredEnv": [],
+  "allowedHosts": [
+    "xiaopeng.jobs.feishu.cn",
+    "lf-package-cn.feishucdn.com",
+    "lf3-cdn-tos.bytescm.com"
+  ],
+  "skill": "skill.md",
+  "humanInTheLoop": true,
+  "browserListing": {
+    "listUrl": "https://xiaopeng.jobs.feishu.cn/campus/position/list",
+    "identityText": "小鹏集团校招官网",
+    "linkSelector": "a[data-id]",
+    "titleSelector": ".positionItem-title-text",
+    "locationSelector": ".positionItem-subTitle > span:first-child"
+  }
+}

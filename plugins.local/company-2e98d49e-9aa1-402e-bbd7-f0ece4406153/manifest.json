@@ -1,0 +1,24 @@
+{
+  "id": "company-2e98d49e-9aa1-402e-bbd7-f0ece4406153",
+  "name": "滴滴 招聘源适配器",
+  "version": "0.1.0",
+  "apiVersion": 1,
+  "description": "通过平台固定 DOM reader 零 Token 读取滴滴 Moka 校招列表首屏，不翻页。",
+  "hooks": [
+    "provider"
+  ],
+  "requiredEnv": [],
+  "allowedHosts": [
+    "campus.didiglobal.com",
+    "static-ats.mokahr.com"
+  ],
+  "skill": "skill.md",
+  "humanInTheLoop": true,
+  "browserListing": {
+    "listUrl": "https://campus.didiglobal.com/campus_apply/didiglobal/96064#/jobs",
+    "identityText": "滴滴",
+    "linkSelector": ".jobs-AkItzswt6b a.link-txmgVOCVz9",
+    "titleSelector": ".title-u2qk9xX9Ie",
+    "locationSelector": ".ellipsis-s4h2VX0z8O > div:last-child > .no-adaptive-tooltip"
+  }
+}

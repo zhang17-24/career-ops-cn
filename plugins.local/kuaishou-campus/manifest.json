@@ -1,0 +1,12 @@
+{
+  "id": "kuaishou-campus",
+  "name": "快手 招聘源适配器",
+  "version": "0.1.0",
+  "apiVersion": 1,
+  "description": "零 Token 读取 快手 的公开招聘职位。",
+  "hooks": ["provider"],
+  "requiredEnv": [],
+  "allowedHosts": ["campus.kuaishou.cn"],
+  "skill": "skill.md",
+  "humanInTheLoop": true
+}

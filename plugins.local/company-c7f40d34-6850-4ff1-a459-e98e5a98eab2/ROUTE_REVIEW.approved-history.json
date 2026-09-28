@@ -1,0 +1,13 @@
+{
+  "officialUrl": "https://www.bosch.com.cn/careers/",
+  "entryUrl": "https://app.mokahr.com/campus-recruitment/bosch/168626?locale=zh-CN#/",
+  "allowedHosts": ["www.bosch.com.cn", "app.mokahr.com"],
+  "evidence": [
+    {
+      "fromUrl": "https://www.bosch.com.cn/careers/",
+      "toUrl": "https://app.mokahr.com/campus-recruitment/bosch/168626?locale=zh-CN#/",
+      "kind": "link",
+      "note": "2026-09-13T15:31:47Z，Ego Lite 打开配置入口，标题为「加入博世 | 博世在中国」，正文显示 Work #LikeABosch。官网「2027届博世中国校园招聘／了解详情」anchor 的原始 href 与解析后绝对 href 均为此地址；未猜测租户或路由。新域名尚未批准，未读取其列表或 API。"
+    }
+  ]
+}

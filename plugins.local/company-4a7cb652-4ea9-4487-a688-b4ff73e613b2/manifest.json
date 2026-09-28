@@ -1,0 +1,12 @@
+{
+  "id": "company-4a7cb652-4ea9-4487-a688-b4ff73e613b2",
+  "name": "京东 招聘源适配器",
+  "version": "0.1.0",
+  "apiVersion": 1,
+  "description": "零 Token 读取 京东 的公开招聘职位。",
+  "hooks": ["provider"],
+  "requiredEnv": [],
+  "allowedHosts": ["campus.jd.com"],
+  "skill": "skill.md",
+  "humanInTheLoop": true
+}

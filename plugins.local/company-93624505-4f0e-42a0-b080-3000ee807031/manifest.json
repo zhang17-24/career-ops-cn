@@ -1,0 +1,12 @@
+{
+  "id": "company-93624505-4f0e-42a0-b080-3000ee807031",
+  "name": "网易 招聘源适配器",
+  "version": "0.1.0",
+  "apiVersion": 1,
+  "description": "零 Token 读取 网易 的公开招聘职位。",
+  "hooks": ["provider"],
+  "requiredEnv": [],
+  "allowedHosts": ["campus.163.com"],
+  "skill": "skill.md",
+  "humanInTheLoop": true
+}

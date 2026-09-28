@@ -1,0 +1,25 @@
+{
+  "id": "company-c7f40d34-6850-4ff1-a459-e98e5a98eab2",
+  "name": "博世中国 招聘源适配器",
+  "version": "0.1.0",
+  "apiVersion": 1,
+  "description": "零 Token 固定 DOM 读取博世中国 2027 校招人工智能方向第一页。",
+  "hooks": [
+    "provider"
+  ],
+  "requiredEnv": [],
+  "allowedHosts": [
+    "www.bosch.com.cn",
+    "app.mokahr.com",
+    "static-ats.mokahr.com"
+  ],
+  "skill": "skill.md",
+  "humanInTheLoop": true,
+  "browserListing": {
+    "listUrl": "https://app.mokahr.com/campus-recruitment/bosch/168626?locale=zh-CN#/jobs?zhineng%5B0%5D=204853",
+    "identityText": "2027 博世中国校园招聘",
+    "linkSelector": ".jobs-AkItzswt6b a.link-txmgVOCVz9[href]",
+    "titleSelector": ".title-u2qk9xX9Ie",
+    "locationSelector": ".info-tPG_0QGbhl .sd-foundation-body-secondary-v3EXx:last-child .no-adaptive-tooltip"
+  }
+}

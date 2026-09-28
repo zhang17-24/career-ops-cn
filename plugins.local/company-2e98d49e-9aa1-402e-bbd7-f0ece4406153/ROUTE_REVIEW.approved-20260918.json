@@ -1,0 +1,21 @@
+{
+  "officialUrl": "https://campus.didiglobal.com/",
+  "entryUrl": "https://campus.didiglobal.com/campus_apply/didiglobal/96064#/jobs",
+  "allowedHosts": [
+    "campus.didiglobal.com"
+  ],
+  "evidence": [
+    {
+      "fromUrl": "https://campus.didiglobal.com/",
+      "toUrl": "https://campus.didiglobal.com/campus_apply/didiglobal/96064#/",
+      "kind": "redirect",
+      "note": "2026-09-18T15:55:45Z Ego Lite 正常导航实际落地地址；标题“滴滴 - 校园招聘”，正文“滴滴27届秋招正式启动”。goto 等待 load 超时后，同一页 DOM 已可读，不是岗位关闭或登录拦截。"
+    },
+    {
+      "fromUrl": "https://campus.didiglobal.com/campus_apply/didiglobal/96064#/",
+      "toUrl": "https://campus.didiglobal.com/campus_apply/didiglobal/96064#/jobs",
+      "kind": "link",
+      "note": "同次 DOM 读取导航“校园招聘”：raw href 为 #/jobs，resolved href 为本条 toUrl。尚未打开列表，入口变更先申请路线审核。"
+    }
+  ]
+}

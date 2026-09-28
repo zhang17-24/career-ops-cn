@@ -1,0 +1,14 @@
+import {strict as assert} from 'node:assert';
+import plugin,{parsePage} from '../index.mjs';
+const row={id:'12345678901234567890',projectId:103,positionName:'仅测试岗位'};
+const data=list=>({code:200,data:{list,total:100}});
+assert.ok(parsePage(data([row]))[0].url.includes(row.id));
+assert.deepEqual(parsePage(data([])),[]);
+for(const bad of [{},{code:500},data([{...row,id:9007199254740992}]),data([{...row,projectId:102}]),data([{...row,positionName:''}])]) assert.throws(()=>parsePage(bad));
+await assert.rejects(()=>plugin.provider.fetch({},{fetchJson:async()=>{throw new Error('network')}}),/network/);
+let calls=0;
+await plugin.provider.fetch({max_pages:3},{fetchJson:async()=>{calls++;return data([])}});
+assert.equal(calls,1);calls=0;
+await plugin.provider.fetch({max_pages:2},{fetchJson:async url=>{calls++;assert.ok(url.includes('currentPage='+calls));return data(Array.from({length:10},(_,i)=>({...row,id:String(calls*10+i)})));}});
+assert.equal(calls,2);
+console.log('fields/long IDs/empty/malformed/network/pagination passed');

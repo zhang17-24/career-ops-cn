@@ -1,0 +1,39 @@
+{
+  "officialUrl": "https://careers.pddglobalhr.com/campus/",
+  "entryUrl": "https://careers.pddglobalhr.com/campus/grad",
+  "allowedHosts": [
+    "careers.pddglobalhr.com"
+  ],
+  "evidence": [
+    {
+      "fromUrl": "https://careers.pddglobalhr.com/campus/",
+      "toUrl": "https://careers.pddglobalhr.com/campus/grad",
+      "kind": "link",
+      "note": "2026-09-18T17:33Z 核验窗口：标题“拼多多集团-PDD校园招聘官网”；点击“应届生招聘”进入该路由，非猜测 href。"
+    },
+    {
+      "fromUrl": "https://careers.pddglobalhr.com/campus/grad",
+      "toUrl": "https://careers.pddglobalhr.com/api/careers/api/recruit/position/list",
+      "kind": "api",
+      "note": "同窗口正常页面加载观察到 POST，公开正文 page=1,pageSize=10,t=null；200，success=true，10条，total字符串36。"
+    },
+    {
+      "fromUrl": "https://careers.pddglobalhr.com/campus/grad",
+      "toUrl": "https://careers.pddglobalhr.com/campus/grad/detail?positionId=43b706c2-9d86-47de-a99d-fcd35405799f",
+      "kind": "link",
+      "note": "同窗口滚动并命中实际卡片后点击：AI Infra研发工程师；详情标题、ID、地点及完整职责可读，职责679字符。"
+    },
+    {
+      "fromUrl": "https://careers.pddglobalhr.com/campus/grad",
+      "toUrl": "https://careers.pddglobalhr.com/campus/grad/detail?positionId=e22c34bf-9ef6-431b-a739-a4e94387413d",
+      "kind": "link",
+      "note": "同窗口滚动并命中实际卡片后点击：运营管培生（区域业务）；详情标题、ID、地点及完整职责可读，职责530字符。"
+    },
+    {
+      "fromUrl": "https://careers.pddglobalhr.com/campus/grad",
+      "toUrl": "https://careers.pddglobalhr.com/campus/grad/detail?positionId=b168e225-3034-4cac-8e3a-ea4aff372a67",
+      "kind": "link",
+      "note": "同窗口滚动并命中实际卡片后点击：仓配物流管培生（区域业务）；详情标题、ID、地点及完整职责可读，职责297字符。"
+    }
+  ]
+}

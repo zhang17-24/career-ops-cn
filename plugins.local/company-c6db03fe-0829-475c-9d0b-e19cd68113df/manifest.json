@@ -1,0 +1,17 @@
+{
+  "id": "company-c6db03fe-0829-475c-9d0b-e19cd68113df",
+  "name": "美的集团 招聘源适配器",
+  "version": "0.1.0",
+  "apiVersion": 1,
+  "description": "美的集团应届生公开列表固定解析；仅第一页10条，运行零模型Token，待平台独立验收。",
+  "hooks": [
+    "provider"
+  ],
+  "requiredEnv": [],
+  "allowedHosts": [
+    "careers.midea.com",
+    "apiprod.midea.com"
+  ],
+  "skill": "skill.md",
+  "humanInTheLoop": true
+}

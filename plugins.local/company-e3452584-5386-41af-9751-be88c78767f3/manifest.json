@@ -1,0 +1,12 @@
+{
+  "id": "company-e3452584-5386-41af-9751-be88c78767f3",
+  "name": "名创优品 招聘源适配器",
+  "version": "0.1.0",
+  "apiVersion": 1,
+  "description": "零 Token 读取 名创优品 的公开招聘职位。",
+  "hooks": ["provider"],
+  "requiredEnv": [],
+  "allowedHosts": ["miniso.zhiye.com"],
+  "skill": "skill.md",
+  "humanInTheLoop": true
+}

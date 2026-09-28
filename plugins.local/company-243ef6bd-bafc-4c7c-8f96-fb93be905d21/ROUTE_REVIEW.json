@@ -1,0 +1,29 @@
+{
+  "officialUrl": "https://www.g-bits.com/en/",
+  "entryUrl": "https://hr.g-bits.com/web/index.html#/home-web/home-index",
+  "allowedHosts": [
+    "www.g-bits.com",
+    "hr.g-bits.com",
+    "joinserverfast.g-bits.com"
+  ],
+  "evidence": [
+    {
+      "fromUrl": "https://www.g-bits.com/en/",
+      "toUrl": "https://www.g-bits.com/en/join.html?page=2",
+      "kind": "link",
+      "note": "2026-09-12T09:54:06Z 核验窗口：官网正文标明 G-bits Network Technology Xiamen Co., Ltd.、证券代码603444、Leiting Games为其子公司。Careers原始href=/en/join.html?page=2，解析绝对地址如toUrl。"
+    },
+    {
+      "fromUrl": "https://www.g-bits.com/en/join.html?page=2",
+      "toUrl": "https://hr.g-bits.com/web/index.html#/home-web/home-index",
+      "kind": "link",
+      "note": "官网 Careers 页实际a元素原始href与绝对href均为toUrl。直接打开后标题为吉比特&雷霆游戏校园招聘，页脚为厦门吉比特网络技术股份有限公司。"
+    },
+    {
+      "fromUrl": "https://hr.g-bits.com/web/index.html#/home-web/home-index",
+      "toUrl": "https://joinserverfast.g-bits.com/humanResource/recruitmentExtranet/ExtrannetHomePage/queryHomePage",
+      "kind": "api",
+      "note": "2026-09-12T09:54:06Z 招聘首页正常加载产生的公开XMLHttpRequest，来自performance资源记录；未主动重放，未核实响应结构，非岗位列表验收证据。"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "spec": {
+    "listUrl": "https://app.mokahr.com/campus-recruitment/wps/41436?sourceToken=8379ee777457c4d22fc65d4439f660b3#/jobs?page=1&anchorName=jobsList&project%5B0%5D=100102183",
+    "identityText": "金山办公软件",
+    "linkSelector": ".jobs-AkItzswt6b a.link-txmgVOCVz9",
+    "titleSelector": ".title-u2qk9xX9Ie",
+    "locationSelector": ".info-tPG_0QGbhl .separator-_pKVwkeo9b + div .no-adaptive-tooltip"
+  },
+  "samples": [
+    {
+      "title": "政企营销（AI应用专项）-面向2027届-北京",
+      "location": "北京市",
+      "url": "https://app.mokahr.com/campus-recruitment/wps/41436?sourceToken=8379ee777457c4d22fc65d4439f660b3#/job/18e7ef00-1329-4766-baf0-b9f023c29e8b"
+    },
+    {
+      "title": "运营专员（AI应用专项）-面向2027届-广州",
+      "location": "广东·广州市",
+      "url": "https://app.mokahr.com/campus-recruitment/wps/41436?sourceToken=8379ee777457c4d22fc65d4439f660b3#/job/6fe479d6-33ba-4fc3-80aa-6a2fca93a02e"
+    },
+    {
+      "title": "运营专员（AI应用专项）-面向2027届-武汉",
+      "location": "湖北·武汉市",
+      "url": "https://app.mokahr.com/campus-recruitment/wps/41436?sourceToken=8379ee777457c4d22fc65d4439f660b3#/job/866ff8e0-96a3-487b-a5e2-ac8a413e7be5"
+    }
+  ]
+}

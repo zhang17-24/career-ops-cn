@@ -1,4 +1,6 @@
 import { spawn } from "node:child_process";
+import path from "node:path";
+import { codexPermissionArgs, readCodexPermissions } from "./codex-permissions.mjs";
 
 // Plain .mjs (same pattern as tracker-table.mjs/clean-chips.mjs) so
 // tests/lib/spawn-cli.test.mjs can import it directly under Node. Import it with the
@@ -27,6 +29,9 @@ import { spawn } from "node:child_process";
  * @param {import("node:child_process").SpawnOptionsWithoutStdio} options
  */
 export function spawnHeadlessCli(binPath, args, options) {
+  if (/^codex(?:\.exe)?$/.test(path.basename(binPath)) && args[0] === "exec") {
+    args = codexPermissionArgs(binPath, args, readCodexPermissions().fullAccess);
+  }
   const child = spawn(binPath, args, options);
   child.stdin?.end();
   return child;

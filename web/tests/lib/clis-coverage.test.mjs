@@ -56,6 +56,24 @@ test("Grok Build CLI is wired up", () => {
   assert.match(src, /bin:\s*"grok"/, "the grok entry must spawn the `grok` binary");
 });
 
+test("WorkBuddy is wired up", () => {
+  // WorkBuddy ships the CodeBuddy Code CLI inside its app bundle, so the entry
+  // spawns `codebuddy` — NOT `workbuddy`. Naming both halves here so a future
+  // "tidy-up" that renames the bin to match the id fails loudly instead of
+  // silently spawning a binary that doesn't exist.
+  assert.match(src, /id:\s*"workbuddy"/, "KNOWN is missing the workbuddy entry");
+  assert.match(src, /bin:\s*"codebuddy"/, "the workbuddy entry must spawn the `codebuddy` binary");
+  // The bundle path is what makes it discoverable at all — without it
+  // detectClis() never finds the binary and the option silently never appears.
+  // The path list itself lives in cli-search-dirs.mjs (so it is unit-testable;
+  // see workbuddy-cli.test.mjs UT-08), which means this guard's job is to check
+  // that clis.ts actually CONSULTS it — a hardcoded copy here would pass while
+  // searchDirs() ignored it.
+  assert.match(src, /workbuddyCliDirs\(/, "searchDirs must consult workbuddyCliDirs()");
+  const dirsSrc = readFileSync(join(WEB, "src", "lib", "cli-search-dirs.mjs"), "utf8");
+  assert.match(dirsSrc, /app\.asar\.unpacked/, "cli-search-dirs.mjs must carry the app-bundle cli/bin path");
+});
+
 test("no CLI is listed twice", () => {
   const ids = [...src.matchAll(/id:\s*"([^"]+)"/g)].map((m) => m[1]);
   assert.equal(new Set(ids).size, ids.length, `duplicate id in KNOWN: ${ids.join(", ")}`);

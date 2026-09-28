@@ -1,0 +1,48 @@
+{
+  "officialUrl": "https://www.xiaopeng.com/",
+  "entryUrl": "https://xiaopeng.jobs.feishu.cn/campus/position/list",
+  "allowedHosts": [
+    "www.xiaopeng.com",
+    "xiaopeng.jobs.feishu.cn",
+    "lf-package-cn.feishucdn.com",
+    "lf3-cdn-tos.bytescm.com"
+  ],
+  "evidence": [
+    {
+      "fromUrl": "https://www.xiaopeng.com/",
+      "toUrl": "https://xiaopeng.jobs.feishu.cn/index",
+      "kind": "link",
+      "note": "2026-09-13T03:53:32Z Ego Lite：官网标题“小鹏汽车丨未来出行探索者”，页脚广州小鹏汽车科技有限公司；加入我们 anchor 的原始与绝对 href 均为目标地址。"
+    },
+    {
+      "fromUrl": "https://xiaopeng.jobs.feishu.cn/index",
+      "toUrl": "https://xiaopeng.jobs.feishu.cn/campus/",
+      "kind": "link",
+      "note": "2026-09-13T03:53:32Z 页面标题“加入小鹏集团”，正文“小鹏集团招聘官网”；校招官网 anchor 原始与绝对 href 均为目标地址。"
+    },
+    {
+      "fromUrl": "https://xiaopeng.jobs.feishu.cn/campus/",
+      "toUrl": "https://xiaopeng.jobs.feishu.cn/campus/position/list",
+      "kind": "link",
+      "note": "2026-09-13T03:53:32Z 正文“小鹏集团校招官网”；职位 anchor 原始 href=/campus/position/list，解析后为目标地址。仅观察链接，未打开列表。"
+    },
+    {
+      "fromUrl": "https://xiaopeng.jobs.feishu.cn/index",
+      "toUrl": "https://xiaopeng.jobs.feishu.cn/api/v1/search/job_post/count",
+      "kind": "api",
+      "note": "2026-09-13T03:53:32Z 招聘首页正常加载产生的公开 XHR/fetch 资源地址；仅观察请求 URL，未重放、未获取响应正文；这是计数请求，不是已验证列表接口。"
+    },
+    {
+      "fromUrl": "https://xiaopeng.jobs.feishu.cn/campus/position/list",
+      "toUrl": "https://lf-package-cn.feishucdn.com/obj/atsx-throne/hire-fe-prod/portal/saas-career/static/js/pc.ee0f1383.js",
+      "kind": "link",
+      "note": "2026-09-13T04:17:15.088Z Ego Lite：列表文档实际 script.src 及 Resource Timing 均观察到的飞书招聘 PC 主程序；固定 DOM reader 需要页面业务脚本，申请精确资源域名。 此处 link 表示文档静态脚本引用，不是用户点击或接口重放。"
+    },
+    {
+      "fromUrl": "https://xiaopeng.jobs.feishu.cn/campus/position/list",
+      "toUrl": "https://lf3-cdn-tos.bytescm.com/obj/ttfe/atsx/official/tinycolor-min_1583312799849.js",
+      "kind": "link",
+      "note": "2026-09-13T04:17:15.088Z Ego Lite：列表文档实际 script.src 及 Resource Timing 均观察到的主题颜色辅助脚本；申请该已引用资源的精确域名，不扩展其他 bytescm 子域。 此处 link 表示文档静态脚本引用，不是用户点击或接口重放。"
+    }
+  ]
+}

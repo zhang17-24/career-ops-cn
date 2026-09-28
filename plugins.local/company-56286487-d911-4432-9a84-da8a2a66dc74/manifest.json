@@ -1,0 +1,24 @@
+{
+  "id": "company-56286487-d911-4432-9a84-da8a2a66dc74",
+  "name": "唯品会 招聘源适配器",
+  "version": "0.1.0",
+  "apiVersion": 1,
+  "description": "通过平台固定 DOM reader 单页读取唯品会校园招聘公开职位（Moka 公开租户 app-tc.mokahr.com），零模型 Token。选择器取实际 DOM：岗位 anchor 的 #/job/ 路由 href、地点 .no-adaptive-tooltip、标题 [class^=\"title-\"]。",
+  "hooks": ["provider"],
+  "requiredEnv": [],
+  "allowedHosts": [
+    "app-tc.mokahr.com",
+    "static-ats-tc.mokahr.com",
+    "public-cdn-tc.mokahr.com",
+    "cstaticdun-v6.126.net"
+  ],
+  "skill": "skill.md",
+  "humanInTheLoop": true,
+  "browserListing": {
+    "listUrl": "https://app-tc.mokahr.com/campus-recruitment/vipshophr/10039#/jobs",
+    "identityText": "唯品会",
+    "linkSelector": "a[href^=\"#/job/\"]:has(.no-adaptive-tooltip)",
+    "titleSelector": "[class^=\"title-\"]",
+    "locationSelector": ".no-adaptive-tooltip"
+  }
+}

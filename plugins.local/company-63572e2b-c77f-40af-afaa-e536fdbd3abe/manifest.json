@@ -1,0 +1,17 @@
+{
+  "id": "company-63572e2b-c77f-40af-afaa-e536fdbd3abe",
+  "name": "米哈游 招聘源适配器",
+  "version": "0.1.0",
+  "apiVersion": 1,
+  "description": "固定读取米哈游公开 ATS 校招首屏（最多10条），不翻页、不调用模型。",
+  "hooks": [
+    "provider"
+  ],
+  "requiredEnv": [],
+  "allowedHosts": [
+    "jobs.mihoyo.com",
+    "ats.openout.mihoyo.com"
+  ],
+  "skill": "skill.md",
+  "humanInTheLoop": true
+}

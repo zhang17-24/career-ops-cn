@@ -1,0 +1,49 @@
+{
+  "officialUrl": "https://jobs.games.wanmei.com/",
+  "entryUrl": "https://app.mokahr.com/campus-recruitment/pwrd/172467?locale=zh-CN#/jobs",
+  "allowedHosts": [
+    "jobs.games.wanmei.com",
+    "app.mokahr.com",
+    "static-ats.mokahr.com",
+    "public-cdn.mokahr.com",
+    "cstaticdun-v6.126.net"
+  ],
+  "evidence": [
+    {
+      "fromUrl": "https://jobs.games.wanmei.com/",
+      "toUrl": "https://app.mokahr.com/campus-recruitment/pwrd/172467?locale=zh-CN",
+      "kind": "link",
+      "note": "2026-09-19 官网标题“完美世界招聘官方网站”，校园招聘 anchor 的原始和绝对 href 一致；原 campus 入口证书名称不匹配，单次搜索恢复此官网。"
+    },
+    {
+      "fromUrl": "https://app.mokahr.com/campus-recruitment/pwrd/172467?locale=zh-CN",
+      "toUrl": "https://app.mokahr.com/campus-recruitment/pwrd/172467?locale=zh-CN#/jobs",
+      "kind": "link",
+      "note": "2026-09-19 完美世界 - 校园招聘；校招职位原始 href=#/jobs。"
+    },
+    {
+      "fromUrl": "https://app.mokahr.com/campus-recruitment/pwrd/172467?locale=zh-CN#/jobs",
+      "toUrl": "https://app.mokahr.com/api/outer/ats-apply/website/jobs/v2",
+      "kind": "api",
+      "note": "2026-09-19 正常 SPA 导航产生公开 POST，200；不透明 data/necromancer 封装，采用 DOM reader。"
+    },
+    {
+      "fromUrl": "https://app.mokahr.com/campus-recruitment/pwrd/172467?locale=zh-CN#/jobs",
+      "toUrl": "https://static-ats.mokahr.com/moka-fe-public/mage-i18n/javascripts/new_i18n_zh_cn_messages.a592fea81c8de852035f1f6c727c503b.js",
+      "kind": "api",
+      "note": "2026-09-19 正常页面加载观察到的公开资源。仅声明精确资源域名；无凭证。"
+    },
+    {
+      "fromUrl": "https://app.mokahr.com/campus-recruitment/pwrd/172467?locale=zh-CN#/jobs",
+      "toUrl": "https://public-cdn.mokahr.com/0e79e9bd-fedc-4e85-a208-39ca8ebce48e.png",
+      "kind": "api",
+      "note": "2026-09-19 正常页面加载观察到的公开资源。仅声明精确资源域名；无凭证。"
+    },
+    {
+      "fromUrl": "https://app.mokahr.com/campus-recruitment/pwrd/172467?locale=zh-CN#/jobs",
+      "toUrl": "https://cstaticdun-v6.126.net/load.min.js",
+      "kind": "api",
+      "note": "2026-09-19 正常页面加载观察到的公开资源。仅声明精确资源域名；无凭证。"
+    }
+  ]
+}

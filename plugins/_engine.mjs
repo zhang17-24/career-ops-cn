@@ -220,6 +220,7 @@ export function validateManifest(m, dir, dirName) {
     name: typeof m.name === 'string' ? m.name : undefined,
     version: typeof m.version === 'string' ? m.version : undefined,
     homepage: typeof m.homepage === 'string' ? m.homepage : undefined,
+    browserListing: m.browserListing,
     dir,
   };
 }
@@ -473,6 +474,12 @@ export function buildCtx(manifest, opts = {}) {
     fetch: guarded,
     fetchText: async (u, o) => (await guarded(u, o)).text(),
     fetchJson: async (u, o) => (await guarded(u, o)).json(),
+    browserJobs: async (entry) => {
+      if (opts.dryRun) throw new Error('dry-run 不启动浏览器');
+      const { readBrowserListing } = await import('../adapter-browser-listing.mjs');
+      if (!manifest.browserListing || entry.careers_url !== manifest.browserListing.listUrl) throw new Error('浏览器列表必须匹配绑定的招聘入口');
+      return readBrowserListing(manifest.browserListing, manifest.allowedHosts, entry.name);
+    },
     env,
     settings: Object.freeze({ ...(opts.settings || {}) }),
     log,

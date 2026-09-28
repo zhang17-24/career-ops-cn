@@ -1,0 +1,28 @@
+{
+  "officialUrl": "https://www.momenta.ai/ch/",
+  "entryUrl": "https://momenta.jobs.feishu.cn/campus/?keywords=&category=&location=&project=7537265013606943018&type=&job_hot_flag=&current=1&limit=10&functionCategory=&tag=",
+  "allowedHosts": [
+    "www.momenta.ai",
+    "momenta.jobs.feishu.cn"
+  ],
+  "evidence": [
+    {
+      "fromUrl": "https://www.momenta.ai/ch/",
+      "toUrl": "https://www.momenta.ai/join.html",
+      "kind": "link",
+      "note": "2026-09-12T16:45:38.986722+00:00 Ego Lite 实读首页标题 Momenta | 全球领先的物理AI公司；页脚北京初速度科技有限公司 ©2026 Momenta；加入我们 raw href=/join.html，resolved href 即 toUrl。"
+    },
+    {
+      "fromUrl": "https://www.momenta.ai/join.html",
+      "toUrl": "https://momenta.jobs.feishu.cn/campus/?keywords=&category=&location=&project=7537265013606943018&type=&job_hot_flag=&current=1&limit=10&functionCategory=&tag=",
+      "kind": "link",
+      "note": "2026-09-12T16:45:38.986722+00:00 加入我们页面显示欢迎加入 Momenta；校园招聘 anchor 的 raw href 与 resolved href 均为 toUrl。打开后标题 Momenta Campus，当前项目 Mstar计划，显示10个岗位。"
+    },
+    {
+      "fromUrl": "https://momenta.jobs.feishu.cn/campus/?keywords=&category=&location=&project=7537265013606943018&type=&job_hot_flag=&current=1&limit=10&functionCategory=&tag=",
+      "toUrl": "https://momenta.jobs.feishu.cn/api/v1/search/job/posts?keyword=&limit=10&offset=0&job_category_id_list=&tag_id_list=&location_code_list=&subject_id_list=7537265013606943018&recruitment_id_list=&portal_type=6&job_function_id_list=&storefront_id_list=&portal_entrance=1",
+      "kind": "api",
+      "note": "2026-09-12T16:45:38.986722+00:00 正常页面加载产生的公开列表 XHR，performance 观察；仅去除动态 _signature 参数，其他公开查询参数原样保留。未重放、未获取响应体、未分析签名。"
+    }
+  ]
+}

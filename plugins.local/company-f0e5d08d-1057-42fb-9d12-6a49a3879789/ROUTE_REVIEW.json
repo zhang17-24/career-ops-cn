@@ -1,0 +1,28 @@
+{
+  "officialUrl": "https://www.deepseek.com/",
+  "entryUrl": "https://talent.deepseek.com/",
+  "allowedHosts": [
+    "talent.deepseek.com",
+    "app.mokahr.com"
+  ],
+  "evidence": [
+    {
+      "fromUrl": "https://www.deepseek.com/",
+      "toUrl": "https://talent.deepseek.com/",
+      "kind": "link",
+      "note": "2026-09-11T02:38:44.591Z Ego Lite 实读官网标题 DeepSeek | 深度求索；页脚公司为杭州深度求索人工智能基础技术研究有限公司，与招聘页一致。加入我们及岗位详情的原始、解析后 href 均为此入口。"
+    },
+    {
+      "fromUrl": "https://talent.deepseek.com/",
+      "toUrl": "https://app.mokahr.com/social-recruitment/high-flyer/140576#/job/2eb2e75d-29f3-47b5-bb10-39f12547d398",
+      "kind": "link",
+      "note": "2026-09-11T02:38:44.591Z 招聘页服务端开发工程师的原始、解析后 href 均为此地址。直接打开后当前标题、字符串 UUID 及描述匹配，品牌为 DeepSeek。"
+    },
+    {
+      "fromUrl": "https://app.mokahr.com/social-recruitment/high-flyer/140576#/job/2eb2e75d-29f3-47b5-bb10-39f12547d398",
+      "toUrl": "https://app.mokahr.com/api/outer/ats-apply/website/job",
+      "kind": "api",
+      "note": "2026-09-11T02:38:44.591Z 正常详情页面产生的公开 XMLHttpRequest；仅观察请求 URL，未重放、保存凭证或验证匿名 HTTP 响应结构。"
+    }
+  ]
+}

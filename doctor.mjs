@@ -22,8 +22,12 @@ import { geminiNodeFloor } from './lib/gemini-node-floor.mjs';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const argv = process.argv.slice(2);
 
-// CLIs the doctor recognises.
-const VALID_CLIS = ['claude', 'codex', 'opencode', 'antigravity', 'grok', 'qwen', 'kimi', 'copilot', 'gemini'];
+// CLIs the doctor recognises. This list validates the CAREER_OPS_CLI label only
+// — it does no binary detection, so `workbuddy` (whose binary `codebuddy` ships
+// inside the WorkBuddy app bundle rather than on PATH) is a valid label even
+// though nothing here can find it. web/src/lib/cli-search-dirs.mjs is what
+// locates that binary.
+const VALID_CLIS = ['claude', 'codex', 'opencode', 'antigravity', 'grok', 'qwen', 'kimi', 'copilot', 'gemini', 'workbuddy'];
 
 // --help ran the full diagnostic and printed the report at exit 0 (#2856), so
 // a mistyped flag was indistinguishable from a clean run — and --targe

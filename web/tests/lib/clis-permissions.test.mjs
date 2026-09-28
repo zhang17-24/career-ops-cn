@@ -40,7 +40,18 @@ function knownBody(text) {
   return text.match(/export const KNOWN[^=]*=\s*\[([\s\S]*?)\n\];/)?.[1] ?? "";
 }
 
-/** Flags that hand a CLI blanket approval for write-capable tools. */
+/** Flags that hand a CLI blanket approval for write-capable tools.
+ *
+ *  `--permission-mode bypassPermissions` is WorkBuddy's spelling of the same
+ *  thing Codex calls `--sandbox danger-full-access`. Both are legitimate — but
+ *  only inside an adapter runtime gated by an explicit user consent toggle
+ *  (codex-permissions.mjs's `codexPermissionArgs` is the precedent: KNOWN stays
+ *  clean, the flag is injected at spawn time). Listing it here keeps that
+ *  layering from eroding the next time someone "just makes it work" by putting
+ *  the flag in the entry itself.
+ *
+ *  A blacklist only catches spellings someone thought of — which is exactly why
+ *  the WorkBuddy entry needed this added rather than assumed. */
 const AUTO_APPROVE = [
   "--always-approve",
   "--dangerously-skip-permissions",
@@ -49,6 +60,7 @@ const AUTO_APPROVE = [
   "--approve-all",
   "--skip-permissions",
   "--no-confirm",
+  "--permission-mode bypassPermissions",
 ];
 
 const body = knownBody(src);

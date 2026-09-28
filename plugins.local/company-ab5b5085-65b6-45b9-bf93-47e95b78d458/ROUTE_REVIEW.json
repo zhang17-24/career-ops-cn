@@ -1,0 +1,12 @@
+{
+  "officialUrl": "https://360campus.zhiye.com/",
+  "entryUrl": "https://360campus.zhiye.com/campus/jobs",
+  "allowedHosts": ["360campus.zhiye.com"],
+  "evidence": [
+    {"fromUrl":"https://360campus.zhiye.com/","toUrl":"https://360campus.zhiye.com/campus/jobs","kind":"link","note":"2026-09-19 首页显示360集团2027全球校园招聘、360集团校园招聘页脚，校招卡片原始href=/campus/jobs，解析后为本地址。"},
+    {"fromUrl":"https://360campus.zhiye.com/campus/jobs","toUrl":"https://360campus.zhiye.com/api/Jobad/GetJobAdPageList","kind":"api","note":"2026-09-19 正常加载公开校招列表产生POST；document-start捕获Code=200、Count=35、Data长度20；匿名HTTP同页复核通过。"},
+    {"fromUrl":"https://360campus.zhiye.com/campus/jobs","toUrl":"https://360campus.zhiye.com/campus/detail?jobAdId=fb968ca0-e3cd-45cd-a659-8403c413f219","kind":"link","note":"2026-09-19 实际点击J12477标题卡片产生新标签；标题和完整职责一致。"},
+    {"fromUrl":"https://360campus.zhiye.com/campus/jobs","toUrl":"https://360campus.zhiye.com/campus/detail?jobAdId=50c5846f-48fe-46a8-a881-e538ead16821","kind":"link","note":"2026-09-19 实际点击J12462标题卡片产生新标签；标题和完整职责一致。"},
+    {"fromUrl":"https://360campus.zhiye.com/campus/jobs","toUrl":"https://360campus.zhiye.com/campus/detail?jobAdId=2bc87f57-fa8b-4b99-a39d-cb0af8dfd2ba","kind":"link","note":"2026-09-19 实际点击J12460标题卡片产生新标签；标题和完整职责一致。"}
+  ]
+}

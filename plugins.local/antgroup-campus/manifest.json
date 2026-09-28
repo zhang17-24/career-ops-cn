@@ -1,0 +1,12 @@
+{
+  "id": "antgroup-campus",
+  "name": "蚂蚁集团 招聘源适配器",
+  "version": "0.1.0",
+  "apiVersion": 1,
+  "description": "零 Token 读取蚂蚁集团校招官网默认列表，固定首1页10条；只用公开API，无登录凭据。",
+  "hooks": ["provider"],
+  "requiredEnv": [],
+  "allowedHosts": ["hrcareersweb.antgroup.com", "talent.antgroup.com"],
+  "skill": "skill.md",
+  "humanInTheLoop": true
+}

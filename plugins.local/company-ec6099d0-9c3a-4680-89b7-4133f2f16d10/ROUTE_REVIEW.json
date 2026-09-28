@@ -1,0 +1,28 @@
+{
+  "officialUrl": "https://www.zhipuai.cn/zh",
+  "entryUrl": "https://app.mokahr.com/campus-recruitment/zphz/148984#/home",
+  "allowedHosts": [
+    "www.zhipuai.cn",
+    "app.mokahr.com"
+  ],
+  "evidence": [
+    {
+      "fromUrl": "https://www.zhipuai.cn/zh",
+      "toUrl": "https://www.zhipuai.cn/zh/joinus",
+      "kind": "link",
+      "note": "2026-09-12T09:18:23Z 本轮 Ego Lite 实测：官网页脚 Copyright 北京智谱华章科技股份有限公司。点击页脚“加入我们”后 pageInfo 确认为此地址；元素为 span，原始 href 与解析 href 均不存在，地址来自实际点击导航。"
+    },
+    {
+      "fromUrl": "https://www.zhipuai.cn/zh/joinus",
+      "toUrl": "https://app.mokahr.com/campus-recruitment/zphz/148984#/home",
+      "kind": "link",
+      "note": "同轮点击“校园招聘”按钮；点击前滚动并验证视口及 elementFromPoint 命中，按钮无 href。pageInfo 与 listTabs 确认新标签为此完整 URL，标题“北京智谱华章科技股份有限公司 - 校园招聘”。"
+    },
+    {
+      "fromUrl": "https://app.mokahr.com/campus-recruitment/zphz/148984#/home",
+      "toUrl": "https://app.mokahr.com/api/outer/ats-apply/website/jobs/module",
+      "kind": "api",
+      "note": "2026-09-12T09:18:23Z 招聘首页自然加载的 XMLHttpRequest，由 performance 资源记录观察；页面显示热招职位。未主动重放请求，尚未核对请求方法、参数及响应结构。"
+    }
+  ]
+}

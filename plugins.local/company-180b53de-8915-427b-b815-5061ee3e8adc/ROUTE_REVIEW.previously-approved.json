@@ -1,0 +1,16 @@
+{
+  "officialUrl": "https://campus.nio.com/",
+  "entryUrl": "https://nio.jobs.feishu.cn/campus/?keywords=&category=&location=&project=&type=&job_hot_flag=&current=1&limit=10&functionCategory=&tag=&storefront_id_list=",
+  "allowedHosts": [
+    "campus.nio.com",
+    "nio.jobs.feishu.cn"
+  ],
+  "evidence": [
+    {
+      "fromUrl": "https://campus.nio.com/",
+      "toUrl": "https://nio.jobs.feishu.cn/campus/?keywords=&category=&location=&project=&type=&job_hot_flag=&current=1&limit=10&functionCategory=&tag=&storefront_id_list=",
+      "kind": "link",
+      "note": "2026-09-13T03:52:03.024Z，Ego Lite 正常打开配置入口后页面地址为 https://campus.nio.com/#/，标题“校园招聘-NIO蔚来”，正文“蔚来校园招聘 / 2027届秋季校园招聘”。读取可见“立即投递”anchor的原始href和解析后href，二者均为此完整地址。未点击投递或提交申请。"
+    }
+  ]
+}

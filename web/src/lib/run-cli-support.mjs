@@ -159,6 +159,39 @@ export function codexStreamArgs(prompt) {
 }
 
 /**
+ * The argv that makes the WorkBuddy CLI (CodeBuddy Code) emit the JSONL
+ * `parseClaudeEvent` reads.
+ *
+ * Sits beside codexStreamArgs for the same reason: `--output-format stream-json`
+ * is what produces the events, so argv and parser are one contract.
+ *
+ * `--include-partial-messages` is NOT optional. Without it the CLI emits only
+ * whole `assistant` messages, and `parseClaudeEvent` does not read that type —
+ * so a run that succeeded end to end reaches the route with zero text and is
+ * reported as "produced no output — is it installed and authenticated?".
+ * Measured 2026-09-19: without the flag, 0 `content_block_delta` events.
+ *
+ * `--no-session-persistence` keeps this process from writing session state. The
+ * bundled CLI defaults its config dir to the same `~/.workbuddy` the desktop app
+ * uses, so an unisolated run leaves `wb-<cwd>__*.log` files beside the app's own
+ * state and puts both processes in contention over the same credential refresh.
+ * The config dir itself is pinned by the adapter runtime; this flag is the half
+ * that can be guaranteed on every invocation.
+ *
+ * NO PERMISSION FLAG HERE. `--permission-mode bypassPermissions` is what makes
+ * tools usable at all in headless mode, but it is injected by
+ * workbuddy-adapter-runtime.mjs behind an explicit user consent toggle — the
+ * same layering codex-permissions.mjs uses for `danger-full-access`. A flag in
+ * this argv would apply to every run kind, including ones that must not write.
+ *
+ * @param {string} prompt
+ * @returns {string[]}
+ */
+export function workbuddyStreamArgs(prompt) {
+  return ["-p", "--output-format", "stream-json", "--include-partial-messages", "--no-session-persistence", prompt];
+}
+
+/**
  * Convert one `codex exec --json` JSONL event into dashboard-friendly data.
  * @param {string} line
  * @returns {ParsedEvent | null}
@@ -296,6 +329,64 @@ export function parseClaudeEvent(line) {
   }
 
   return null;
+}
+
+/**
+ * Whether one stdout line marks the END of the run.
+ *
+ * Kept OUT of `ParsedEvent` on purpose. The parsers answer "what payload does
+ * this event carry", and `parseClaudeEvent` deliberately returns null for a
+ * payload-free `result` — a contract several existing tests pin with exact
+ * shape assertions. Terminality is a different question about the same line, so
+ * it gets its own predicate and rides on `CliSpec.isTerminal` instead of
+ * widening a shared type.
+ *
+ * WHY THIS EXISTS AT ALL: a CLI can finish its work and still leave a child
+ * process holding stdout, so `child.on("close")` never fires. Without a terminal
+ * signal the route waits for EOF, hits its 780s kill timer, and reports a
+ * timeout for a run that finished in seconds — measured 2026-09-19: the agent
+ * ended 16s in, the route ran 13.4 minutes, and the honesty gate never ran, so
+ * "the agent produced nothing" surfaced as "任务超时".
+ *
+ * @param {string} line
+ * @returns {boolean}
+ */
+export function isTerminalClaudeLine(line) {
+  let ev;
+  try {
+    ev = JSON.parse(line);
+  } catch {
+    return false;
+  }
+  // `result` is the last line of a Claude run, success or failure.
+  return !!ev && typeof ev === "object" && ev.type === "result";
+}
+
+/**
+ * Codex's counterpart to `isTerminalClaudeLine`.
+ *
+ * `turn.completed` is deliberately NOT terminal: it fires once PER TURN, so
+ * treating it as the end would let the route's grace timer kill a healthy
+ * multi-turn run mid-flight. Only a failed turn ends the run early.
+ *
+ * The transient carve-out mirrors parseCodexEvent's: a "Reconnecting…" notice is
+ * something Codex recovers from, so it must not count as the end.
+ *
+ * @param {string} line
+ * @returns {boolean}
+ */
+export function isTerminalCodexLine(line) {
+  let ev;
+  try {
+    ev = JSON.parse(line);
+  } catch {
+    return false;
+  }
+  if (!ev || typeof ev !== "object") return false;
+  if (ev.type === "turn.failed") return true;
+  if (ev.type !== "error") return false;
+  const message = String(ev.error?.message || ev.message || "");
+  return !CODEX_TRANSIENT_ERROR_RE.test(message);
 }
 
 /**

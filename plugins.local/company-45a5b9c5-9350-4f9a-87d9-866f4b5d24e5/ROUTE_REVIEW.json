@@ -1,0 +1,37 @@
+{
+  "officialUrl": "https://hr.huya.com/",
+  "entryUrl": "https://hr.huya.com/SocialRecruit/recruitList?zhineng=15181",
+  "allowedHosts": ["hr.huya.com", "api.mokahr.com"],
+  "evidence": [
+    {
+      "fromUrl": "https://hr.huya.com/",
+      "toUrl": "https://hr.huya.com/home",
+      "kind": "redirect",
+      "note": "2026-09-21 00:18 CST 配置入口（portals.yml 虎牙 careers_url）打开后跳转到招聘首页，标题“首页-虎牙招聘”，页脚“广州虎牙信息科技有限公司版权所有”，身份与目标企业一致"
+    },
+    {
+      "fromUrl": "https://hr.huya.com/home",
+      "toUrl": "https://hr.huya.com/SocialRecruit/allPosition",
+      "kind": "link",
+      "note": "2026-09-21 00:18 CST 顶部导航“社会招聘”实际 href（/SocialRecruit/allPosition），打开后标题“社会招聘”，展示 8 个职位类别卡片"
+    },
+    {
+      "fromUrl": "https://hr.huya.com/SocialRecruit/allPosition",
+      "toUrl": "https://hr.huya.com/SocialRecruit/recruitList?zhineng=15181",
+      "kind": "link",
+      "note": "2026-09-21 00:22 CST 正常点击可见职位类别卡片“技术类”（.position-content-item，scrollIntoView 后 elementFromPoint 命中）产生的站内导航，标题“社会招聘”，页面显示“显示1-10 共 20 个职位”"
+    },
+    {
+      "fromUrl": "https://hr.huya.com/SocialRecruit/recruitList?zhineng=15181",
+      "toUrl": "https://api.mokahr.com/v1/jobs/huya?mode=social&limit=100",
+      "kind": "api",
+      "note": "2026-09-21 00:24 CST 列表页正常加载产生的公开 GET（Page.addScriptToEvaluateOnNewDocument + publicCapturePreload 取证：status 200，code 0，total 107，jobs 100 条，字段 id/title/status/locations/publishedAt/openedAt/description）。同页另有 limit=10、offset=100 请求，本适配器只取 limit=100 一页"
+    },
+    {
+      "fromUrl": "https://hr.huya.com/SocialRecruit/recruitList?zhineng=15181",
+      "toUrl": "https://hr.huya.com/SocialRecruit/detail/4195ef65-a1c3-4c15-b186-ff231a9ab568",
+      "kind": "link",
+      "note": "2026-09-21 00:31 CST 列表页岗位卡片真实 anchor href（/SocialRecruit/detail/<uuid>）点击后新标签打开同一地址，详情页标题“数据开发工程师”，与列表 ID 一致"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "id": "company-210af4de-c4b0-4fe9-abea-82d2ee905e18",
+  "name": "新浪微博 招聘源适配器",
+  "version": "0.1.0",
+  "apiVersion": 1,
+  "description": "零 Token 读取 新浪微博 的公开招聘职位。",
+  "hooks": ["provider"],
+  "requiredEnv": [],
+  "allowedHosts": ["career.sina.com.cn"],
+  "skill": "skill.md",
+  "humanInTheLoop": true
+}

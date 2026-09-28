@@ -9,6 +9,7 @@ import {
   aiToParams,
   isBroadSearch,
   parseExplorePatch,
+  paramsToFilters,
   type AtsSource,
   type DiscoveredOffer,
   type ExploreFilters,
@@ -18,6 +19,7 @@ import {
 import { makeAiStreamParser, type AiTraceChunk } from "@/lib/explore-ai";
 import { MAX_OFFER_LIMIT } from "@/lib/whats-new.mjs";
 import { isScannerMissing } from "@/lib/explore-error.mjs";
+import { scanScopeKey } from "@/lib/explore-scan-scope.mjs";
 
 export type Phase =
   | "idle"
@@ -94,6 +96,7 @@ export function useExplore(): ExploreCtx {
 const RESULTS_KEY = "career-ops:explore-results";
 type ResultSnapshot = {
   v: number;
+  scanFilters?: ExploreFilters;
   mode: ExploreMode;
   phase: Phase;
   offers: DiscoveredOffer[];
@@ -142,21 +145,30 @@ export function ExploreProvider({ children }: { children: React.ReactNode }) {
   aiIntentRef.current = aiIntent;
   const filtersRef = useRef(filters);
   filtersRef.current = filters;
+  const scanFiltersRef = useRef<ExploreFilters | undefined>(undefined);
+  const invalidateDifferentScope = useCallback((f: ExploreFilters) => {
+    if (!runningRef.current && scanFiltersRef.current && scanScopeKey(f) !== scanScopeKey(scanFiltersRef.current)) {
+      setPhase("idle"); setOffers([]); setCompaniesScanned(0); setSources({});
+    }
+  }, []);
 
   const setFilters = useCallback((f: ExploreFilters) => {
+    invalidateDifferentScope(f);
     touched.current = true;
     filtersRef.current = f;
     setFiltersState(f);
-  }, []);
+  }, [invalidateDifferentScope]);
   const initFilters = useCallback((f: ExploreFilters) => {
     if (touched.current) return;
+    invalidateDifferentScope(f);
     filtersRef.current = f;
     setFiltersState(f);
-  }, []);
+  }, [invalidateDifferentScope]);
 
   const discover = useCallback(async () => {
     if (runningRef.current) return;
     const f = filtersRef.current;
+    scanFiltersRef.current = f;
     runningRef.current = true;
     setPhase("casting");
     setOffers([]);
@@ -533,6 +545,16 @@ export function ExploreProvider({ children }: { children: React.ReactNode }) {
       snap = null;
     }
     if (!snap || snap.v !== 1 || !Array.isArray(snap.offers)) return;
+    if (snap.mode === "scan") {
+      const sp = new URLSearchParams(window.location.search);
+      const requested = sp.toString() ? paramsToFilters(sp) : snap.scanFilters;
+      if (!snap.scanFilters || scanScopeKey(requested) !== scanScopeKey(snap.scanFilters)) return;
+      scanFiltersRef.current = snap.scanFilters;
+      if (!sp.toString() && !touched.current) {
+        filtersRef.current = snap.scanFilters;
+        setFiltersState(snap.scanFilters);
+      }
+    }
     setModeState(snap.mode === "ai" ? "ai" : "scan");
     setOffers(snap.offers);
     setMatchCount(typeof snap.matchCount === "number" ? snap.matchCount : snap.offers.length);
@@ -560,7 +582,7 @@ export function ExploreProvider({ children }: { children: React.ReactNode }) {
     if (!SETTLED.has(phase)) return;
     try {
       const snap: ResultSnapshot = {
-        v: 1, mode, phase, offers, matchCount, companiesScanned, companiesAvailable, capHit, droppedNoDate, sources,
+        v: 1, scanFilters: scanFiltersRef.current, mode, phase, offers, matchCount, companiesScanned, companiesAvailable, capHit, droppedNoDate, sources,
         partial, status, error, scannerMissing, added: [...added], aiTrace, aiCost, aiIntent,
       };
       sessionStorage.setItem(RESULTS_KEY, JSON.stringify(snap));

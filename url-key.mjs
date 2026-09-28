@@ -56,6 +56,21 @@ const TRACKING_PARAMS = [
  * @param {URL} url
  */
 export function promoteKnownFragmentIdentity(url) {
+  // Browser text locators distinguish inline postings without inventing ATS routes.
+  const textDirective = url.hash.split(':~:text=')[1];
+  if (textDirective) url.searchParams.set('careerops_text_locator', textDirective);
+  const host = url.hostname.toLowerCase();
+  if (host === 'campus.kuaishou.cn') {
+    const match = /^#\/campus\/job-info\/(\d+)(?:\?[^#]*)?$/.exec(url.hash);
+    if (match) url.searchParams.set('kuaishou_job_id', match[1]);
+    return;
+  }
+  if (host === 'campus.jd.com') {
+    const match = /^#\/details\?([^#]+)$/.exec(url.hash);
+    const id = match && new URLSearchParams(match[1]).get('id');
+    if (id && /^\d+$/.test(id)) url.searchParams.set('jd_publish_id', id);
+    return;
+  }
   if (url.hostname.toLowerCase() !== 'app.mokahr.com') return;
   const match = /^#\/job\/([^/?#]+)(?:\?[^#]*)?$/.exec(url.hash);
   if (!match) return;

@@ -15,6 +15,16 @@ import { grantsWriteCapability, toolScopeFor } from "../../src/lib/claude-invoca
 
 const ARGS = { input: "018", memory: "", today: "2026-08-04" };
 
+test("adapter prompt checks actual click targets and fresh evidence before stopping", () => {
+  const prompt = buildPrompt({ kind: "adapt-provider", ...ARGS });
+  for (const required of ['scrollIntoView', 'elementFromPoint', 'CURRENT title', 'plugin-audit.mjs', 'BLOCKED.md', 'close it after verification']) assert.ok(prompt.includes(required), required);
+});
+
+test("adapter can discover a failed entry but cannot self-authorize a new domain", () => {
+  const prompt = buildPrompt({ kind: "adapt-provider", ...ARGS });
+  for (const text of ['ROUTE_REVIEW.json', 'at most one company-name search', 'at most three official/navigation pages', 'stop for human review', 'resumed candidate', 'ERR_CONNECTION_CLOSED as unconfirmed']) assert.ok(prompt.includes(text), text);
+});
+
 test("buildPrompt: the pdf prompt asks for the envelope and forbids saving", () => {
   // Given a pdf run
   const prompt = buildPrompt({ kind: "pdf", ...ARGS });
@@ -71,9 +81,9 @@ test("buildPrompt: the pdf prompt still pins tailoring to the real mode", () => 
   assert.match(prompt, /reports\/018-\*\.md/);
 });
 
-test("buildPrompt: every kind ends with exactly one VERDICT instruction", () => {
+test("buildPrompt: scored kinds end with exactly one VERDICT instruction", () => {
   // Given each kind — job-store.tsx parses that final line client-side
-  for (const kind of ["pdf", "research", "evaluate", "fix-portal", "adapt-provider"]) {
+  for (const kind of ["pdf", "research", "evaluate", "fix-portal"]) {
     const prompt = buildPrompt({ kind, ...ARGS });
 
     // Then the contract is present exactly once, so the parse cannot pick a
@@ -129,6 +139,9 @@ test("buildPrompt: adapt-provider creates one disabled plugin and forbids scans"
   assert.match(prompt, /Do NOT run scan\.mjs/i);
   assert.match(prompt, /DISABLED/i);
   assert.match(prompt, /exactly one company/i);
+  assert.match(prompt, /platform independently verifies/i);
+  assert.match(prompt, /retain the old version/i);
+  assert.doesNotMatch(prompt, /VERDICT:/);
 });
 
 test("buildPrompt: fix-portal is additionally scoped to one company and one file", () => {

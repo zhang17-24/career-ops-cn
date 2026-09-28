@@ -4,6 +4,8 @@ import path from "node:path";
 import * as yaml from "js-yaml";
 import { careerOpsRoot } from "@/lib/career-ops";
 import { atomicWriteWithBackup } from "@/lib/core/safe-write";
+import { enterpriseAction } from "@/lib/enterprise-adapters";
+import { localPermissionRequest } from "@/lib/codex-permissions.mjs";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -75,7 +77,7 @@ function runPlugins(...args: string[]) {
 }
 
 export async function GET() {
-  try { return Response.json({ adapters: providerManifests() }); }
+  try { return Response.json({ adapters: providerManifests(), enterpriseRuns: await enterpriseAction("list") }); }
   catch (error) { return Response.json({ error: error instanceof Error ? error.message : "无法读取适配器" }, { status: 500 }); }
 }
 
@@ -85,6 +87,19 @@ export async function POST(req: Request) {
   const action = clean(body.action, 30);
   const id = clean(body.id, 80);
   try {
+    if (action === "approve-route") {
+      if (!localPermissionRequest(req) || body.confirmed !== true) return Response.json({ error: "请从本机页面核对官网证据并明确确认域名权限。" }, { status: 403 });
+      return Response.json({ ok: true, result: await enterpriseAction("approve-route", { company: clean(body.company), ticket: clean(body.ticket, 80), digest: clean(body.digest, 64) }) });
+    }
+    if (action === "retry") {
+      const ticket = clean(body.ticket, 80);
+      const runs = await enterpriseAction("list");
+      if (!runs.some((r: { ticket: string; company: string; status: string }) => r.ticket === ticket && r.company === clean(body.company) && r.status === "failed")) return Response.json({ error: "只能重新验收本企业的失败候选" }, { status: 400 });
+      return Response.json({ ok: true, result: await enterpriseAction("retry", { ticket }) });
+    }
+    if (action === "trash" || action === "restore" || action === "cancel") {
+      return Response.json({ ok: true, result: await enterpriseAction(action, { company: clean(body.company), id, ticket: clean(body.ticket, 80) }) });
+    }
     if (action === "scaffold") {
       const host = clean(body.host, 255).toLowerCase();
       const company = clean(body.company);
@@ -125,10 +140,9 @@ export async function DELETE(req: Request) {
     const adapter = providerManifests().find((item) => item.id === id);
     if (!adapter) return Response.json({ error: "适配器不存在。" }, { status: 404 });
     if (!adapter.local) return Response.json({ error: "内置适配器不能卸载，只能停用。" }, { status: 400 });
-    const doc = readPortals();
-    for (const row of doc.tracked_companies || []) if (row.provider === id) delete row.provider;
-    writePortals(doc);
-    return Response.json({ ok: true, message: runPlugins("remove", id) });
+    const company = clean(body.company) || (Array.isArray(adapter.companies) && adapter.companies.length === 1 ? adapter.companies[0] : "");
+    if (!company) return Response.json({ error: "请从对应企业的适配器设置中删除。" }, { status: 400 });
+    return Response.json({ ok: true, result: await enterpriseAction("trash", { company, id }) });
   } catch (error) {
     return Response.json({ error: error instanceof Error ? error.message.slice(0, 500) : "无法卸载适配器" }, { status: 500 });
   }

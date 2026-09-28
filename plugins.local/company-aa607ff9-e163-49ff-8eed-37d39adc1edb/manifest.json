@@ -1,0 +1,12 @@
+{
+  "id": "company-aa607ff9-e163-49ff-8eed-37d39adc1edb",
+  "name": "携程 招聘源适配器",
+  "version": "0.1.0",
+  "apiVersion": 1,
+  "description": "零 Token 读取 携程 的公开招聘职位。",
+  "hooks": ["provider"],
+  "requiredEnv": [],
+  "allowedHosts": ["careers.ctrip.com"],
+  "skill": "skill.md",
+  "humanInTheLoop": true
+}

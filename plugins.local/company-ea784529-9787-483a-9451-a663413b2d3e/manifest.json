@@ -1,0 +1,12 @@
+{
+  "id": "company-ea784529-9787-483a-9451-a663413b2d3e",
+  "name": "比亚迪 招聘源适配器",
+  "version": "0.1.0",
+  "apiVersion": 1,
+  "description": "零 Token 读取 比亚迪 的公开招聘职位。",
+  "hooks": ["provider"],
+  "requiredEnv": [],
+  "allowedHosts": ["job.byd.com"],
+  "skill": "skill.md",
+  "humanInTheLoop": true
+}

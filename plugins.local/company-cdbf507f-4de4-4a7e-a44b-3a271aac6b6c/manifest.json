@@ -1,0 +1,25 @@
+{
+  "id": "company-cdbf507f-4de4-4a7e-a44b-3a271aac6b6c",
+  "name": "Momenta 招聘源适配器",
+  "version": "0.1.0",
+  "apiVersion": 1,
+  "description": "通过平台固定 DOM reader 零 Token 读取 Momenta Mstar 公开招聘单页。",
+  "hooks": [
+    "provider"
+  ],
+  "requiredEnv": [],
+  "allowedHosts": [
+    "momenta.jobs.feishu.cn",
+    "lf-package-cn.feishucdn.com",
+    "lf3-cdn-tos.bytescm.com"
+  ],
+  "skill": "skill.md",
+  "humanInTheLoop": true,
+  "browserListing": {
+    "listUrl": "https://momenta.jobs.feishu.cn/campus/?keywords=&category=&location=&project=7537265013606943018&type=&job_hot_flag=&current=1&limit=10&functionCategory=&tag=",
+    "identityText": "Momenta Campus",
+    "linkSelector": "a[data-id][href^=\"/campus/position/\"]",
+    "titleSelector": ".positionItem-title-text",
+    "locationSelector": ".positionItem-subTitle > span:first-child"
+  }
+}

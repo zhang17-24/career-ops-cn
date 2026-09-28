@@ -1,0 +1,12 @@
+{
+  "id": "company-ab5b5085-65b6-45b9-bf93-47e95b78d458",
+  "name": "三六零 招聘源适配器",
+  "version": "0.1.0",
+  "apiVersion": 1,
+  "description": "零 Token 读取 三六零 的公开招聘职位。",
+  "hooks": ["provider"],
+  "requiredEnv": [],
+  "allowedHosts": ["360campus.zhiye.com"],
+  "skill": "skill.md",
+  "humanInTheLoop": true
+}

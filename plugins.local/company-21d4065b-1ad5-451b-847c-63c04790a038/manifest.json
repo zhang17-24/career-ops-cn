@@ -1,0 +1,25 @@
+{
+  "id": "company-21d4065b-1ad5-451b-847c-63c04790a038",
+  "name": "阿里巴巴 招聘源适配器",
+  "version": "0.1.0",
+  "apiVersion": 1,
+  "description": "零 Token 读取 阿里巴巴 的公开招聘职位。",
+  "hooks": [
+    "provider"
+  ],
+  "requiredEnv": [],
+  "allowedHosts": [
+    "campus-talent.alibaba.com",
+    "g.alicdn.com",
+    "lang.alicdn.com"
+  ],
+  "skill": "skill.md",
+  "humanInTheLoop": true,
+  "browserListing": {
+    "listUrl": "https://campus-talent.alibaba.com/campus/position",
+    "identityText": "阿里巴巴校园招聘",
+    "linkSelector": "a[class*=\"PositionListCard--linkContainer--\"]",
+    "titleSelector": "[class*=\"PositionListCard--mame--\"]",
+    "locationSelector": "[class*=\"PositionListCard--basicItem--\"]:nth-child(3) [class*=\"PositionListCard--text--\"]"
+  }
+}

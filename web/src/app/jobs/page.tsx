@@ -5,6 +5,7 @@ import { Check, AlertTriangle, Loader2, Trash2 } from "lucide-react";
 import { useJobs } from "@/components/jobs/job-store";
 import { pillTone } from "@/components/jobs/worker-pills";
 import { cn } from "@/lib/cn";
+import { adapterPendingHint } from "@/lib/job-error-hint.mjs";
 
 const TONE_CHIP = {
   good: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400",
@@ -43,11 +44,14 @@ export default function JobsHistory() {
         <ul className="mt-6 divide-y divide-border overflow-hidden rounded-2xl border border-border bg-surface/40">
           {jobs.map((j) => {
             const tone = pillTone(j);
+            const pending = adapterPendingHint(j);
             return (
               <li key={j.id}>
                 <Link href={`/jobs/${j.id}`} className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-surface-hover">
                   {j.status === "running" ? (
                     <Loader2 className="size-4 shrink-0 animate-spin text-brand" />
+                  ) : pending ? (
+                    <AlertTriangle className="size-4 shrink-0 text-amber-500" />
                   ) : j.status === "error" ? (
                     <AlertTriangle className="size-4 shrink-0 text-red-400" />
                   ) : (
@@ -64,7 +68,7 @@ export default function JobsHistory() {
                       {j.result.score}/5
                     </span>
                   )}
-                  <span className="hidden shrink-0 text-xs text-faint sm:block">{{ running: "运行中", done: "已完成", error: "失败" }[j.status]}</span>
+                  <span className="hidden shrink-0 text-xs text-faint sm:block">{pending?.title ?? { running: "运行中", done: "已完成", error: "失败", awaiting_review: "等待审核" }[j.status]}</span>
                 </Link>
               </li>
             );

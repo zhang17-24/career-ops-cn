@@ -1,0 +1,36 @@
+{
+  "officialUrl": "https://app-tc.mokahr.com/campus-recruitment/vipshophr/10039",
+  "entryUrl": "https://app-tc.mokahr.com/campus-recruitment/vipshophr/10039#/jobs",
+  "allowedHosts": [
+    "app-tc.mokahr.com",
+    "static-ats-tc.mokahr.com",
+    "public-cdn-tc.mokahr.com",
+    "cstaticdun-v6.126.net"
+  ],
+  "evidence": [
+    {
+      "fromUrl": "https://app-tc.mokahr.com/campus-recruitment/vipshophr/10039",
+      "toUrl": "https://app-tc.mokahr.com/campus-recruitment/vipshophr/10039#/jobs",
+      "kind": "link",
+      "note": "2026-09-20T17:00Z 观察：portals.yml 配置的唯品会招聘首页（Moka 公开租户 app-tc.mokahr.com，标题「唯品会（中国）有限公司 - 校园招聘」）加载后落到 #/，页面首屏图片链接指向同租户在招职位 #/jobs 路由（该链接带 previewKey 预览参数，未采用，改用不带预览参数的公开路由读取，渲染同一份公开列表）"
+    },
+    {
+      "fromUrl": "https://app-tc.mokahr.com/campus-recruitment/vipshophr/10039#/jobs",
+      "toUrl": "https://app-tc.mokahr.com/campus-recruitment/vipshophr/10039#/job/53bb03c1-8fcd-4cf2-bf80-b10af7ead4d0",
+      "kind": "link",
+      "note": "2026-09-20T17:01Z 观察：列表卡片 anchor 的 href 为 #/job/<uuid>；实际点击（scrollIntoView + elementFromPoint 命中卡片内部）后地址栏变为该详情路由，未新开标签，标题「【2027届物流】物流总部校招生」与列表一致"
+    },
+    {
+      "fromUrl": "https://app-tc.mokahr.com/campus-recruitment/vipshophr/10039#/job/53bb03c1-8fcd-4cf2-bf80-b10af7ead4d0",
+      "toUrl": "https://app-tc.mokahr.com/campus-recruitment/vipshophr/10039#/job/cfe6b0e2-86a5-4afe-b7c5-f462f05dc574",
+      "kind": "link",
+      "note": "2026-09-20T17:03Z 观察：同租户详情路由仅末段编号不同；按列表实际 href 打开后标题「【2027届物流】东北RDC校招生」与列表一致，编号取自同一 #/job/ 路由"
+    },
+    {
+      "fromUrl": "https://app-tc.mokahr.com/campus-recruitment/vipshophr/10039#/job/cfe6b0e2-86a5-4afe-b7c5-f462f05dc574",
+      "toUrl": "https://app-tc.mokahr.com/campus-recruitment/vipshophr/10039#/job/6d21b156-54e2-4f53-9b5b-8017b5fccf0a",
+      "kind": "link",
+      "note": "2026-09-20T17:03Z 观察：列表实际 href 打开的第三个详情，标题「【2027届秋招】测试开发工程师」与列表一致；三个详情均无登录/验证码拦截，正文（岗位职责/任职要求）可读"
+    }
+  ]
+}

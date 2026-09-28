@@ -1,0 +1,19 @@
+{
+  "officialUrl": "https://www.lixiang.com/employ/campus/list.html",
+  "entryUrl": "https://www.lixiang.com/employ/campus/list.html?fromJob=1",
+  "allowedHosts": ["www.lixiang.com", "api-web.lixiang.com"],
+  "evidence": [
+    {
+      "fromUrl": "https://www.lixiang.com/employ/campus/list.html",
+      "toUrl": "https://www.lixiang.com/employ/campus/list.html?fromJob=1",
+      "kind": "redirect",
+      "note": "2026-09-13 15:31 UTC，Ego Lite 打开配置入口后 pageInfo 与 listTabs 均显示此地址；Navigation Timing 原地址 redirectCount=0，记录为页面端地址变化，不声称 HTTP 3xx。标题为理想汽车丨理想，给车和家赋予生命。 | 职位列表；正文显示校园招聘与实习、加入我们及真实岗位列表，品牌一致。"
+    },
+    {
+      "fromUrl": "https://www.lixiang.com/employ/campus/list.html?fromJob=1",
+      "toUrl": "https://api-web.lixiang.com/osd-hr-recruitment-website/v1/recruit/school/job-page?page=1&page_size=10",
+      "kind": "api",
+      "note": "2026-09-13 15:31 UTC，正常首屏加载的 Resource Timing 记录此 xmlhttprequest；页面显示十条岗位、共1031个职位。仅观察真实请求 URL，未重放请求、未捕获响应正文或读取凭证。此主机尚未获生产权限，待平台审核。"
+    }
+  ]
+}

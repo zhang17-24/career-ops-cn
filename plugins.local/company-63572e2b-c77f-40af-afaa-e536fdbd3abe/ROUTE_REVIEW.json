@@ -1,0 +1,52 @@
+{
+  "officialUrl": "https://jobs.mihoyo.com/",
+  "entryUrl": "https://jobs.mihoyo.com/#/campus/position",
+  "allowedHosts": [
+    "jobs.mihoyo.com",
+    "ats.openout.mihoyo.com"
+  ],
+  "evidence": [
+    {
+      "fromUrl": "https://jobs.mihoyo.com/",
+      "toUrl": "https://jobs.mihoyo.com/#/campus",
+      "kind": "link",
+      "note": "2026-09-19：配置首页显示 miHoYo 社会招聘与米哈游品牌；实际点击「切换到校招」。"
+    },
+    {
+      "fromUrl": "https://jobs.mihoyo.com/#/campus",
+      "toUrl": "https://jobs.mihoyo.com/#/campus/position",
+      "kind": "link",
+      "note": "2026-09-19：实际点击「岗位投递」，校招列表显示259条。"
+    },
+    {
+      "fromUrl": "https://jobs.mihoyo.com/#/campus/position",
+      "toUrl": "https://ats.openout.mihoyo.com/ats-portal/v1/job/list",
+      "kind": "api",
+      "note": "正常SPA导航观察到公开POST；响应code=0、success=true；第一页10条。"
+    },
+    {
+      "fromUrl": "https://jobs.mihoyo.com/#/campus/position",
+      "toUrl": "https://jobs.mihoyo.com/umi.6f1adbea.js",
+      "kind": "api",
+      "note": "页面实际引用的脚本；只核对C_POSITION_ID公开路由声明 /campus/position/:id。"
+    },
+    {
+      "fromUrl": "https://jobs.mihoyo.com/#/campus/position",
+      "toUrl": "https://jobs.mihoyo.com/#/campus/position/9544",
+      "kind": "link",
+      "note": "2026-09-19：滚动、命中检查后点击真实岗位卡片；新标签实际地址与列表字符串ID吻合，完整职责及要求可读。"
+    },
+    {
+      "fromUrl": "https://jobs.mihoyo.com/#/campus/position",
+      "toUrl": "https://jobs.mihoyo.com/#/campus/position/9541",
+      "kind": "link",
+      "note": "2026-09-19：滚动、命中检查后点击真实岗位卡片；新标签实际地址与列表字符串ID吻合，完整职责及要求可读。"
+    },
+    {
+      "fromUrl": "https://jobs.mihoyo.com/#/campus/position",
+      "toUrl": "https://jobs.mihoyo.com/#/campus/position/9538",
+      "kind": "link",
+      "note": "2026-09-19：滚动、命中检查后点击真实岗位卡片；新标签实际地址与列表字符串ID吻合，完整职责及要求可读。"
+    }
+  ]
+}

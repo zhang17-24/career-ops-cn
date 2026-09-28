@@ -8,11 +8,14 @@ import { ArrowLeft, Loader2, Wrench, CircleDot, Check, X } from "lucide-react";
 import { useJobs } from "@/components/jobs/job-store";
 import { HeroGlow } from "@/components/hero-glow";
 import { Badge } from "@/components/ui/badge";
+import { adapterPendingHint, jobErrorHint } from "@/lib/job-error-hint.mjs";
 
 export default function JobPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const { jobs } = useJobs();
   const job = jobs.find((j) => j.id === id);
+  const pending = adapterPendingHint(job);
+  const errorHint = jobErrorHint(job);
 
   if (!job) {
     return (
@@ -39,6 +42,8 @@ export default function JobPage({ params }: { params: Promise<{ id: string }> })
           <p className="flex items-center gap-2 font-mono text-xs uppercase tracking-[0.18em] text-faint">
             {job.status === "running" ? (
               <><Loader2 className="size-3 animate-spin text-brand" /> 运行中</>
+            ) : pending ? (
+              <><CircleDot className="size-3 text-amber-500" /> {pending.title}</>
             ) : job.status === "done" ? (
               <><Check className="size-3 text-emerald-500" /> 已完成</>
             ) : (
@@ -47,7 +52,10 @@ export default function JobPage({ params }: { params: Promise<{ id: string }> })
           </p>
           <h1 className="mt-2 font-display text-2xl tracking-tight text-landing">{job.title}</h1>
           {job.subtitle && <p className="mt-1 text-sm text-muted">{job.subtitle}</p>}
-          {job.result?.score != null && (
+          {(pending || errorHint) && <p className="mt-3 text-sm text-amber-700 dark:text-amber-400">{pending?.text ?? errorHint?.text}</p>}
+          {pending?.href && <Link href={pending.href} className="mt-4 inline-flex rounded-lg border border-amber-500/40 bg-surface px-4 py-2 text-sm text-brand">前往本企业审核并继续</Link>}
+          {!pending && job.status === "error" && job.kind === "adapt-provider" && <Link href={"/portals?adapter=" + encodeURIComponent(job.input || "")} className="mt-4 inline-flex rounded-lg border border-red-500/40 px-4 py-2 text-sm text-brand">重试 / 零 Token 重新验收</Link>}
+          {!pending && job.result?.score != null && (
             <div className="mt-3 flex flex-wrap items-center gap-2.5">
               <Badge tone={job.result.tone}>{job.result.score}/5</Badge>
               {job.result.summary && <span className="text-sm text-muted">{job.result.summary}</span>}

@@ -1,0 +1,12 @@
+{
+  "id": "company-dbbe8943-7e93-449c-bef8-1e820597a1e2",
+  "name": "小红书 招聘源适配器",
+  "version": "0.1.0",
+  "apiVersion": 1,
+  "description": "零 Token 读取 小红书 的公开招聘职位。",
+  "hooks": ["provider"],
+  "requiredEnv": [],
+  "allowedHosts": ["job.xiaohongshu.com"],
+  "skill": "skill.md",
+  "humanInTheLoop": true
+}

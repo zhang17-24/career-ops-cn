@@ -1711,6 +1711,18 @@ export function companyRoleDedupKey(company, role, canonicalize = defaultCompany
   return `${canonicalize(company)}::${normalizeRoleForDedup(role)}`;
 }
 
+export function postingRoleDedupKey(job, canonicalize = defaultCompanyNormalizer) {
+  const base = companyRoleDedupKey(job.company, job.title, canonicalize);
+  // Inline roles can have identical names but distinct, verified ATS IDs.
+  // Existing URL history remains authoritative; do not collapse these by title.
+  try {
+    const directive = new URL(job.url).hash.split(':~:')[1];
+    const id = directive && new URLSearchParams(directive).get('careerops-id');
+    if (typeof job.id === 'string' && id === job.id && id) return `${base}::posting:${normalizeUrlForDedup(job.url)}`;
+  } catch { /* ordinary/invalid URLs retain the original title guard */ }
+  return base;
+}
+
 /**
  * Build the seen-role set from the same three sources as `loadSeenUrls`.
  *
@@ -2886,7 +2898,7 @@ async function main() {
           totalDupes++;
           continue;
         }
-        const key = companyRoleDedupKey(job.company, job.title, canonicalizeCompany);
+        const key = postingRoleDedupKey(job, canonicalizeCompany);
         if (seenCompanyRoles.has(key)) {
           totalDupes++;
           continue;

@@ -1,0 +1,25 @@
+{
+  "id": "company-366fdb82-50b1-44cf-880a-ff842560f54f",
+  "name": "得物 招聘源适配器",
+  "version": "0.1.0",
+  "apiVersion": 1,
+  "description": "通过平台固定飞书 ATS DOM reader 零模型 Token 读取得物校招第一页。",
+  "hooks": [
+    "provider"
+  ],
+  "requiredEnv": [],
+  "allowedHosts": [
+    "campus.dewu.com",
+    "lf-package-cn.feishucdn.com",
+    "lf3-cdn-tos.bytescm.com"
+  ],
+  "skill": "skill.md",
+  "humanInTheLoop": true,
+  "browserListing": {
+    "listUrl": "https://campus.dewu.com/578078/position/list",
+    "identityText": "得物App校园招聘",
+    "linkSelector": "a[data-id]",
+    "titleSelector": ".positionItem-title-text",
+    "locationSelector": ".positionItem-subTitle > span:first-child"
+  }
+}

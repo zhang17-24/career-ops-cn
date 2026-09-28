@@ -1,0 +1,51 @@
+{
+  "officialUrl": "https://hr.yuanfudao.com/",
+  "entryUrl": "https://hr.yuanfudao.com/campus-recruitment/fenbi/47742/#/jobs?&zhineng%5B0%5D=160479",
+  "allowedHosts": [
+    "hr.yuanfudao.com"
+  ],
+  "evidence": [
+    {
+      "fromUrl": "https://hr.yuanfudao.com/",
+      "toUrl": "https://hr.yuanfudao.com/campus-recruitment/fenbi/47742/",
+      "kind": "redirect",
+      "note": "2026-09-19T01:12:36.934Z 官网实际302到Moka fenbi/47742，标题及org.name均为猿辅导集团；匿名初始化一次。"
+    },
+    {
+      "fromUrl": "https://hr.yuanfudao.com/campus-recruitment/fenbi/47742/",
+      "toUrl": "https://hr.yuanfudao.com/campus-recruitment/fenbi/47742/#/",
+      "kind": "redirect",
+      "note": "2026-09-19T01:12:36.934Z Ego加载后实际首页hash地址。"
+    },
+    {
+      "fromUrl": "https://hr.yuanfudao.com/campus-recruitment/fenbi/47742/#/",
+      "toUrl": "https://hr.yuanfudao.com/campus-recruitment/fenbi/47742/#/jobs?&zhineng%5B0%5D=160479",
+      "kind": "link",
+      "note": "2026-09-19T01:12:36.934Z 首页产品/研发类原始href=#/jobs?&zhineng%5B0%5D=160479，7个岗位。"
+    },
+    {
+      "fromUrl": "https://hr.yuanfudao.com/campus-recruitment/fenbi/47742/#/jobs?&zhineng%5B0%5D=160479",
+      "toUrl": "https://hr.yuanfudao.com/api/outer/ats-apply/website/jobs/v2",
+      "kind": "api",
+      "note": "2026-09-19T01:12:36.934Z 正常列表POST；200封装data/necromancer，仅观察，生产不调用不解密。"
+    },
+    {
+      "fromUrl": "https://hr.yuanfudao.com/campus-recruitment/fenbi/47742/#/jobs?&zhineng%5B0%5D=160479",
+      "toUrl": "https://hr.yuanfudao.com/campus-recruitment/fenbi/47742/#/job/c3404b3e-9cb8-456f-a0df-cc89384f7255",
+      "kind": "link",
+      "note": "2026-09-19 Ego Lite真实anchor点击，标题/字符串ID/完整职责核对一致，详见ACCEPTANCE.md。"
+    },
+    {
+      "fromUrl": "https://hr.yuanfudao.com/campus-recruitment/fenbi/47742/#/jobs?&zhineng%5B0%5D=160479",
+      "toUrl": "https://hr.yuanfudao.com/campus-recruitment/fenbi/47742/#/job/e433c6ae-c3f0-4e9e-96a1-4421063b1f69",
+      "kind": "link",
+      "note": "2026-09-19 Ego Lite真实anchor点击，标题/字符串ID/完整职责核对一致，详见ACCEPTANCE.md。"
+    },
+    {
+      "fromUrl": "https://hr.yuanfudao.com/campus-recruitment/fenbi/47742/#/jobs?&zhineng%5B0%5D=160479",
+      "toUrl": "https://hr.yuanfudao.com/campus-recruitment/fenbi/47742/#/job/6ae831e9-eda5-417b-9353-5f229b46a9fb",
+      "kind": "link",
+      "note": "2026-09-19 Ego Lite真实anchor点击，标题/字符串ID/完整职责核对一致，详见ACCEPTANCE.md。"
+    }
+  ]
+}

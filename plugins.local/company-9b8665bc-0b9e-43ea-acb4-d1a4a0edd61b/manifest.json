@@ -1,0 +1,12 @@
+{
+  "id": "company-9b8665bc-0b9e-43ea-acb4-d1a4a0edd61b",
+  "name": "腾讯 招聘源适配器",
+  "version": "0.1.0",
+  "apiVersion": 1,
+  "description": "零 Token 读取 腾讯 的公开招聘职位。",
+  "hooks": ["provider"],
+  "requiredEnv": [],
+  "allowedHosts": ["join.qq.com"],
+  "skill": "skill.md",
+  "humanInTheLoop": true
+}

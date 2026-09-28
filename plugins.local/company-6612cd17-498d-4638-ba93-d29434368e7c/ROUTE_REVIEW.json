@@ -1,0 +1,56 @@
+{
+  "officialUrl": "https://jobs.games.wanmei.com/",
+  "entryUrl": "https://app.mokahr.com/campus-recruitment/pwrd/172467?locale=zh-CN#/jobs",
+  "allowedHosts": [
+    "jobs.games.wanmei.com",
+    "app.mokahr.com",
+    "static-ats.mokahr.com",
+    "public-cdn.mokahr.com",
+    "static.mokahr.com",
+    "cstaticdun-v6.126.net"
+  ],
+  "evidence": [
+    {
+      "fromUrl": "https://jobs.games.wanmei.com/",
+      "toUrl": "https://app.mokahr.com/campus-recruitment/pwrd/172467?locale=zh-CN",
+      "kind": "link",
+      "note": "2026-09-19：官方招聘首页标题“完美世界招聘官方网站”，校园招聘原始/绝对 href 均指此 Moka 租户，目标标题“完美世界 - 校园招聘”。由一次官网搜索发现首页，旧 campus.wanmei.com 证书域名不匹配。"
+    },
+    {
+      "fromUrl": "https://app.mokahr.com/campus-recruitment/pwrd/172467?locale=zh-CN",
+      "toUrl": "https://app.mokahr.com/campus-recruitment/pwrd/172467?locale=zh-CN#/jobs",
+      "kind": "link",
+      "note": "校招职位原始 href #/jobs；正常导航可见岗位。"
+    },
+    {
+      "fromUrl": "https://app.mokahr.com/campus-recruitment/pwrd/172467?locale=zh-CN#/jobs",
+      "toUrl": "https://app.mokahr.com/api/outer/ats-apply/website/jobs/v2",
+      "kind": "api",
+      "note": "2026-09-19 正常页面公开资源请求；API 为列表 POST，其余为页面实际加载资源，不代表登录或验证码已出现。"
+    },
+    {
+      "fromUrl": "https://app.mokahr.com/campus-recruitment/pwrd/172467?locale=zh-CN#/jobs",
+      "toUrl": "https://static-ats.mokahr.com/recruitment-web-client/javascripts/recruitmentWeb-20260916-1942-b5798-release.js",
+      "kind": "api",
+      "note": "2026-09-19 正常页面公开资源请求；API 为列表 POST，其余为页面实际加载资源，不代表登录或验证码已出现。"
+    },
+    {
+      "fromUrl": "https://app.mokahr.com/campus-recruitment/pwrd/172467?locale=zh-CN#/jobs",
+      "toUrl": "https://public-cdn.mokahr.com/pwrd/be042f08-1cf0-4c5d-bef1-051f94d55633.png",
+      "kind": "api",
+      "note": "2026-09-19 正常页面公开资源请求；API 为列表 POST，其余为页面实际加载资源，不代表登录或验证码已出现。"
+    },
+    {
+      "fromUrl": "https://app.mokahr.com/campus-recruitment/pwrd/172467?locale=zh-CN#/jobs",
+      "toUrl": "https://static.mokahr.com/sugar/icon-resource/iconfont.1755248674224.woff2",
+      "kind": "api",
+      "note": "2026-09-19 正常页面公开资源请求；API 为列表 POST，其余为页面实际加载资源，不代表登录或验证码已出现。"
+    },
+    {
+      "fromUrl": "https://app.mokahr.com/campus-recruitment/pwrd/172467?locale=zh-CN#/jobs",
+      "toUrl": "https://cstaticdun-v6.126.net/load.min.js",
+      "kind": "api",
+      "note": "2026-09-19 正常页面公开资源请求；API 为列表 POST，其余为页面实际加载资源，不代表登录或验证码已出现。"
+    }
+  ]
+}

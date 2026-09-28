@@ -1,0 +1,14 @@
+import { strict as assert } from 'node:assert';
+import hooks, { preserveIds } from '../index.mjs';
+const base='https://app.mokahr.com/campus-recruitment/pwrd/172467?locale=zh-CN#/job/';
+const row={title:'27届秋招-数值策划（MMO）',url:base+'de498ba8-660d-4225-85cb-92a7fc892c0d',company:'完美世界',location:'北京市'};
+let calls=0;
+const entry={name:'完美世界'};
+const jobs=await hooks.provider.fetch(entry,{browserJobs:async e=>{assert.equal(e,entry);calls++;return [row]}});
+assert.equal(calls,1);
+assert.deepEqual(jobs,[{...row,id:'de498ba8-660d-4225-85cb-92a7fc892c0d'}]);
+assert.equal(preserveIds([{...row,url:base+'900719925474099312345'}])[0].id,'900719925474099312345');
+assert.equal(preserveIds([row,{...row,url:base+'different-id'}]).length,2);
+for(const bad of [null,[],{},[row,row],Array(101).fill(row),[{...row,title:''}],[{...row,location:''}],[{...row,company:'其他'}],[{...row,url:'https://example.com/job/1'}],[{...row,url:base}]] ) assert.throws(()=>preserveIds(bad));
+await assert.rejects(hooks.provider.fetch(entry,{browserJobs:async()=>{throw new Error('unconfirmed')}}),/unconfirmed/);
+console.log('PASS: offline fixture mapping, long string IDs, duplicate IDs, empty/malformed data, single-page bound, error propagation. No network.');

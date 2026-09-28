@@ -12,7 +12,9 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { CadenceSettings } from "@/components/followups/cadence-settings";
-import { persistCliId, readSavedCliId } from "@/lib/saved-cli";
+import { CodexPermissions } from "@/components/codex-permissions";
+import { pickSoleInstalled, readSavedCliId } from "@/lib/saved-cli";
+import { persistSettings, readSettings } from "@/lib/browser-settings.mjs";
 
 type Cli = {
   id: string;
@@ -32,8 +34,6 @@ const PROVIDERS = [
   { id: "openrouter", label: "OpenRouter" },
 ] as const;
 
-const STORAGE_KEY = "career-ops:config";
-
 export function ConfigForm() {
   const [mode, setMode] = useState<Mode>("cli");
   const [clis, setClis] = useState<Cli[] | null>(null);
@@ -42,52 +42,61 @@ export function ConfigForm() {
   const [apiKey, setApiKey] = useState("");
   const [logos, setLogos] = useState(true);
   const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState("");
+  const [ready, setReady] = useState(false);
 
   // Load saved prefs
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const v = JSON.parse(raw);
+    function read() {
+      try {
+        const v = readSettings();
         // key/manual are not wired yet (nothing reads them) → never restore into
         // those dead panels; only the Installed-CLI path is functional.
         if (v.mode === "cli") setMode("cli");
-        if (v.cliId) setCliId(v.cliId);
-        if (v.provider) setProvider(v.provider);
-        if (typeof v.logos === "boolean") setLogos(v.logos);
+        setCliId(typeof v.cliId === "string" ? v.cliId : "");
+        setProvider(typeof v.provider === "string" ? v.provider : "anthropic");
+        setLogos(v.logos !== false);
+        setSaveError("");
+      } catch {
+        setSaveError("无法读取设置，请检查浏览器存储；不会覆盖原配置。");
       }
-    } catch {
-      /* ignore */
+      setReady(true);
     }
+    read();
+    window.addEventListener("storage", read);
+    return () => window.removeEventListener("storage", read);
   }, []);
 
   // Detect installed CLIs
   useEffect(() => {
+    let cancelled = false;
     fetch("/api/clis")
       .then((r) => r.json())
       .then((d) => {
         const list: Cli[] = d.clis ?? [];
+        if (cancelled) return;
         setClis(list);
         // Highlight + persist the only installed CLI when Config was never saved.
         // Highlight-only used to look configured while jobs still read empty localStorage.
-        setCliId((prev) => {
-          if (prev) return prev;
-          const only = list.filter((c) => c.installed);
-          if (only.length !== 1) return list.find((c) => c.installed)?.id || "";
-          if (!readSavedCliId()) persistCliId(only[0].id);
-          return only[0].id;
-        });
+        const only = pickSoleInstalled(list);
+        if (!readSavedCliId() && only) save({ mode: "cli", cliId: only });
       })
       .catch(() => setClis([]));
+    return () => { cancelled = true; };
   }, []);
 
-  function save() {
+  function save(patch: { mode?: Mode; cliId?: string; provider?: string; logos?: boolean }) {
     // The API key is deliberately NOT persisted: nothing reads it yet (the
     // key/manual panel is unwired) and a secret must never sit in clear-text
     // localStorage. Keys belong in the user's own CLI/provider config.
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ mode, cliId, provider, logos }));
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+    try {
+      persistSettings(patch);
+      setSaved(true);
+      setSaveError("");
+    } catch {
+      setSaved(false);
+      setSaveError("设置保存失败，请检查浏览器存储权限或空间。");
+    }
   }
 
   const installed = clis?.filter((c) => c.installed) ?? [];
@@ -99,6 +108,7 @@ export function ConfigForm() {
         在本机使用你自己的 AI 工具运行求职工作台。简历和投递数据默认不会离开电脑。
       </p>
 
+      <CodexPermissions />
       {/* Engine mode */}
       <label className="mt-8 mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-muted">
         AI 工具
@@ -106,7 +116,7 @@ export function ConfigForm() {
       <div className="grid gap-2 sm:grid-cols-3">
         <ModeCard
           active={mode === "cli"}
-          onClick={() => setMode("cli")}
+          onClick={() => save({ mode: "cli" })}
           icon={Terminal}
           title="使用已安装的 AI 工具"
           hint="推荐"
@@ -135,7 +145,7 @@ export function ConfigForm() {
             <p className="mb-1 text-sm text-muted">
               求职工作台会使用你已经登录的 AI 工具，不需要在这里粘贴密钥。
             </p>
-            <p className="mb-3 text-xs text-faint">支持 Claude Code、Codex、OpenCode、Qwen 等工具。</p>
+            <p className="mb-3 text-xs text-faint">支持 Claude Code、Codex、WorkBuddy、OpenCode、Qwen 等工具。</p>
             {clis === null ? (
               <div className="flex items-center gap-2 text-sm text-muted">
                 <Loader2 className="size-4 animate-spin" /> 正在检查电脑上已安装的工具…
@@ -170,8 +180,9 @@ export function ConfigForm() {
                       )}
                       <button
                         type="button"
-                        disabled={!c.installed}
-                        onClick={() => setCliId(c.id)}
+                        disabled={!c.installed || !ready}
+                        aria-pressed={selected}
+                        onClick={() => save({ mode: "cli", cliId: c.id })}
                         className={cn(
                           "flex flex-1 items-center gap-2 text-left max-sm:min-h-[44px]",
                           c.installed ? "" : "cursor-default",
@@ -228,7 +239,7 @@ export function ConfigForm() {
                   <button
                     key={p.id}
                     type="button"
-                    onClick={() => setProvider(p.id)}
+                    onClick={() => save({ provider: p.id })}
                     className={cn(
                       "rounded-xl border px-4 py-2.5 text-left text-sm transition-colors",
                       provider === p.id
@@ -255,7 +266,7 @@ export function ConfigForm() {
                 className="w-full rounded-xl border border-border bg-surface/60 px-4 py-2.5 font-mono text-sm outline-none transition-colors placeholder:text-faint focus:border-brand/50"
               />
               <p className="mt-2 text-xs text-faint">
-                只保存在当前浏览器中，仅发送给你选择的服务商。
+                此功能尚未接通，密钥不会保存。
               </p>
             </div>
           </div>
@@ -274,7 +285,9 @@ export function ConfigForm() {
       </label>
       <button
         type="button"
-        onClick={() => setLogos((v) => !v)}
+        disabled={!ready}
+        aria-pressed={logos}
+        onClick={() => save({ logos: !logos })}
         className="flex w-full items-center justify-between gap-4 rounded-xl border border-border bg-surface/50 px-4 py-3 text-left transition-colors hover:bg-surface-hover"
       >
         <span className="min-w-0">
@@ -301,16 +314,13 @@ export function ConfigForm() {
       <CadenceSettings />
 
       <div className="mt-8 flex items-center gap-3">
-        <button
-          type="button"
-          onClick={save}
-          className="inline-flex items-center justify-center gap-2 rounded-full bg-brand px-5 py-2 text-sm font-medium text-brand-foreground transition-colors hover:bg-brand-200 max-sm:min-h-[44px]"
-        >
+        <span className="inline-flex items-center gap-2 text-sm" role="status">
           {saved ? <Check className="size-4" /> : null}
-          {saved ? "已保存" : "保存设置"}
-        </button>
-        <span className="text-xs text-faint">本地优先 · 中国版</span>
+          {saved ? "已自动保存" : "更改后自动保存"}
+        </span>
+        <span className="text-xs text-faint">AI 工具及图标偏好保存在当前浏览器，刷新或重启后保留。</span>
       </div>
+      {saveError && <p role="alert" className="mt-2 text-sm text-red-500">{saveError}</p>}
     </div>
   );
 }

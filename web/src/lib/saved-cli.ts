@@ -1,4 +1,5 @@
-export const CONFIG_KEY = "career-ops:config";
+import { CONFIG_KEY, persistSettings } from "./browser-settings.mjs";
+export { CONFIG_KEY };
 
 export function readSavedCliId(): string | null {
   try {
@@ -12,14 +13,10 @@ export function readSavedCliId(): string | null {
 
 export function persistCliId(cliId: string) {
   try {
-    const raw = localStorage.getItem(CONFIG_KEY);
-    const prev = raw ? JSON.parse(raw) : {};
-    localStorage.setItem(
-      CONFIG_KEY,
-      JSON.stringify({ ...prev, mode: prev.mode || "cli", cliId }),
-    );
+    persistSettings({ mode: "cli", cliId });
+    return true;
   } catch {
-    /* quota / private mode */
+    return false;
   }
 }
 
@@ -37,10 +34,12 @@ export async function resolveCliId(): Promise<string | null> {
   try {
     const r = await fetch("/api/clis");
     const d = (await r.json()) as { clis?: { id: string; installed?: boolean }[] };
+    // A user may have made a selection while detection was pending.
+    const selected = readSavedCliId();
+    if (selected) return selected;
     const sole = pickSoleInstalled(d.clis);
     if (!sole) return null;
-    persistCliId(sole);
-    return sole;
+    return persistCliId(sole) ? sole : null;
   } catch {
     return null;
   }

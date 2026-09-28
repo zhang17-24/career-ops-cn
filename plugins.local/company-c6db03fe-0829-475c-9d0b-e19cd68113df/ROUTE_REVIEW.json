@@ -1,0 +1,28 @@
+{
+  "officialUrl": "https://www.midea.com.cn/zh/careers",
+  "entryUrl": "https://careers.midea.com/schoolOut/home",
+  "allowedHosts": [
+    "careers.midea.com",
+    "apiprod.midea.com"
+  ],
+  "evidence": [
+    {
+      "fromUrl": "https://www.midea.com.cn/zh/careers",
+      "toUrl": "https://careers.midea.com/schoolOut/home",
+      "kind": "link",
+      "note": "2026-09-13T02:59:57Z：Ego Lite 只读核验。官网标题“加入美的”，正文明确美的集团，页脚“©2026美的集团股份有限公司版权所有”；“应届毕业生招聘”anchor 的原始 href 与绝对 href 均为此地址。目标标题“美的集团-校园招聘官网”，正文“美的集团 2027 届校园招聘”。"
+    },
+    {
+      "fromUrl": "https://careers.midea.com/schoolOut/home",
+      "toUrl": "https://apiprod.midea.com/stp/sc-msct/resource/all/app/public/api/getAppLanguageTypes/recruit-school-out",
+      "kind": "api",
+      "note": "2026-09-13T02:59:57Z：招聘首页正常加载时 performance resource 实际记录的 fetch 请求；公开语言配置依赖，仅观察地址，未重放、未读取凭证或响应正文。"
+    },
+    {
+      "fromUrl": "https://careers.midea.com/schoolOut/home",
+      "toUrl": "https://apiprod.midea.com/stp/sc-msct/resource/all/app/public/api/getLanguagePackByte/recruit-school-out",
+      "kind": "api",
+      "note": "2026-09-13T02:59:57Z：同一首页正常加载产生的 fetch 语言包请求；仅记录真实请求 URL，尚未批准生产访问。"
+    }
+  ]
+}

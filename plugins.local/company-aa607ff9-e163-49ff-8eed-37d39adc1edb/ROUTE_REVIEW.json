@@ -1,0 +1,52 @@
+{
+  "officialUrl": "https://careers.ctrip.com/",
+  "entryUrl": "https://careers.ctrip.com/#/campus/jobList",
+  "allowedHosts": [
+    "careers.ctrip.com",
+    "ak-s-cw.tripcdn.com"
+  ],
+  "evidence": [
+    {
+      "fromUrl": "https://careers.ctrip.com/",
+      "toUrl": "https://careers.ctrip.com/#/campus",
+      "kind": "link",
+      "note": "2026-09-18T18:21Z，首页标题携程集团招聘官网；校园招聘原始 href=#/campus。"
+    },
+    {
+      "fromUrl": "https://careers.ctrip.com/#/campus",
+      "toUrl": "https://careers.ctrip.com/#/campus/jobList",
+      "kind": "link",
+      "note": "2026-09-18T18:21Z，滚动并确认命中查看所有职位，实际点击导航；page.info 与 tabs 核对。"
+    },
+    {
+      "fromUrl": "https://careers.ctrip.com/#/campus/jobList",
+      "toUrl": "https://careers.ctrip.com/api/hrrecruit/getJobAd",
+      "kind": "api",
+      "note": "2026-09-18T18:22Z，正常 SPA 导航触发 POST；公开列表捕获 HTTP 200、retCode=201、10条，总数56。"
+    },
+    {
+      "fromUrl": "https://careers.ctrip.com/#/campus/jobList",
+      "toUrl": "https://ak-s-cw.tripcdn.com/modules/hrteam/careers-trip-new-ares/static/js/84.1b218d6d.chunk.js",
+      "kind": "api",
+      "note": "2026-09-18T18:23Z，页面实际加载的公开导航模块；局部代码以校园 job-detail 路径及 e.fromId 生成 anchor。仅开发核对，不执行下载脚本。"
+    },
+    {
+      "fromUrl": "https://careers.ctrip.com/#/campus/jobList",
+      "toUrl": "https://careers.ctrip.com/#/campus/job-detail/MJ036670",
+      "kind": "link",
+      "note": "2026-09-18T18:23Z，列表 anchor 原始及解析 href、滚动命中后实际点击弹窗一致；详情标题、编号和职责正文与列表API一致。"
+    },
+    {
+      "fromUrl": "https://careers.ctrip.com/#/campus/jobList",
+      "toUrl": "https://careers.ctrip.com/#/campus/job-detail/MJ036676",
+      "kind": "link",
+      "note": "2026-09-18T18:23Z，列表 anchor 原始及解析 href、滚动命中后实际点击弹窗一致；详情标题、编号和职责正文与列表API一致。"
+    },
+    {
+      "fromUrl": "https://careers.ctrip.com/#/campus/jobList",
+      "toUrl": "https://careers.ctrip.com/#/campus/job-detail/MJ036671",
+      "kind": "link",
+      "note": "2026-09-18T18:23Z，列表 anchor 原始及解析 href、滚动命中后实际点击弹窗一致；详情标题、编号和职责正文与列表API一致。"
+    }
+  ]
+}

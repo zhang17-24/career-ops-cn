@@ -1,0 +1,49 @@
+{
+  "officialUrl": "https://jobs.games.wanmei.com/",
+  "entryUrl": "https://app.mokahr.com/campus-recruitment/pwrd/172467?locale=zh-CN#/jobs",
+  "allowedHosts": [
+    "jobs.games.wanmei.com",
+    "app.mokahr.com",
+    "static-ats.mokahr.com",
+    "public-cdn.mokahr.com",
+    "cstaticdun-v6.126.net"
+  ],
+  "evidence": [
+    {
+      "fromUrl": "https://jobs.games.wanmei.com/",
+      "toUrl": "https://app.mokahr.com/campus-recruitment/pwrd/172467?locale=zh-CN",
+      "kind": "link",
+      "note": "2026-09-19 Ego Lite：标题完美世界招聘官方网站、集团品牌及页脚一致；校园招聘 raw/resolved href 均为此地址。配置 campus.wanmei.com 证书不匹配后一次搜索发现此招聘首页。"
+    },
+    {
+      "fromUrl": "https://app.mokahr.com/campus-recruitment/pwrd/172467?locale=zh-CN",
+      "toUrl": "https://app.mokahr.com/campus-recruitment/pwrd/172467?locale=zh-CN#/jobs",
+      "kind": "link",
+      "note": "校招职位真实 anchor；目标标题完美世界 - 校园招聘。"
+    },
+    {
+      "fromUrl": "https://app.mokahr.com/campus-recruitment/pwrd/172467?locale=zh-CN#/jobs",
+      "toUrl": "https://app.mokahr.com/api/outer/ats-apply/website/jobs/v2",
+      "kind": "api",
+      "note": "正常 SPA 导航产生的公开 POST，HTTP 200；data 为不透明字符串，未解码。"
+    },
+    {
+      "fromUrl": "https://app.mokahr.com/campus-recruitment/pwrd/172467?locale=zh-CN#/jobs",
+      "toUrl": "https://static-ats.mokahr.com/recruitment-web-client/stylesheets/recruitmentWeb-20260916-1942-b5798-release.css",
+      "kind": "api",
+      "note": "2026-09-19 招聘页面实际资源请求；未出现验证码挑战。"
+    },
+    {
+      "fromUrl": "https://app.mokahr.com/campus-recruitment/pwrd/172467?locale=zh-CN#/jobs",
+      "toUrl": "https://public-cdn.mokahr.com/0e79e9bd-fedc-4e85-a208-39ca8ebce48e.png",
+      "kind": "api",
+      "note": "2026-09-19 招聘页面实际资源请求；未出现验证码挑战。"
+    },
+    {
+      "fromUrl": "https://app.mokahr.com/campus-recruitment/pwrd/172467?locale=zh-CN#/jobs",
+      "toUrl": "https://cstaticdun-v6.126.net/load.min.js",
+      "kind": "api",
+      "note": "2026-09-19 招聘页面实际资源请求；未出现验证码挑战。"
+    }
+  ]
+}

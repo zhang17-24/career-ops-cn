@@ -44,8 +44,8 @@ export const LIVENESS_CONTEXT_OPTIONS = {
 
 // Open a page in a context that already presents a realistic UA. Both callers use
 // this instead of browser.newPage() so headless checks aren't instantly bot-walled.
-export async function newLivenessPage(browser) {
-  const context = await browser.newContext(LIVENESS_CONTEXT_OPTIONS);
+export async function newLivenessPage(browser, options = {}) {
+  const context = await browser.newContext({ ...LIVENESS_CONTEXT_OPTIONS, ...options });
   return context.newPage();
 }
 
@@ -239,22 +239,34 @@ export async function validateUrlSecurity(urlString) {
   }
 }
 
-export async function checkUrlLiveness(page, url, { extraSettleMs = 0 } = {}) {
+export async function checkUrlLiveness(page, url, { extraSettleMs = 0, expectedTitle = '', requireJobBody = false, allowedNavigationHosts } = {}) {
   const guardError = rejectPrivateOrInvalid(url);
   if (guardError) {
     return { result: 'uncertain', code: guardError.code, reason: guardError.reason };
   }
+  const inScope = value => {
+    const u = new URL(value);
+    return u.protocol === 'https:' && !u.username && !u.password && !u.port && allowedNavigationHosts.includes(u.hostname);
+  };
+  if (allowedNavigationHosts && !inScope(url)) return { result: 'uncertain', code: 'unapproved_host', reason: '详情地址不在已审核 HTTPS 域名内' };
   if (page) {
     page._blockedByGuard = null;
+    page._allowedNavigationHosts = allowedNavigationHosts;
   }
   if (page && typeof page.route === 'function' && !page._routeInterceptorRegistered) {
     page._routeInterceptorRegistered = true;
     await page.route('**/*', async (route) => {
       const requestUrl = route.request().url();
+      if (page._allowedNavigationHosts && route.request().isNavigationRequest() && route.request().frame() === page.mainFrame() &&
+          !page._allowedNavigationHosts.includes(new URL(requestUrl).hostname)) {
+        page._blockedByGuard = { code: 'unapproved_host', reason: '详情跳转到未审核域名' };
+        return route.abort('blockedbyclient');
+      }
       const errGuard = rejectPrivateOrInvalid(requestUrl);
       if (errGuard) {
         console.warn(`Blocked request to restricted destination: ${requestUrl}`);
-        page._blockedByGuard = errGuard;
+        // Extension probes are blocked, but do not describe the job document.
+        if (!requestUrl.startsWith('chrome-extension://') || route.request().isNavigationRequest?.()) page._blockedByGuard = errGuard;
         return route.abort('blockedbyclient');
       }
       try {
@@ -303,8 +315,27 @@ export async function checkUrlLiveness(page, url, { extraSettleMs = 0 } = {}) {
     // Give SPAs (Ashby, Lever, Workday) time to hydrate. extraSettleMs adds slack
     // for the headed retry, where a JS anti-bot interstitial needs a moment to clear.
     await page.waitForTimeout(HYDRATION_WAIT_MS + extraSettleMs);
+    if (page._blockedByGuard) return { result: 'uncertain', ...page._blockedByGuard };
+    if (expectedTitle && page.url() === 'about:blank') return { result: 'uncertain', code: 'blank_document', reason: '官网脚本运行后详情变为空白，尚未确认' };
+    if (expectedTitle) {
+      try {
+        await page.waitForFunction(({ title, requireBody }) => {
+          const text = document.body?.innerText || '';
+          return text.includes(title) && (!requireBody || /职责|描述|要求|资格|responsibilit|qualification|requirements|description/i.test(text));
+        }, { title: expectedTitle, requireBody: requireJobBody }, { timeout: 12000 });
+      } catch (error) {
+        if (error.name !== 'TimeoutError') throw error;
+        // Classify real login/closed/redirect pages before reporting readiness.
+        const text = await page.evaluate(() => document.body?.innerText || '');
+        const verdict = classifyLiveness({ status, requestedUrl: url, finalUrl: page.url(), bodyText: text, applyControls: [] });
+        if (page._blockedByGuard) return { result: 'uncertain', ...page._blockedByGuard };
+        if (verdict.code !== 'no_apply_control' && verdict.code !== 'insufficient_content') return verdict;
+        return { result: 'uncertain', code: 'detail_not_ready', reason: '详情标题或职责正文未在12秒内就绪，未确认；可重新验收' };
+      }
+    }
 
     const finalUrl = page.url();
+    if (allowedNavigationHosts && !inScope(finalUrl)) return { result: 'uncertain', code: 'unapproved_host', reason: '详情跳转到未审核地址' };
     const bodyText = await page.evaluate(() => document.body?.innerText ?? '');
     const extractApplyControls = () => {
       const candidates = Array.from(
@@ -447,6 +478,12 @@ export async function checkUrlLiveness(page, url, { extraSettleMs = 0 } = {}) {
       reason: `navigation error: ${err.message.split('\n')[0]}`,
     };
   }
+}
+
+// Only an empty document can use passive HTML verification. Never retry a
+// login, CAPTCHA, HTTP error, closed job or off-site redirect this way.
+export function canVerifyStaticDetail(result, finalUrl) {
+  return finalUrl === 'about:blank' && result?.result === 'uncertain' && result.code === 'blank_document';
 }
 
 // Anti-bot results that a headed browser may be able to get past. A real (headed)

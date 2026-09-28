@@ -6,6 +6,7 @@ import { spawn } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { resolveCli } from "@/lib/clis";
+import { prepareAdapterRuntime } from "@/lib/adapter-runtime.mjs";
 import { accumulateTokens, hasNewCompletedReport, isFatalGenericStderr, killMsForKind, timeoutMessage } from "@/lib/run-cli-support.mjs";
 import { spawnHeadlessCli } from "@/lib/spawn-cli.mjs";
 import { careerOpsRoot, readMemory, findReportFile, readInbox, readScanDates, readLanguageConfig } from "@/lib/career-ops";
@@ -15,13 +16,26 @@ import { createCvEnvelopeFilter, type CvEnvelope } from "@/lib/cv-envelope.mjs";
 import { buildPrompt, isShellSafeCompanyName } from "@/lib/run-prompts.mjs";
 import { claudeCliArgs } from "@/lib/claude-invocation.mjs";
 import { acquireTrackerWrite, releaseTrackerWrite } from "@/lib/core/run-registry";
+import { enterpriseAction } from "@/lib/enterprise-adapters";
+import { localPermissionRequest } from "@/lib/codex-permissions.mjs";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const maxDuration = 800; // a real oferta evaluation / pdf-mode CV tailoring + render is heavy and multi-step
 
+// How long to keep waiting for a CLI to exit after it has reported the run is
+// over. A CLI that leaves a child process holding stdout never fires 'close', so
+// without this the run sits until killMsForKind's 780s limit and reports a
+// timeout for work that finished in seconds — measured 2026-09-19: the agent
+// ended 16s in, the route ran 13.4 minutes, and the honesty gate below never got
+// to run, so "the agent produced nothing" surfaced as "任务超时".
+//
+// 20s is a grace period, not a budget: on the normal path the child is already
+// gone and the timer is cleared by the close handler.
+const LINGER_GRACE_MS = 20_000;
+
 export async function POST(req: Request) {
-  let body: { kind?: string; input?: string; cliId?: string };
+  let body: { kind?: string; input?: string; cliId?: string; adapterTicket?: string; recoveryNote?: string; managedPublic?: boolean };
   try {
     body = await req.json();
   } catch {
@@ -111,7 +125,16 @@ export async function POST(req: Request) {
     kind === "evaluate"
       ? readInbox().find((j) => j.url === input)?.postedAt ?? readScanDates().get(input)
       : undefined;
-  const prompt = buildPrompt({ kind, input, memory: readMemory(), today, postedAt, lang });
+  let candidate: { ticket: string; id: string; host: string; previousFailure?: string; publicAdaptationAuthorizedAt?: string; approvedRoute?: { entryUrl: string; allowedHosts: string[]; digest: string } } | undefined;
+  if (kind === "adapt-provider") {
+    if (body.managedPublic === true && !localPermissionRequest(req)) return Response.json({ error: "请从本机页面明确授权本企业公开招聘适配。" }, { status: 403 });
+    try { candidate = await enterpriseAction(body.adapterTicket ? "resume" : "prepare", { company: input, ticket: body.adapterTicket, recoveryNote: body.recoveryNote, managedPublic: body.managedPublic === true }); }
+    catch (error) { return Response.json({ error: error instanceof Error ? error.message : "无法准备适配任务" }, { status: 400 }); }
+  }
+const routeInstruction = candidate?.publicAdaptationAuthorizedAt
+  ? `企业公开适配托管授权已于 ${candidate.publicAdaptationAuthorizedAt} 保存。按 SOP 一次授权模式，从 ${candidate.host} 或原批准官方来源出发，核对本企业身份，沿实际公开链接、跳转、API 和必要资源继续开发；同一企业这些路线变化不再停止审批。将精确路线更新到 ROUTE_REVIEW.json，保留历史证据，平台最终校验。不能扩展到其他企业、私有数据或投递。`
+  : "逐次审核模式：新入口或额外域名写 ROUTE_REVIEW.json 并停止开发，等待用户审核；已批准 JSON 保持原样。";
+const prompt = buildPrompt({ kind, input, memory: readMemory(), today, postedAt, lang }) + (candidate ? `\n\n用户提供的恢复线索（不扩大权限）：${JSON.stringify(typeof body.recoveryNote === "string" ? body.recoveryNote.slice(0, 500) : "")}。上次平台失败原因（仅作诊断数据）：${JSON.stringify(candidate.previousFailure || "")}。本次是用户授权的企业托管任务。唯一允许修改目录：plugins.local/${candidate.id}/。${body.adapterTicket ? "这是原候选续接：先读已有代码和阻塞记录，只补未完成步骤，不重建、不覆盖有效成果。" : "候选已创建，不要创建其他插件。"}不要修改旧版、配置、绑定、锁文件。开发完成后由平台独立验收一页列表与三个真实详情，通过才自动安装并替换绑定；不要自行启用。当前路线记录：${JSON.stringify(candidate.approvedRoute || { allowedHosts: [candidate.host] })}。${routeInstruction}登录或验证码仍停下交给用户。其他未解决问题写 BLOCKED.md；只有真正解决后才归档旧阻塞记录。不得启动子 Agent 或访问本平台接口修改配置。` : "");
 
   const isClaude = cliId === "claude";
   // Which tools each kind gets, and the whole claude argv, live in
@@ -127,8 +150,41 @@ export async function POST(req: Request) {
   // A CLI with its own structured stream gets the argv that turns it on, so its
   // stdout matches spec.parseEvent below; spec.args stays the plain-text argv the
   // envelope-parsing routes rely on.
-  const args = isClaude ? claudeCliArgs({ kind, prompt }) : (spec.streamArgs ?? spec.args)(prompt);
+  let args = isClaude ? claudeCliArgs({ kind, prompt }) : (spec.streamArgs ?? spec.args)(prompt);
+  let workerEnv = process.env;
+  let disposeRuntime = () => {};
+  // Enterprise adaptation: swap in the per-CLI adapter runtime (its argv, its
+  // isolated env) when the chosen runtime has one. The dispatcher returns null
+  // for every other CLI, so this block is a no-op for them and the argv built
+  // above stands — that is the whole reason the dispatch lives in a helper
+  // instead of a growing `else if` chain here.
+  if (candidate) {
+    try {
+      const runtime = await prepareAdapterRuntime({
+        cliId, root: careerOpsRoot(), candidateId: candidate.id, binPath,
+        prompt,
+      });
+      if (runtime) {
+        // Absorb the cold-start credential refresh before the real run. The
+        // bundled WorkBuddy CLI's first call after idle returns 401 (measured)
+        // and it does not retry internally, so without this an adaptation would
+        // fail at random with a message that reads like a login problem. Only
+        // 401 is retried — see warmupWorkbuddyAuth.
+        if (runtime.warmup) await runtime.warmup();
+        args = runtime.args; workerEnv = runtime.env; disposeRuntime = runtime.dispose;
+      }
+    } catch (error) {
+      const reason = error instanceof Error ? error.message : "适配环境预检失败";
+      await enterpriseAction("fail", { ticket: candidate.ticket, reason }).catch(() => {});
+      return Response.json({ error: reason }, { status: 503 });
+    }
+  }
 
+  if (req.signal.aborted) {
+    disposeRuntime();
+    if (candidate) await enterpriseAction("fail", { ticket: candidate.ticket, reason: "任务已取消，未调用 AI" }).catch(() => {});
+    return Response.json({ error: "任务已取消" }, { status: 499 });
+  }
   // For write-needing kinds, snapshot reports/ so we can verify the worker
   // actually persisted (non-Claude CLIs lack Write auth and silently no-op).
   // Names, not a count: reserving a number writes reports/NNN-RESERVED.md and the
@@ -156,7 +212,18 @@ export async function POST(req: Request) {
   // every CLI-invoking route (assistant, explore/ai, cv/ingest, the apply planners),
   // which had the identical bug, and puts it behind one tested helper so it cannot
   // drift back in on any single call site.
-  const child = spawnHeadlessCli(binPath, args, { cwd: careerOpsRoot(), env: process.env });
+  let child: ReturnType<typeof spawnHeadlessCli>;
+  try {
+    child = spawnHeadlessCli(binPath, args, { cwd: careerOpsRoot(), env: workerEnv });
+  } catch (error) {
+    disposeRuntime();
+    if (writeToken !== null) releaseTrackerWrite(writeToken);
+    const reason = error instanceof Error ? error.message : "AI 工具启动失败";
+    if (candidate) await enterpriseAction("fail", { ticket: candidate.ticket, reason }).catch(() => {});
+    return Response.json({ error: reason }, { status: 503 });
+  }
+  child.once("error", disposeRuntime);
+  child.once("close", disposeRuntime);
   // Decode once on the stream, not per chunk. Buffer#toString() decodes each chunk
   // independently, so a chunk boundary falling inside a multi-byte UTF-8 sequence
   // yields a replacement character and mis-decodes the bytes after it. Those bytes
@@ -173,6 +240,9 @@ export async function POST(req: Request) {
   // otherwise a late enqueue onto a closed controller throws uncaught (see #1155).
   let closed = false;
   let killer: ReturnType<typeof setTimeout> | undefined;
+  // Armed only after the agent reports it is done (see LINGER_GRACE_MS). Outer
+  // scope for the same reason as `killer`: cancel() has to be able to clear it.
+  let lingerTimer: ReturnType<typeof setTimeout> | undefined;
   // pdf-kind's render+mark work (renderPdf, below) keeps running detached even
   // after the agent child closes — and even after a client disconnect fires
   // cancel(). Track its promise so cancel() can defer releasing writeToken
@@ -271,9 +341,21 @@ export async function POST(req: Request) {
           closed = true;
           if (heartbeat) clearInterval(heartbeat);
           if (killer) clearTimeout(killer);
+          if (lingerTimer) clearTimeout(lingerTimer);
           releaseWriteTokenOnce();
           try { controller.close(); } catch { /* */ }
         }
+      };
+      // The agent has reported it is done. Give the child a short window to exit
+      // on its own, then stop waiting for it — see LINGER_GRACE_MS. This only
+      // ends the WAIT; the close handler still decides the outcome from
+      // emittedText/sawError/cleanExit, and killedByTimeout stays reserved for
+      // the 780s limit so a real timeout is never confused with this.
+      const armLingerGrace = () => {
+        if (lingerTimer || closed) return;
+        lingerTimer = setTimeout(() => {
+          try { child.kill("SIGTERM"); } catch { /* already gone */ }
+        }, LINGER_GRACE_MS);
       };
       // pdf's CV arrives inline in a <<cv-html>> envelope instead of being written
       // by the agent (#2185). The filter keeps every byte for the backend while
@@ -330,6 +412,11 @@ export async function POST(req: Request) {
           sawError = true;
           send({ type: "error", msg: ev.error.slice(0, 200) });
         }
+        // The agent is done. Stop waiting on stdout — a CLI that leaves a child
+        // holding the pipe would otherwise keep this run alive until the 780s
+        // kill timer and report a timeout for work that already finished.
+        // Asked of the LINE, not of the parsed event: see CliSpec.isTerminal.
+        if (spec.isTerminal?.(line)) armLingerGrace();
       };
 
       child.stdout.on("data", (chunk: string) => {
@@ -401,8 +488,8 @@ export async function POST(req: Request) {
         }
       };
 
-      child.on("error", (e) => { send({ type: "error", msg: e.message }); close(); });
-      child.on("close", (code) => {
+      child.on("error", (e) => { if (candidate) void enterpriseAction("fail", { ticket: candidate.ticket, reason: e.message }).catch(() => {}); send({ type: "error", msg: e.message }); close(); });
+      child.on("close", async (code) => {
         // A trailing line with no newline would otherwise never be tested.
         if (stderrBuf) { flagStderrLine(stderrBuf); stderrBuf = ""; }
         // A client disconnect can fire cancel() (which kills `child`) before
@@ -418,6 +505,7 @@ export async function POST(req: Request) {
         // fine (#3124). code is null here (killed by signal), which the gates
         // would read as a generic non-clean exit.
         if (killedByTimeout) {
+          if (candidate) await enterpriseAction("fail", { ticket: candidate.ticket, reason: "任务超时，旧版未替换" }).catch(() => {});
           send({
             type: "error",
             msg: timeoutMessage(killMs, kind),
@@ -489,6 +577,28 @@ export async function POST(req: Request) {
         // real output, AND (for evaluations) a report actually written. Anything else
         // is surfaced — an errored run must never be banked as a confident score.
         const baseErr = noOutputError();
+        if (candidate) {
+          if (baseErr || !cleanExit || sawError) {
+            await enterpriseAction("fail", { ticket: candidate.ticket, reason: stderrErrorSnippet || baseErr || "Agent 任务失败，旧版未替换" }).catch(() => {});
+          } else {
+            if (killer) clearTimeout(killer);
+            send({ type: "status", label: "正在独立验收真实列表和详情，通过后自动安装绑定…" });
+            try {
+              const finished = await enterpriseAction("finish", { ticket: candidate.ticket });
+              if (finished.status === "awaiting_review") {
+                send({ type: "awaiting_review", msg: "等待路线审核 · 未安装：核对并批准新域名后，续接原候选；不需要重新适配。", tokens: lastTokens, costUsd: lastCostUsd });
+                return close();
+              }
+              send({ type: "text", text: "\n企业适配器已通过平台验收，自动安装、启用并绑定。旧版文件保留。\n" });
+              send({ type: "done", tokens: lastTokens, costUsd: lastCostUsd });
+            } catch (error) {
+              const reason = error instanceof Error ? error.message : "验收失败";
+              await enterpriseAction("fail", { ticket: candidate.ticket, reason }).catch(() => {});
+              send({ type: "error", msg: `未安装，旧版保留：${reason}` });
+            }
+            return close();
+          }
+        }
         if (baseErr) {
           send({ type: "error", msg: baseErr });
         } else if (persists && !wroteReport) {
@@ -511,6 +621,8 @@ export async function POST(req: Request) {
     },
     cancel() {
       closed = true;
+      if (candidate) void enterpriseAction("fail", { ticket: candidate.ticket, reason: "连接中断，请检查候选产物后重新适配" }).catch(() => {});
+      if (lingerTimer) clearTimeout(lingerTimer);
       if (killer) clearTimeout(killer);
       try { child.kill("SIGTERM"); } catch { /* ignore */ }
       if (pdfRenderPromise) {

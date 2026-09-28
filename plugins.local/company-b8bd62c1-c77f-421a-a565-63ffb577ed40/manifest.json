@@ -1,0 +1,12 @@
+{
+  "id": "company-b8bd62c1-c77f-421a-a565-63ffb577ed40",
+  "name": "哔哩哔哩 招聘源适配器",
+  "version": "0.1.0",
+  "apiVersion": 1,
+  "description": "零 Token 读取 哔哩哔哩 的公开招聘职位。",
+  "hooks": ["provider"],
+  "requiredEnv": [],
+  "allowedHosts": ["jobs.bilibili.com"],
+  "skill": "skill.md",
+  "humanInTheLoop": true
+}

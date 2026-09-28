@@ -1,0 +1,12 @@
+{
+  "id": "company-65f17e44-48c6-4c1e-9cdf-67b4743e1bb6",
+  "name": "唯品会 招聘源适配器",
+  "version": "0.1.0",
+  "apiVersion": 1,
+  "description": "零 Token 读取 唯品会 的公开招聘职位。",
+  "hooks": ["provider"],
+  "requiredEnv": [],
+  "allowedHosts": ["app-tc.mokahr.com"],
+  "skill": "skill.md",
+  "humanInTheLoop": true
+}

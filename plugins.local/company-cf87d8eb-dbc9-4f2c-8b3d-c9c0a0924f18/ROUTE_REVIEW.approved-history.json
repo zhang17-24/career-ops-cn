@@ -1,0 +1,22 @@
+{
+  "officialUrl": "https://talent.catl.com/",
+  "entryUrl": "https://app.mokahr.com/campus-recruitment/catlhr/148948#/",
+  "allowedHosts": [
+    "talent.catl.com",
+    "app.mokahr.com"
+  ],
+  "evidence": [
+    {
+      "fromUrl": "https://talent.catl.com/",
+      "toUrl": "https://talent.catl.com/social-recruitment/catlhr/96144/#/",
+      "kind": "redirect",
+      "note": "2026-09-13T15:31:33Z Ego Lite正常打开配置入口后pageInfo实际落点；标题为宁德时代校招 | 宁德时代社招 | 宁德时代招聘官网，页脚为宁德时代新能源科技股份有限公司。"
+    },
+    {
+      "fromUrl": "https://talent.catl.com/social-recruitment/catlhr/96144/#/",
+      "toUrl": "https://app.mokahr.com/campus-recruitment/catlhr/148948#/",
+      "kind": "link",
+      "note": "同次真实DOM中2027届全球校园招聘anchor的原始href与解析后absolute href完全一致。仅提出路线申请，未打开目标、未批准域名。"
+    }
+  ]
+}

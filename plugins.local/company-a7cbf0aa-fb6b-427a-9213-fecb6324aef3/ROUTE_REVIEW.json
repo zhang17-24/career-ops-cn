@@ -1,0 +1,19 @@
+{
+  "officialUrl": "https://talent.baidu.com/jobs/campus",
+  "entryUrl": "https://talent.baidu.com/jobs/list",
+  "allowedHosts": ["talent.baidu.com"],
+  "evidence": [
+    {
+      "fromUrl": "https://talent.baidu.com/jobs/campus",
+      "toUrl": "https://talent.baidu.com/jobs/list",
+      "kind": "link",
+      "note": "2026-09-18T15:55:47Z Ego Lite：配置入口标题和正文均为百度校园招聘；职位导航为无 href 的 li.header-menu-item。滚动并确认视口内命中后正常点击，page.info 和 task.tabs 均确认此实际地址，同标签导航。列表显示校园招聘、面向全球2027届毕业生、158条职位信息。"
+    },
+    {
+      "fromUrl": "https://talent.baidu.com/jobs/list",
+      "toUrl": "https://talent.baidu.com/httservice/getPostListNew",
+      "kind": "api",
+      "note": "2026-09-18T15:55:47Z 正常官网导航后 performance resource entries 中实际观察到此 XMLHttpRequest；未重放、未读取凭证，尚未提取请求体或响应 schema。"
+    }
+  ]
+}
